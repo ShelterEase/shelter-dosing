@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1916">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shelter Dosing">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Shelter Drug Dosing Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  :root{--bg:#f4f3ef;--surface:#fff;--surface2:#f9f8f5;--border:#e2e0d8;--border2:#ccc9be;--text:#1a1916;--text2:#6b6860;--text3:#9e9b93;--teal:#0d7e6b;--teal-light:#e6f5f2;--teal-mid:#b3e0d9;--amber:#b45309;--amber-light:#fef3c7;--red:#b91c1c;--red-light:#fee2e2;--accent:#5ee8cf;--accent-dark:#0d2e29;--radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 12px rgba(0,0,0,.08);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
+  .site-header{background:var(--text);color:#fff;padding:18px 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .header-inner{max-width:1150px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .site-title{font-size:17px;font-weight:600;letter-spacing:-.02em;color:#fff;flex-shrink:0;}
+  .site-title span{color:#5ee8cf;font-family:'DM Mono',monospace;font-size:11px;font-weight:400;display:block;margin-top:1px;opacity:.8;}
+  .header-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto;}
+  .species-toggle{display:flex;background:rgba(255,255,255,.12);border-radius:8px;padding:3px;gap:2px;}
+  .sp-btn{padding:6px 16px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .sp-btn.active{background:#5ee8cf;color:#0d2e29;}
+  .weight-group{display:flex;align-items:center;gap:8px;}
+  .weight-label{font-size:11px;color:rgba(255,255,255,.5);font-weight:500;letter-spacing:.05em;text-transform:uppercase;}
+  .weight-input-wrap{display:flex;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;overflow:hidden;}
+  #weightInput{width:70px;padding:7px 10px;background:transparent;border:none;color:#fff;font-family:'DM Mono',monospace;font-size:14px;outline:none;}
+  #weightInput::placeholder{color:rgba(255,255,255,.3);}
+  .unit-toggle{display:flex;border-left:1px solid rgba(255,255,255,.15);}
+  .unit-btn{padding:7px 9px;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+  .unit-btn.active{color:#5ee8cf;background:rgba(94,232,207,.12);}
+  .main{max-width:1150px;margin:0 auto;padding:18px 16px 150px;}
+  .section-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);}
+  .sec-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+  .sec-btn:hover{border-color:var(--border2);color:var(--text);}
+  .sec-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
+  .drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:11px;}
+  .drug-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:box-shadow .15s,border-color .15s;}
+  .drug-card:hover{box-shadow:var(--shadow-md);}
+  .drug-card.na-card{opacity:.38;pointer-events:none;}
+  .drug-card.selected{border-color:var(--teal);box-shadow:0 0 0 2px rgba(13,126,107,.14),var(--shadow-md);}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+  .card-top-left{display:flex;align-items:flex-start;gap:9px;flex:1;}
+  .drug-name{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.01em;}
+  .drug-alias{font-size:11px;color:var(--text3);margin-top:1px;font-family:'DM Mono',monospace;}
+  .route-pill{flex-shrink:0;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);white-space:nowrap;}
+  .drug-use{font-size:11.5px;color:var(--text2);line-height:1.45;margin-bottom:9px;}
+  .drug-checkbox{width:18px;height:18px;border-radius:5px;border:2px solid var(--border2);background:var(--surface);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none;}
+  .drug-checkbox.checked{background:var(--teal);border-color:var(--teal);}
+  .drug-checkbox.checked::after{content:'';display:block;width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
+  .opt-cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none;}
+  .opt-cb.checked{background:var(--teal);border-color:var(--teal);}
+  .opt-cb.checked::after{content:'';display:block;width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
+  .opt-label{font-size:12px;font-weight:500;color:var(--text2);}
+  .divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
+  .dose-block{background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);padding:9px 11px;margin-bottom:5px;}
+  .dose-block.warn-block{background:var(--amber-light);border-color:#fcd34d;}
+  .dose-block.red-block{background:var(--red-light);border-color:#fca5a5;}
+  .dose-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:2px;}
+  .warn-lbl{color:var(--amber)!important;}
+  .red-lbl{color:var(--red)!important;}
+  .dose-value{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;color:var(--teal);line-height:1;}
+  .warn-val{color:var(--amber)!important;}
+  .red-val{color:var(--red)!important;}
+  .dose-detail{font-size:11px;color:var(--text2);line-height:1.5;margin-top:3px;}
+  .combo-line{font-size:12px;color:var(--text);font-family:'DM Mono',monospace;margin-top:3px;font-weight:500;}
+  .no-weight-msg{font-size:12px;color:var(--text3);font-style:italic;padding:6px 0;text-align:center;}
+  .na-msg{font-size:12px;color:var(--red);font-weight:500;padding:4px 0;}
+  .drug-note{font-size:11px;color:var(--text3);line-height:1.5;}
+  .cat-warn{font-size:11px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:5px 9px;margin-top:5px;line-height:1.4;font-weight:500;}
+  .empty-state{grid-column:1/-1;text-align:center;padding:48px 0;color:var(--text3);}
+  .copy-bar{position:fixed;bottom:0;left:0;right:0;background:var(--text);box-shadow:0 -4px 20px rgba(0,0,0,.25);z-index:200;transition:transform .25s ease;}
+  .copy-bar.hidden{transform:translateY(100%);}
+  .copy-bar-inner{max-width:1150px;margin:0 auto;padding:12px 16px 16px;display:flex;gap:12px;align-items:flex-start;}
+  .copy-bar-text{flex:1;font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,.85);line-height:1.65;white-space:pre-wrap;word-break:break-word;min-height:34px;cursor:text;-webkit-user-select:text;user-select:text;}
+  .copy-bar-tap-hint{font-size:10px;color:rgba(255,255,255,.45);margin-top:3px;display:none;}
+  @media(hover:none){.copy-bar-tap-hint{display:block;}}
+  .copy-bar-actions{display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
+  .copy-btn{padding:8px 15px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s;}
+  .copy-btn:hover{background:rgba(255,255,255,.18);}
+  .copy-btn.primary{background:var(--accent);color:var(--accent-dark);border-color:var(--accent);}
+  .copy-btn.primary:hover{background:#4dd4bb;}
+  .copy-bar-label{font-size:10px;color:rgba(255,255,255,.38);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+  .copied-flash{color:var(--accent);font-size:11px;text-align:center;opacity:0;transition:opacity .2s;}
+  .copied-flash.show{opacity:1;}
+  .clear-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.13);background:transparent;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .clear-btn:hover{color:rgba(255,255,255,.65);}
+  footer{background:var(--text);color:rgba(255,255,255,.38);text-align:center;padding:16px;font-size:11px;}
+  footer strong{color:rgba(255,255,255,.65);font-weight:500;}
+  @media(max-width:600px){.drug-grid{grid-template-columns:1fr;}.site-header{padding:12px 14px;}.header-controls{gap:6px;}.sp-btn{font-size:11px;padding:5px 10px;}}
+  html,body{overflow-x:hidden;}
+  @media print{.site-header{position:static;background:#fff;color:#000;border-bottom:2px solid #000;box-shadow:none;}.header-controls,.section-tabs,.copy-bar,footer{display:none;}.drug-card{break-inside:avoid;box-shadow:none;border:1px solid #ccc;}.drug-grid{grid-template-columns:repeat(2,1fr);}.na-card{display:none;}body{background:#fff;}}
+
+  /* ── Clinical Module ─────────────────────────── */
+  .clinical-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;}
+  .clinical-header{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;user-select:none;gap:10px;}
+  .clinical-header:hover{background:var(--surface2);}
+  .clinical-header-left{display:flex;align-items:center;gap:10px;}
+  .clinical-icon{width:28px;height:28px;border-radius:7px;background:var(--teal-light);border:1px solid var(--teal-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .clinical-icon svg{width:14px;height:14px;stroke:var(--teal);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .clinical-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em;}
+  .clinical-subtitle{font-size:11px;color:var(--text3);margin-top:1px;}
+  .clinical-chevron{width:16px;height:16px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex-shrink:0;}
+  .clinical-chevron.open{transform:rotate(180deg);}
+  .clinical-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal);color:#fff;white-space:nowrap;flex-shrink:0;}
+  .clinical-body{border-top:1px solid var(--border);padding:14px 15px;display:none;}
+  .clinical-body.open{display:block;}
+  /* Role toggle */
+  .role-toggle-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .role-toggle-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);}
+  .role-toggle{display:flex;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;gap:2px;}
+  .role-btn{padding:5px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .role-btn.active{background:var(--text);color:#fff;}
+  .role-btn.vet-active{background:var(--teal);color:#fff;}
+  /* Category accordion */
+  .cat-accordion{display:flex;flex-direction:column;gap:8px;}
+  .cat-block{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+  .cat-block-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;background:var(--surface2);user-select:none;gap:8px;}
+  .cat-block-header:hover{background:var(--border);}
+  .cat-block-title{font-size:12px;font-weight:600;color:var(--text);}
+  .cat-block-meta{display:flex;align-items:center;gap:8px;}
+  .cat-count{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--teal);color:#fff;}
+  .cat-chev{width:13px;height:13px;stroke:var(--text3);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s;flex-shrink:0;}
+  .cat-chev.open{transform:rotate(180deg);}
+  .cat-block-body{display:none;padding:10px 12px;border-top:1px solid var(--border);}
+  .cat-block-body.open{display:block;}
+  /* Symptom checkboxes */
+  .symptom-group-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:8px 0 5px;padding-bottom:3px;border-bottom:1px solid var(--border);}
+  .symptom-group-label:first-child{margin-top:0;}
+  .symptom-group-major{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);margin:14px 0 6px;padding:5px 8px;background:var(--teal-light);border-left:3px solid var(--teal);border-radius:3px;}
+  .symptom-group-major:first-child{margin-top:0;}
+  .symptom-row{display:flex;align-items:flex-start;gap:9px;padding:5px 4px;border-radius:5px;cursor:pointer;}
+  .symptom-row:hover{background:var(--surface2);}
+  /* Laterality toggle — appears inline after checkbox is checked */
+  .lat-toggle{display:none;align-items:center;gap:3px;margin-top:5px;}
+  .lat-toggle.show{display:flex;}
+  .lat-btn{padding:2px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;line-height:1.5;}
+  .lat-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .lat-btn.lat-active{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .clinical-preview-line.incomplete{background:rgba(245,158,11,.12);border-left:3px solid var(--amber);}
+  .sym-cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .13s;margin-top:1px;}
+  .sym-cb.checked{background:var(--teal);border-color:var(--teal);}
+  .sym-cb.checked::after{content:'';display:block;width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
+  .sym-label{font-size:12.5px;color:var(--text);line-height:1.4;}
+  .sym-label-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+  /* Vet-only DDx badge on symptom */
+  .ddx-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;background:rgba(13,126,107,.1);color:var(--teal);border:1px solid var(--teal-mid);margin-left:5px;vertical-align:middle;white-space:nowrap;}
+  /* Footer disposition row (tech mode) */
+  .clinical-footer-row{margin-top:12px;padding:10px 12px;background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-sm);}
+  .clinical-footer-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:7px;}
+  .clinical-footer-opts{display:flex;flex-wrap:wrap;gap:6px;}
+  .footer-opt-btn{padding:4px 11px;border-radius:6px;border:1px solid #fcd34d;background:transparent;color:var(--amber);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .13s;}
+  .footer-opt-btn:hover{background:rgba(245,158,11,.15);}
+  .footer-opt-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+  @media(max-width:600px){.clinical-footer-opts{flex-direction:column;}}
+  /* Preview output */
+  .clinical-preview{margin-top:12px;background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);overflow:hidden;display:none;}
+  .clinical-preview.show{display:block;}
+  .clinical-preview-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--teal-mid);}
+  .clinical-preview-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);}
+  .clinical-clear{padding:3px 10px;border-radius:5px;border:1px solid var(--teal-mid);background:transparent;color:var(--teal);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;cursor:pointer;}
+  .clinical-clear:hover{background:var(--teal);color:#fff;}
+  .clinical-preview-lines{padding:9px 12px;display:flex;flex-direction:column;gap:5px;}
+  .clinical-preview-line{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text);line-height:1.55;padding:5px 8px;background:rgba(255,255,255,.55);border-radius:4px;}
+  @media(max-width:600px){.clinical-body{padding:12px;}.clinical-header{padding:10px 12px;}.cat-block-header{padding:8px 10px;}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-title">Shelter Drug Dosing<span>&#x25CF; Practical dose calculator</span></div>
+    <div class="header-controls">
+      <div class="species-toggle">
+        <button class="sp-btn active" onclick="setSpecies('dog')">&#x1F436; Dog</button>
+        <button class="sp-btn" onclick="setSpecies('cat')">&#x1F431; Cat</button>
+      </div>
+      <div class="weight-group">
+        <span class="weight-label">Weight</span>
+        <div class="weight-input-wrap">
+          <input type="number" id="weightInput" placeholder="e.g. 20" min="0.5" step="0.5" oninput="render()"/>
+          <div class="unit-toggle">
+            <button class="unit-btn active" id="lbBtn" onclick="setUnit('lb')">lb</button>
+            <button class="unit-btn" id="kgBtn" onclick="setUnit('kg')">kg</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="main">
+  <!-- ── Clinical Problem Module ── -->
+  <div class="clinical-panel" id="clinicalPanel">
+    <div class="clinical-header" onclick="toggleClinical()">
+      <div class="clinical-header-left">
+        <div class="clinical-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div>
+          <div class="clinical-title">Clinical Findings</div>
+          <div class="clinical-subtitle" id="clinicalSubtitle">Select role, then check symptoms to add to notes</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="clinical-badge" id="clinicalBadge" style="display:none">0 selected</span>
+        <svg class="clinical-chevron" id="clinicalChevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="clinical-body" id="clinicalBody">
+      <!-- Role toggle -->
+      <div class="role-toggle-row">
+        <div>
+          <div class="role-toggle-label">Role</div>
+        </div>
+        <div class="role-toggle">
+          <button class="role-btn active" id="roleTechBtn" onclick="setRole('tech')">🩺 Vet Tech</button>
+          <button class="role-btn" id="roleVetBtn" onclick="setRole('vet')">👨‍⚕️ Veterinarian</button>
+        </div>
+      </div>
+      <!-- Symptom accordion rendered by JS -->
+      <div class="cat-accordion" id="catAccordion"></div>
+      <!-- Footer disposition (tech mode only, shown when symptoms selected) -->
+      <div class="clinical-footer-row" id="clinicalFooterRow" style="display:none;">
+        <div class="clinical-footer-label">Add closing statement:</div>
+        <div class="clinical-footer-opts">
+          <button class="footer-opt-btn" id="fopt_none"    onclick="setFooterOpt('none')">None</button>
+          <button class="footer-opt-btn" id="fopt_discuss" onclick="setFooterOpt('discuss')">Discussed with veterinarian</button>
+          <button class="footer-opt-btn" id="fopt_proto"   onclick="setFooterOpt('proto')">Per protocol</button>
+          <button class="footer-opt-btn" id="fopt_eval"    onclick="setFooterOpt('eval')">Vet evaluation recommended</button>
+        </div>
+      </div>
+      <!-- Preview -->
+      <div class="clinical-preview" id="clinicalPreview">
+        <div class="clinical-preview-header">
+          <div class="clinical-preview-label">📋 Note preview — appears above medications in clipboard</div>
+          <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
+        </div>
+        <div class="clinical-preview-lines" id="clinicalPreviewLines"></div>
+      </div>
+    </div>
+  </div>
+  <div class="section-tabs" id="tabs"></div>
+  <div class="drug-grid" id="grid"></div>
+</main>
+<div class="copy-bar hidden" id="copyBar">
+  <div class="copy-bar-inner">
+    <div style="flex:1;">
+      <div class="copy-bar-label">Clinical notes — ready to copy</div>
+      <div class="copy-bar-text" id="copyText" onclick="selectCopyText()"></div>
+      <div class="copy-bar-tap-hint">Tap text to select all · then copy with your keyboard or long-press</div>
+    </div>
+    <div class="copy-bar-actions">
+      <button class="copy-btn primary" onclick="copyToClipboard()">Copy to clipboard</button>
+      <button class="clear-btn" onclick="clearAll()">Clear all</button>
+      <div class="copied-flash" id="copiedFlash">Copied!</div>
+    </div>
+  </div>
+</div>
+<footer><strong>For shelter staff use only.</strong> &nbsp;Always verify doses with a licensed veterinarian.</footer>
+<script>
+// ── helpers ──────────────────────────────────
+function f(n,d=2){return parseFloat(n.toFixed(d));}
+
+// Best whole-pill combo, never split, minimize overage then pill count
+// sizes = [{mg, unit}]  e.g. [{mg:100,unit:'tablet'},{mg:50,unit:'capsule'}]
+function bestPills(targetMg, sizes, allowHalf=false){
+  // Generate all candidates up to reasonable multiples
+  let best=null, bd=[Infinity,Infinity];
+  // max 10 of any single size
+  function recurse(idx, remaining, combo, count){
+    if(remaining<=0){
+      const over=-remaining, total=count;
+      const key=[over,total];
+      if(key[0]<bd[0]||(key[0]===bd[0]&&key[1]<bd[1])){bd=key;best=[...combo];}
+      return;
+    }
+    if(idx>=sizes.length){return;}
+    const s=sizes[idx];
+    const maxN=Math.ceil((remaining+s.mg*2)/s.mg);
+    const step=allowHalf?0.5:1;
+    for(let n=0;n<=Math.min(maxN,10);n+=step){
+      combo.push({n,s});
+      recurse(idx+1, remaining-n*s.mg, combo, count+n);
+      combo.pop();
+    }
+  }
+  recurse(0,targetMg,[],0);
+  if(!best)return null;
+  return best.filter(x=>x.n>0).map(x=>`${x.n} \u00d7 ${x.s.mg}mg ${x.n===1?x.s.unit:x.s.unit+'s'}`);
+}
+
+function rLiq(targetMg, concMgMl, decimals=2){return f(targetMg/concMgMl,decimals);}
+
+// Check if pill dose exceeds the safe range; return warning html+plain if so
+function checkRange(pillMg, minMg, maxMg, pillDesc, altMsg=''){
+  const isCap=pillDesc&&pillDesc.toLowerCase().includes('capsule');
+  const pillWord=isCap?'Capsule':'Tablet';
+  if(pillMg>maxMg*1.5){
+    const msg=altMsg||'Use compounded liquid or alternate medication.';
+    return{html:blk(pillWord+' too large','Safe range: '+f(minMg,1)+'–'+f(maxMg,1)+'mg','',msg,'warn-block'),
+           plain:pillWord+' too large — safe range '+f(minMg,1)+'–'+f(maxMg,1)+'mg. '+msg};
+  }
+  if(pillMg>maxMg){
+    return{html:blk(pillWord+' slightly above range','Safe max: '+f(maxMg,1)+'mg','','Closest whole pill — use cautiously and monitor.','warn-block'),
+           plain:pillWord+' slightly above range (safe max '+f(maxMg,1)+'mg) — use cautiously'};
+  }
+  return null;
+}
+
+// Prefer liquid for small animals (<= threshold kg), tablets/caps otherwise
+// Returns {form:'liquid'|'tablet', ...details}
+function chooseBest(kg, liquidThresholdKg, liquidCalc, pillCalc){
+  return kg<=liquidThresholdKg ? liquidCalc() : pillCalc();
+}
+
+function blk(lbl,val,combo,detail,cls=''){
+  const lc=cls==='warn-block'?' warn-lbl':cls==='red-block'?' red-lbl':'';
+  const vc=cls==='warn-block'?' warn-val':cls==='red-block'?' red-val':'';
+  return `<div class="dose-block${cls?' '+cls:''}"><div class="dose-lbl${lc}">${lbl}</div>`+
+    `<div class="dose-value${vc}">${val}</div>`+
+    (combo?`<div class="combo-line">${combo}</div>`:'')+
+    (detail?`<div class="dose-detail">${detail}</div>`:'')+`</div>`;
+}
+
+function noWeight(){return{html:`<p class="no-weight-msg">Enter weight above</p>`,plain:''};}
+function notFor(sp){return{html:`<p class="na-msg">Not indicated for ${sp}s</p>`,plain:''};}
+function topicalResult(note){return{html:`<div class="dose-detail" style="padding:2px 0">${note}</div>`,plain:note};}
+
+// ── LOOKUP TABLES ────────────────────────────
+// Apoquel (per label weight chart)
+function apoquelDose(lb){
+  if(lb<6.6)return null;
+  if(lb<=9.9) return{mg:1.8, combo:'0.5 \u00d7 3.6mg tab'};
+  if(lb<=14.9)return{mg:2.7, combo:'0.5 \u00d7 5.4mg tab'};
+  if(lb<=19.9)return{mg:3.6, combo:'1 \u00d7 3.6mg tab'};
+  if(lb<=29.9)return{mg:5.4, combo:'1 \u00d7 5.4mg tab'};
+  if(lb<=44.9)return{mg:8,   combo:'0.5 \u00d7 16mg tab'};
+  if(lb<=53.9)return{mg:9.8, combo:'0.5 \u00d7 3.6mg + 0.5 \u00d7 16mg'};
+  if(lb<=59.9)return{mg:10.7,combo:'0.5 \u00d7 5.4mg + 0.5 \u00d7 16mg'};
+  if(lb<=89.9)return{mg:16,  combo:'1 \u00d7 16mg tab'};
+  if(lb<=129.9)return{mg:24, combo:'1.5 \u00d7 16mg tabs'};
+  return{mg:32,combo:'2 \u00d7 16mg tabs'};
+}
+
+// Cefpodoxime table
+const CEFPOD={15:50,20:50,25:100,30:100,35:100,40:100,45:150,50:150,55:150,60:150,65:150,70:200,75:200,80:200,85:200,90:250,95:250,100:250,110:300,120:300};
+function cefpodDose(lb){const keys=Object.keys(CEFPOD).map(Number).sort((a,b)=>a-b);let mg=CEFPOD[keys[0]];for(const k of keys){if(lb>=k)mg=CEFPOD[k];}
+  const parts=bestPillsHalf(mg,[{mg:200,unit:'tablet'},{mg:100,unit:'tablet'}]);
+  return{mg,combo:parts?parts.join(' + '):''};}
+
+// Clavamox table
+const CLAV={5:31.25,10:62.5,15:125,20:125,25:187.5,30:187.5,35:250,40:250,45:312.5,50:312.5,55:375,60:375,65:437.5,70:437.5,75:500,80:500,85:562.5,90:625,95:625,100:625,110:750,120:750};
+function clavDose(lb){const keys=Object.keys(CLAV).map(Number).sort((a,b)=>a-b);let mg=CLAV[keys[0]];for(const k of keys){if(lb>=k)mg=CLAV[k];}
+  const parts=bestPills(mg,[{mg:375,unit:'tablet'},{mg:250,unit:'tablet'},{mg:125,unit:'tablet'},{mg:62.5,unit:'tablet'}]);
+  return{mg,combo:parts?parts.join(' + '):''};}
+
+// Selamectin
+function selaDog(lb){if(lb<5)return'0.13';if(lb<=10)return'0.25';if(lb<=20)return'0.50';if(lb<=40)return'1.0';if(lb<=85)return'2.0';return'3.0';}
+function selaCat(lb){return lb<5?'0.13':'0.38';}
+
+// Pyrantel
+function strongid(lb){const lbR=Math.round(lb*10)/10;const r=Math.ceil(lbR/5)*5;return{ml:r/5,rounded:r};}
+
+// Enrofloxacin tabs
+const ENROTAB={5:11.35,10:22.7,15:34.05,20:45.4,25:56.7,30:68,35:90.7,40:90.7,45:113.4,50:113.4,55:136,60:136,65:158.7,70:158.7,75:170,80:181.4,85:204,90:204,95:226.7,100:238,110:272,120:272};
+function enroTabMg(lb){const keys=Object.keys(ENROTAB).map(Number).sort((a,b)=>a-b);let mg=ENROTAB[keys[0]];for(const k of keys){if(lb>=k)mg=ENROTAB[k];}
+  const parts=bestPills(mg,[{mg:136,unit:'tablet'},{mg:68,unit:'tablet'},{mg:22.7,unit:'tablet'}]);
+  return{mg,combo:parts?parts.join(' + '):''};}
+
+// Metronidazole
+function metroDose(lb,kg){const raw=kg*22;
+  const parts=bestPills(raw,[{mg:500,unit:'tablet'},{mg:250,unit:'tablet'}],true);
+  let actualMg=0;
+  if(parts){parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*\u00d7\s*(\d+(?:\.\d+)?)mg/);if(m)actualMg+=parseFloat(m[1])*parseFloat(m[2]);});}
+  else actualMg=Math.round(raw);
+  return{mg:f(actualMg,1),combo:parts?parts.join(' + '):''};}
+
+// Doxycycline dogs: 10mg/kg whole pills only, prefer 100mg tab then 50mg cap
+function doxyDogDose(kg){
+  const target=kg*10;
+  let best=null,bd=[Infinity,Infinity];
+  for(let a=0;a<=12;a++)for(let b=0;b<=6;b++){
+    const dose=a*100+b*50;
+    if(dose<target)continue;
+    const key=[dose-target,a+b];
+    if(key[0]<bd[0]||(key[0]===bd[0]&&key[1]<bd[1])){bd=key;best={dose,a,b};}
+  }
+  if(!best)return null;
+  const parts=[];
+  if(best.a>0)parts.push(best.a+' \u00d7 100mg '+(best.a===1?'tablet':'tablets'));
+  if(best.b>0)parts.push(best.b+' \u00d7 50mg '+(best.b===1?'capsule':'capsules'));
+  return{dose:best.dose,combo:parts.join(' + ')};
+}
+
+// Clindamycin dogs — whole pills
+function clindaDogDose(lb){
+  const kg=lb*0.4536;
+  const minMg=5*kg; // minimum 5mg/kg — find smallest whole-pill combo at or above minimum
+  // Prefer 25mg tablets for small dogs, supplement with 75/150mg capsules
+  const parts=bestPills(minMg,[{mg:25,unit:'tablet'},{mg:75,unit:'capsule'},{mg:150,unit:'capsule'}]);
+  let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+(?:\.\d+)?)mg/);if(m)mg+=parseInt(m[1])*parseFloat(m[2]);});
+  return{mg,combo:parts?parts.join(' + '):''};}
+
+// Temaril-P
+function temarilDose(lb){
+  let init,half,halfTab;
+  if(lb<=10)  {init='0.5 tablet'; half='0.5 tablet'; halfTab='0.5 tablet';}
+  else if(lb<=20){init='1 tablet';   half='0.5 tablet'; halfTab='0.5 tablet';}
+  else if(lb<=40){init='2 tablets';  half='1 tablet';   halfTab='1 tablet';}
+  else           {init='3 tablets';  half='1.5 tablets';halfTab='1.5 tablets';}
+  return{init,half};
+}
+
+// Capstar
+function capstarDose(lb){
+  if(lb<2)return null;
+  if(lb<=25)return{mg:11.4,combo:'1 \u00d7 11.4mg tablet'};
+  return{mg:57,combo:'1 \u00d7 57mg tablet'};
+}
+
+// Zorbium cats
+function zorbiumDose(lb){
+  if(lb<2.6)return null;
+  if(lb<=6.6)return{ml:0.4,dose:f(0.4*20,1)};
+  if(lb<=16.5)return{ml:1.0,dose:f(1.0*20,1)};
+  return null;
+}
+
+
+// bestPillsHalf — same as bestPills but allows 0.5 tablet increments
+function bestPillsHalf(targetMg, sizes){
+  let best=null, bd=[Infinity,Infinity];
+  function recurse(idx, remaining, combo, count){
+    if(remaining<=0){
+      const over=-remaining, total=count, key=[over,total];
+      if(key[0]<bd[0]||(key[0]===bd[0]&&key[1]<bd[1])){bd=key;best=[...combo];}
+      return;
+    }
+    if(idx>=sizes.length){return;}
+    const s=sizes[idx];
+    const maxN=Math.ceil((remaining+s.mg*2)/s.mg)*2; // *2 for half steps
+    for(let n=0;n<=Math.min(maxN,20);n++){
+      const qty=n*0.5;
+      combo.push({n:qty,s});
+      recurse(idx+1, remaining-qty*s.mg, combo, count+qty);
+      combo.pop();
+    }
+  }
+  recurse(0,targetMg,[],0);
+  if(!best)return null;
+  return best.filter(x=>x.n>0).map(x=>{
+    const nStr=x.n%1===0?String(x.n):x.n.toFixed(1);
+    const unitStr=x.n===1?x.s.unit:x.s.unit+'s';
+    return nStr+' × '+x.s.mg+'mg '+unitStr;
+  });
+}
+
+// ── DRUG DEFINITIONS ─────────────────────────
+// type options:
+//   'topical' — no calculation
+//   'single'  — one checkbox, calc via calcDose()
+//   'multi'   — multiple option checkboxes defined in options[]
+// For 'single' drugs with both liquid+tablet, calcDose picks best automatically.
+
+const SECTIONS=['All','Antibiotic','Eye','Ear','Respiratory','GI / Antiemetic','Pain / NSAID','Sedation / Behavior','Anti-parasitic','Antifungal','Dermatology','Other'];
+
+const DRUGS=[
+{id:'acepromazine',name:'Acepromazine',alias:'PromAce',route:'PO / IM / SQ',sections:['Sedation / Behavior'],species:['dog','cat'],type:'multi',
+ use:'Pre-anesthetic sedation — phenothiazine. No analgesia.',
+ options:[{key:'po',label:'Tablet PO'},{key:'inj',label:'Injectable IM/SQ'}],
+ note:'10mg tabs (PO), 10mg/mL injectable. Max: dogs 3mg total, cats 1mg total. Avoid in hypotensive or epileptic animals.'},
+{id:'aluspray',name:'ALuSpray',alias:'Aluminum Spray Bandage',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
+ use:'Wound protection, minor abrasions, post-surgical incisions — aluminum-based barrier spray.',
+ note:'Clean and dry area first. Apply thin coat from 6–8 inches. Reapply q24h or as needed. Do not use on deep wounds.'},
+{id:'animax',name:'Animax Ointment',alias:'Nystatin / Neomycin / Thiostrepton / Triamcinolone',route:'Otic / Topical',sections:['Ear','Dermatology'],species:['dog','cat'],type:'topical',
+ use:'Otitis, skin folds, interdigital — broad-spectrum antibiotic + antifungal + steroid.',
+ note:'Ear: 1 mL/ear q12h \u00d7 7–14 days. Skin: thin layer q12h.'},
+{id:'apoquel',name:'Apoquel',alias:'Oclacitinib — per label chart',route:'PO',sections:['Dermatology'],species:['dog'],type:'single',
+ use:'Allergic/atopic dermatitis — JAK inhibitor. Dogs \u2265 12 months.',
+ note:'Per weight chart. Induction: q12h \u00d7 14 days, then q24h. Do not use < 12 months.'},
+{id:'artears',name:'Artificial Tears',alias:'Genteal / Soothe / Refresh',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Dry eye (KCS), lubrication, irritation — supportive care.',
+ note:'1–2 drops q4–8h as needed. OTC. Gel/ointment for longer contact time.'},
+{id:'atropineeye',name:'Atropine 1% Ophthalmic',alias:'Atropine Eye Drops',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Uveitis, corneal ulcers — cycloplegia, reduces ciliary spasm and pain.',
+ note:'1 drop q12–24h as directed. Cats: use sparingly — systemic absorption risk.'},
+{id:'azithro',name:'Azithromycin',alias:'Zithromax',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
+ use:'URI, Chlamydophila, Mycoplasma — macrolide. Auto-selects tablet or liquid.',
+ note:'5–10 mg/kg q24h \u00d7 3–5 days. Tablets 250mg (larger dogs). Oral susp 200mg/5mL for cats/small dogs.'},
+{id:'baytrilotic',name:'Baytril Otic',alias:'Enrofloxacin / Silver Sulfadiazine',route:'Otic',sections:['Ear'],species:['dog','cat'],type:'topical',
+ use:'Otitis — gram-negative, Pseudomonas. Use when other treatments fail.',
+ note:'5–10 drops/ear q12h \u00d7 14 days. One of few effective against Pseudomonas.'},
+{id:'bnpdex',name:'BNP + Dex Ophthalmic',alias:'Neomycin / Polymyxin B / Dexamethasone',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Bacterial conjunctivitis with inflammation — antibiotic + steroid.',
+ note:'Apply q12h. DO NOT use with corneal ulcers — rule out with fluorescein stain first.'},
+{id:'bnphc',name:'BNP + HC Ophthalmic',alias:'Neomycin / Polymyxin B / Hydrocortisone',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Mild bacterial conjunctivitis with mild inflammation — milder steroid than dex.',
+ note:'Apply q12h. Rule out corneal ulcer before use.'},
+{id:'bnp',name:'BNP Ophthalmic',alias:'Bacitracin / Neomycin / Polymyxin B',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Bacterial conjunctivitis, minor corneal wounds.',
+ note:'Apply thin ribbon q12h. Ophthalmic formulation only.'},
+{id:'buprenorphine',name:'Buprenorphine',alias:'Buprenex 0.3mg/mL',route:'SL / SQ / IV',sections:['Pain / NSAID'],species:['dog','cat'],type:'single',
+ use:'Moderate–severe pain — Schedule III opioid.',
+ note:'0.01–0.03 mg/kg q6–8h. 0.3mg/mL. DEA Schedule III — log required. Cats: sublingual very effective.'},
+{id:'bupsr',name:'Buprenorphine SR',alias:'Extended Release 3mg/mL',route:'SQ',sections:['Pain / NSAID'],species:['dog'],type:'single',
+ use:'Extended-release pain — single SQ injection, 24–72 hr duration. Dogs only.',
+ note:'0.1–0.2 mg/kg SQ once. 3mg/mL SR formulation. DEA Schedule III — log required. Do not redose < 24 hrs.'},
+{id:'capstar',name:'Capstar',alias:'Nitenpyram — 11.4mg & 57mg tabs',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Immediate flea kill — kills adult fleas within 30 min. Single dose.',
+ note:'Dogs & cats > 2 lbs. < 25 lbs: 11.4mg tab. > 25 lbs: 57mg tab. Can redose q24h if needed. Safe for kittens > 4 weeks.'},
+{id:'carafate',name:'Carafate',alias:'Sucralfate 1g/10mL susp',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Gastric/esophageal ulcers — coats and protects mucosal lining. Give on empty stomach.',
+ note:'Dogs: 0.5–1g q8h. Cats: 0.25–0.5g q8–12h. Oral susp 1g/10mL. Give 1–2 hrs before other meds.'},
+{id:'carprofen',name:'Carprofen',alias:'Rimadyl — injectable',route:'SQ / IV',sections:['Pain / NSAID'],species:['dog'],type:'single',
+ use:'Peri-operative pain — NSAID. Pre or post-op injection. Dogs only.',
+ note:'4.4 mg/kg SQ or IV once. Injectable 50mg/mL. Do not combine with other NSAIDs or steroids.'},
+{id:'cefpod',name:'Cefpodoxime',alias:'Simplicef',route:'PO',sections:['Antibiotic'],species:['dog'],type:'single',
+ use:'Skin, wounds, URI, UTI — once daily. Dogs only.',
+ note:'< 15 lbs use Clavamox instead. Tablets: 100mg, 200mg. Give with food.'},
+{id:'cephalexin',name:'Cephalexin',alias:'Keflex',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'Skin, pyoderma, wounds — first-generation cephalosporin.',
+ note:'10–15 mg/kg q8–12h. Caps: 250mg, 500mg. Give with food.'},
+{id:'cerenia',name:'Cerenia',alias:'Maropitant citrate',route:'PO / SQ',sections:['GI / Antiemetic'],species:['dog','cat'],type:'multi',
+ use:'Nausea, vomiting — NK1 antagonist.',
+ options:[{key:'po',label:'Tablet PO'},{key:'inj',label:'Injectable SQ'}],
+ note:'Tabs: 16mg, 24mg, 60mg. Injectable 10mg/mL — refrigerate. Cats: SQ preferred.'},
+{id:'cipro',name:'Ciprofloxacin',alias:'Cipro',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'UTI, gram-negative — fluoroquinolone. Use enrofloxacin if available.',
+ note:'5–10 mg/kg q12h. Tabs: 250mg.'},
+{id:'claro',name:'Claro',alias:'Florfenicol / Terbinafine / Mometasone',route:'Otic',sections:['Ear'],species:['dog'],type:'topical',
+ use:'Single in-clinic application — 30-day duration. Bacterial + yeast.',
+ note:'Dogs only. One-time in-clinic dose lasts ~30 days. No owner doses needed.'},
+{id:'clavamox',name:'Clavamox',alias:'Amoxicillin / Clavulanate',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
+ use:'Skin, wounds, URI, UTI, pneumonia — beta-lactam + clavulanate. Twice daily.',
+ note:'6.25 mg/lb q12h. Tabs: 62.5 / 125 / 250 / 375mg. Give with food.'},
+{id:'clinda',name:'Clindamycin',alias:'Antirobe / Cleocin',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
+ use:'Anaerobes, dental, skin, soft tissue, respiratory.',
+ note:'Dogs: 5–11 mg/kg q12h — tabs 25/75/150mg. Cats: 25mg/mL liquid, 1 mL/5 lbs q24h.'},
+{id:'clonidine',name:'Clonidine',alias:'Catapres — compounded',route:'PO',sections:['Sedation / Behavior'],species:['dog'],type:'single',
+ use:'Situational anxiety, noise phobia — alpha-2 agonist. Dogs BID.',
+ note:'0.01–0.05 mg/kg q12h. Compounded. Give 1–2 hrs before stressor.'},
+{id:'convenia',name:'Convenia',alias:'Cefovecin Sodium',route:'SQ injection',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'Skin, soft tissue, URI, UTI — long-acting injectable cephalosporin. Single dose.',
+ note:'8 mg/kg SQ once. Duration ~7 days dogs, ~14 days cats. Reconstituted vial refrigerated 28 days. Excellent for compliance issues. Cannot be stopped if adverse reaction occurs.'},
+{id:'cytopoint',name:'Cytopoint',alias:'Lokivetmab — injectable monoclonal antibody',route:'SQ injection',sections:['Dermatology'],species:['dog'],type:'single',
+ use:'Allergic/atopic dermatitis, canine pruritus — IL-31 monoclonal antibody. Monthly injection. Dogs only.',
+ note:'2–3 mg/kg SQ once monthly. Vials: 10mg, 20mg, 30mg, 40mg. Use smallest vial combination. Duration 4–8 weeks. No tapering required.'},
+{id:'dex',name:'Dexamethasone',alias:'Dex 2mg/mL',route:'SQ / IV / IM',sections:['Pain / NSAID','Respiratory','Other'],species:['dog','cat'],type:'single',
+ use:'Anti-inflammatory, shock, allergic reactions.',
+ note:'0.5 mg/kg. 2mg/mL injectable. Do not combine with NSAIDs.'},
+{id:'dexsp',name:'Dexamethasone SP',alias:'Dex SP 4mg/mL',route:'SQ / IV / IM',sections:['Pain / NSAID','Respiratory','Other'],species:['dog','cat'],type:'single',
+ use:'Anti-inflammatory, shock — faster onset, preferred for acute use.',
+ note:'0.15 mg/kg. 4mg/mL injectable.'},
+{id:'diaperrashpaste',name:'Diaper Rash Paste',alias:'Zinc Oxide / Dimethicone Paste',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
+ use:'Perivulvar, perianal, skin fold dermatitis — barrier protection and mild astringent.',
+ note:'Apply thin layer to clean, dry skin q12–24h as needed. Prevent licking — use e-collar. Do not use with occlusive bandaging.'},
+{id:'depomedrol',name:'Depo-Medrol',alias:'Methylprednisolone Acetate 20mg/mL',route:'SQ / IM',sections:['Pain / NSAID','Dermatology','Other'],species:['cat'],type:'single',
+ use:'Long-acting corticosteroid — allergic skin disease, inflammation, immune-mediated conditions. Cats only.',
+ note:'1–2 mg/kg SQ or IM. 20mg/mL suspension. Duration 2–8 weeks. Do not combine with NSAIDs. Shake well. Use cautiously — long duration means side effects cannot be quickly reversed.'},
+{id:'diazepam',name:'Diazepam',alias:'Valium 5mg/mL',route:'IV / IM / PR',sections:['Pain / NSAID','Sedation / Behavior'],species:['dog','cat'],type:'single',
+ use:'Seizures, muscle relaxation, sedation — benzodiazepine. DEA Schedule IV.',
+ note:'Seizures: 0.5 mg/kg IV or rectal. Sedation: 0.25–0.5 mg/kg IV. 5mg/mL. DEA Schedule IV — log required. Short-acting; have flumazenil reversal available.'},
+{id:'diphenhydramine',name:'Diphenhydramine',alias:'Benadryl 25mg tab / 50mg/mL inj',route:'PO / IM / SQ',sections:['Sedation / Behavior','Other'],species:['dog','cat'],type:'multi',
+ use:'Allergic reactions, mild sedation, vaccine reactions — antihistamine.',
+ options:[{key:'po',label:'Tablet PO 25mg'},{key:'inj',label:'Injectable IM/SQ 50mg/mL'}],
+ note:'2–4 mg/kg q8–12h. Tablets 25mg PO. Injectable 50mg/mL IM or SQ. Plain formulation only — no decongestants. Max 50mg/dose dogs.'},
+{id:'dopram',name:'Doxapram',alias:'Dopram 20mg/mL',route:'IV / SL',sections:['Other'],species:['dog','cat'],type:'single',
+ use:'Neonatal stimulation, respiratory depression.',
+ note:'Neonates: 1–2 drops SL at birth. IV: 5–10 mg/kg.'},
+{id:'doxy',name:'Doxycycline',alias:'Vibramycin',route:'PO',sections:['Antibiotic','Respiratory','Eye'],species:['dog','cat'],type:'single',
+ use:'URI, Bordetella, Mycoplasma, Chlamydophila, tick-borne disease.',
+ note:'Dogs: 10 mg/kg q12h — whole pills only, 100mg tabs + 50mg caps. Cats: 50mg/mL liquid 0.1 mL/lb q12h. Always give with food/water.'},
+{id:'enro',name:'Enrofloxacin',alias:'Baytril',route:'PO / SQ / Injectable',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'multi',
+ catWarning:'CATS: 5 mg/kg/day MAX — higher doses cause irreversible retinal blindness.',
+ use:'UTI, skin, gram-negative, respiratory — fluoroquinolone.',
+ options:[{key:'std',label:'Standard 5mg/kg PO'},{key:'pneumo',label:'Pneumonia 10mg/kg PO'},{key:'high3',label:'High Dose 18-20mg/kg × 3 days'},{key:'inj',label:'Baytril Injectable SQ'}],
+ note:'Tabs: 22.7mg, 68mg, 136mg. Cats: NEVER exceed 5mg/kg/day — retinal toxicity. Injectable 22.7mg/mL.'},
+{id:'entyce',name:'Entyce',alias:'Capromorelin 30mg/mL',route:'PO',sections:['GI / Antiemetic'],species:['dog'],type:'single',
+ use:'Appetite stimulation — ghrelin receptor agonist. Dogs only.',
+ note:'3 mg/kg q24h. 30mg/mL oral liquid. Shake well. Dogs only — not approved for cats.'},
+{id:'erythro',name:'Erythromycin Ophthalmic',alias:'Ilotycin',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Conjunctivitis, Chlamydophila, URI eye disease — first-line for cat URI.',
+ note:'1/4 inch ribbon q12h \u00d7 7–14 days.'},
+{id:'famotidine',name:'Famotidine',alias:'Pepcid',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Gastric ulcers, nausea — H2 blocker.',
+ note:'0.5–1 mg/kg q12–24h. Tabs: 10mg, 20mg. OTC.'},
+{id:'fenbendazole',name:'Fenbendazole',alias:'Panacur 100mg/mL',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Roundworms, hookworms, whipworms, Giardia — dogs 50mg/kg, cats 30mg/kg.',
+ note:'100mg/mL suspension. q24h \u00d7 3–5 days. Give with food.'},
+{id:'furosemide',name:'Furosemide',alias:'Lasix',route:'PO / SQ / IV',sections:['Other'],species:['dog','cat'],type:'multi',
+ use:'Edema, heart failure, pleural effusion — loop diuretic.',
+ options:[{key:'po',label:'Oral tablet'},{key:'liq',label:'Oral liquid 10mg/mL'},{key:'inj',label:'Injectable 5%'}],
+ note:'1–4 mg/kg q8–12h dogs; q12–24h cats. Monitor hydration and potassium.'},
+{id:'gabapentin',name:'Gabapentin',alias:'Neurontin — capsules only',route:'PO',sections:['Pain / NSAID','Sedation / Behavior'],species:['dog','cat'],type:'multi',
+ use:'Neuropathic pain, sedation/anxiety, seizure adjunct.',
+ options:[{key:'low',label:'5–10 mg/kg (Low)'},{key:'mid',label:'10–20 mg/kg (Mid)'},{key:'high',label:'20–30 mg/kg (High)'}],
+ note:'CAPSULES ONLY — liquid contains xylitol. Do not split. Cats: fixed 50–100mg sprinkled on food.'},
+{id:'itraconazole',name:'Itraconazole',alias:'Intrafungol 10mg/mL',route:'PO',sections:['Antifungal'],species:['cat'],type:'single',
+ use:'Ringworm, systemic fungal — 5 mg/kg. Cats only.',
+ note:'10mg/mL. q24h pulse: 1 wk on / 1 wk off for ringworm. Give with fatty food.'},
+{id:'ivermectin',name:'Ivermectin',alias:'Ivomec 1%',route:'SQ',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Mange, ear mites — macrocyclic lactone.',
+ note:'0.2–0.4 mg/kg SQ. 1% = 10mg/mL. \u26a0 CONTRAINDICATED in MDR1/ABCB1 breeds (Collies, Shelties, Aussies).'},
+{id:'ketoconazole',name:'Ketoconazole',alias:'Nizoral 200mg',route:'PO',sections:['Antifungal'],species:['dog'],type:'single',
+ use:'Dermatophytosis, systemic fungal, Cushing\'s — dogs only.',
+ note:'5–10 mg/kg q12–24h. Tabs 200mg. Hepatotoxic in cats — avoid.'},
+{id:'ketotifen',name:'Ketotifen Eye Drops',alias:'Zaditor / Alaway (OTC)',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Allergic conjunctivitis, ocular pruritus — mast cell stabilizer + antihistamine.',
+ note:'1 drop/eye q12h. 0.025% solution. OTC.'},
+{id:'lactulose',name:'Lactulose',alias:'Enulose 10g/15mL',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Constipation, hepatic encephalopathy — osmotic laxative.',
+ note:'Dogs: 0.25–0.5 mL/kg q8–12h. Cats: 0.25–0.5 mL/cat q8–12h. Titrate to soft stool.'},
+{id:'mannitol',name:'Mannitol',alias:'Osmitrol 20%',route:'IV',sections:['Other'],species:['dog','cat'],type:'single',
+ use:'Cerebral edema, elevated ICP, acute oliguric renal failure.',
+ note:'0.25–1 g/kg IV over 15–20 min. Use fresh solution only. Contraindicated in dehydrated or anuric patients.'},
+{id:'meloxicam',name:'Meloxicam',alias:'Metacam',route:'PO / SQ',sections:['Pain / NSAID'],species:['dog','cat'],type:'multi',
+ catWarning:'CATS: Only FDA-approved for SINGLE SQ dose in the US. Repeated oral use risks renal toxicity.',
+ use:'Pain, inflammation — NSAID.',
+ options:[{key:'po',label:'Oral 1.5mg/mL'},{key:'inj',label:'Injectable 5mg/mL'}],
+ note:'Do not combine with other NSAIDs or steroids.'},
+{id:'methocarbamol',name:'Methocarbamol',alias:'Robaxin 750mg',route:'PO',sections:['Pain / NSAID'],species:['dog','cat'],type:'single',
+ use:'Muscle spasm, tetanus — centrally acting muscle relaxant.',
+ note:'20–45 mg/kg q8h. Tabs 750mg. Give with food.'},
+{id:'metoclopramide',name:'Metoclopramide',alias:'Reglan',route:'PO / SQ',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Nausea, vomiting, GI motility — prokinetic.',
+ note:'0.2–0.5 mg/kg q6–8h. Syrup 5mg/5mL. Do not use with obstruction.'},
+{id:'metro',name:'Metronidazole',alias:'Flagyl',route:'PO',sections:['Antibiotic','GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Giardia, anaerobic infections, diarrhea, colitis.',
+ note:'22 mg/kg q24h (Giardia) or q12h (infection). Tabs: 250mg, 500mg. Liquid 80mg/mL for cats.'},
+{id:'miconazole',name:'Miconazole 1% Lotion',alias:'Miconazole Nitrate Lotion',route:'Topical',sections:['Dermatology','Antifungal'],species:['dog','cat'],type:'topical',
+ use:'Superficial dermatophytosis, Malassezia dermatitis, skin fold yeast infections.',
+ note:'Apply thin layer to affected area q12h. Continue 7 days past resolution. Avoid eyes and mucous membranes.'},
+{id:'miconahex',name:'MiconaHex + Triz Wipes',alias:'Miconazole / Chlorhexidine / Tris-EDTA Wipes',route:'Topical',sections:['Dermatology','Antifungal','Ear'],species:['dog','cat'],type:'topical',
+ use:'Skin fold dermatitis, interdigital yeast/bacteria, ear pinna cleaning — antifungal + antiseptic wipes.',
+ note:'Wipe affected areas q12–24h. Allow to air dry. Do not rinse. Safe for ears, skin folds, paws, and perianal areas.'},
+{id:'mirtazapine',name:'Mirtazapine',alias:'Mirataz / Remeron',route:'PO / Transdermal',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Appetite stimulant, antiemetic.',
+ note:'Cats: Mirataz 0.1mL transdermal to LEFT ear pinna (inner surface) q24h. Wear gloves. Dogs: whole 15mg tabs q72h.'},
+{id:'mometamax',name:'Mometamax',alias:'Gentamicin / Mometasone / Clotrimazole',route:'Otic',sections:['Ear'],species:['dog'],type:'topical',
+ use:'Otitis externa — bacterial + yeast + inflammation. Daily dosing.',
+ note:'Dogs only. 4 drops/ear q24h \u00d7 7 days.'},
+{id:'mometamaxsingle',name:'Mometamax Single Dose',alias:'1 mL vial — 30-day duration',route:'Otic',sections:['Ear'],species:['dog'],type:'topical',
+ use:'Single in-clinic application — lasts ~30 days. Dogs only.',
+ note:'Instill entire 1mL vial per affected ear in clinic. No owner dosing needed.'},
+{id:'mupirocin',name:'Mupirocin Ointment',alias:'Bactoderm 2%',route:'Topical',sections:['Dermatology','Antibiotic'],species:['dog','cat'],type:'topical',
+ use:'Superficial pyoderma, impetigo, folliculitis, small wound infections — gram-positive antibiotic.',
+ note:'Apply thin layer to affected area q12h × 7–14 days. Do not use near eyes. For localized lesions only — systemic infection requires oral antibiotics.'},
+{id:'omeprazole',name:'Omeprazole',alias:'Prilosec',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Gastric ulcers, acid reflux, GI protection with NSAIDs.',
+ note:'0.5–1 mg/kg q24h. Caps 20mg. Give 30 min before food.'},
+{id:'ondansetron',name:'Ondansetron',alias:'Zofran',route:'PO / IV',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Nausea, vomiting — 5-HT3 antagonist.',
+ note:'Dogs: 0.1–1.0 mg/kg q12h. Cats: 0.22 mg/kg q12h. Tabs 4mg.'},
+{id:'osurnia',name:'Osurnia',alias:'Florfenicol / Terbinafine / Betamethasone',route:'Otic',sections:['Ear'],species:['dog'],type:'topical',
+ use:'Single or 2-dose otitis — bacterial + yeast. Lasts 7–45 days per application.',
+ note:'Dogs only. First dose in clinic; second dose at home on day 7 if needed. One tube per ear.'},
+{id:'otipacka',name:'Oti-Pack A',alias:'Antifungal + Acidifying flush',route:'Otic — In-clinic',sections:['Ear'],species:['dog','cat'],type:'topical',
+ use:'In-clinic ear flush — bacterial + yeast + acidifying. Staff administered.',
+ note:'In-clinic use only. Flush under visualization. Follow with maintenance otic.'},
+{id:'otipacke',name:'Oti-Pack E',alias:'Enrofloxacin-based Otic Pack',route:'Otic — In-clinic',sections:['Ear'],species:['dog','cat'],type:'topical',
+ use:'In-clinic flush — gram-negative, Pseudomonas. Staff administered.',
+ note:'In-clinic use only. For resistant gram-negative otitis.'},
+{id:'otipackm',name:'Oti-Pack M',alias:'Miconazole-based Otic Pack',route:'Otic — In-clinic',sections:['Ear'],species:['dog','cat'],type:'topical',
+ use:'In-clinic flush — predominantly yeast (Malassezia). Staff administered.',
+ note:'In-clinic use only. Follow with maintenance otic.'},
+{id:'oxytocin',name:'Oxytocin',alias:'Pitocin',route:'SQ / IM',sections:['Other'],species:['dog','cat'],type:'single',
+ use:'Uterine inertia, retained placenta, milk letdown.',
+ note:'0.5–2 IU/kg SQ or IM. Max \u00d73 doses q30min. Rule out obstruction first.'},
+{id:'pentoxifylline',name:'Pentoxifylline',alias:'Trental / 125mg/mL susp / 400mg tabs',route:'PO',sections:['Dermatology','Respiratory'],species:['dog'],type:'single',
+ use:'Dermatomyositis, vasculitis, pulmonary fibrosis — dogs only.',
+ note:'Dogs: 10–15 mg/kg q8–12h. Cats: 100mg fixed q8–12h. Oral susp 125mg/mL or tabs 400mg. Takes 4–8 weeks for effect.'},
+{id:'ponazuril',name:'Ponazuril',alias:'Marquis 50mg/mL',route:'PO',sections:['GI / Antiemetic','Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Coccidia — antiprotozoal. 1–3 day course.',
+ note:'50 mg/kg q24h \u00d7 1–3 days. 50mg/mL oral paste.'},
+{id:'droncit',name:'Praziquantel',alias:'Droncit 34mg tabs',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Tapeworms — single dose.',
+ note:'5–7.5 mg/kg single dose. Tabs 34mg. Injectable 56.8mg/mL also available.'},
+{id:'predforte',name:'Pred Forte Ophthalmic',alias:'Prednisolone Acetate 1%',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Uveitis, immune-mediated eye disease — corticosteroid.',
+ note:'Shake well. 1 drop q12h. Absolutely contraindicated with corneal ulcers.'},
+{id:'prednisolone',name:'Prednisolone',alias:'Prednisolone 15mg/5mL liquid',route:'PO',sections:['Pain / NSAID','Dermatology','Other'],species:['cat'],type:'single',
+ use:'Anti-inflammatory, immune-mediated — corticosteroid. Cats only (cats cannot convert prednisone).',
+ note:'1–2 mg/kg q24h. Liquid 15mg/5mL. Taper for > 2 weeks use. Do not combine with NSAIDs.'},
+{id:'prednisone',name:'Prednisone',alias:'Prednisone tablets',route:'PO',sections:['Pain / NSAID','Dermatology','Other'],species:['dog'],type:'single',
+ use:'Anti-inflammatory, immune-mediated disease, allergies — corticosteroid. Dogs only.',
+ note:'0.5–1 mg/kg q24h (anti-inflam); 1–2 mg/kg/day immunosuppression. Tabs: 5mg, 10mg, 20mg. Taper > 2 weeks.'},
+{id:'previcox',name:'Previcox',alias:'Firocoxib',route:'PO',sections:['Pain / NSAID'],species:['dog'],type:'single',
+ use:'Osteoarthritis, post-op pain — COX-2 NSAID. Dogs only.',
+ note:'5 mg/kg q24h. Chewable tabs: 57mg, 227mg.'},
+{id:'strongid',name:'Pyrantel Pamoate',alias:'Strongid / Nemex',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Roundworms, hookworms — 1 mL per 5 lbs, round UP.',
+ note:'Shake well. Repeat in 2 weeks. Very safe for young animals.'},
+{id:'secnidazole',name:'Secnidazole',alias:'Flagentyl 150mg/mL',route:'PO',sections:['GI / Antiemetic','Antibiotic'],species:['dog','cat'],type:'single',
+ use:'Giardia, Tritrichomonas — single or short-course.',
+ note:'Cats: 30–50 mg/kg single dose or q24h \u00d7 3 days. 150mg/mL suspension.'},
+{id:'selamectin',name:'Selamectin',alias:'Revolution 120mg/mL',route:'Topical',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+ use:'Fleas, heartworm prevention, ear mites, mange.',
+ note:'120mg/mL. Apply to back of neck. Monthly.'},
+{id:'ssdcream',name:'SSD Cream',alias:'Silver Sulfadiazine 1% Cream',route:'Topical',sections:['Dermatology','Antibiotic'],species:['dog','cat'],type:'topical',
+ use:'Burns, deep wounds, infected ulcers — broad-spectrum antimicrobial with gram-negative and gram-positive coverage.',
+ note:'Apply 1/16 inch layer to clean wound q12–24h. Cover with non-adherent dressing. Avoid prolonged use on large areas — systemic absorption possible. Do not use near eyes.'},
+{id:'smztmp',name:'SMZ / TMP',alias:'Trimethoprim-Sulfa',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'UTI, skin, toxoplasmosis — sulfonamide combo.',
+ note:'15–30 mg/kg q12h. Tabs: 480mg, 960mg. Ensure hydration. Cats: use cautiously.'},
+{id:'temarilp',name:'Temaril-P',alias:'Trimeprazine / Prednisolone',route:'PO',sections:['Dermatology','Respiratory'],species:['dog'],type:'single',
+ use:'Pruritus, allergic cough, kennel cough — antihistamine + corticosteroid. Dogs only.',
+ note:'Each tab = 5mg trimeprazine + 2mg prednisolone. q12h \u00d7 4 days then taper. Do not use in cats.'},
+{id:'terra',name:'Terramycin Ophthalmic',alias:'Oxytetracycline / Polymyxin B',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Conjunctivitis, URI eye disease — OTC option.',
+ note:'Apply to lower conjunctival sac q12h.'},
+{id:'tobra',name:'Tobramycin Ophthalmic',alias:'Tobrex',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
+ use:'Bacterial conjunctivitis, Pseudomonas, corneal ulcers.',
+ note:'1–2 drops or 1/4 inch ointment q12h.'},
+{id:'tramadol',name:'Tramadol',alias:'Ultram 50mg tabs',route:'PO',sections:['Pain / NSAID'],species:['dog','cat'],type:'single',
+ use:'Mild–moderate pain — opioid agonist / SNRI.',
+ note:'Dogs: 2–5 mg/kg q8–12h. Cats: 2–4 mg/kg q12h. Tabs 50mg only — cannot split.'},
+{id:'trazodone',name:'Trazodone',alias:'Desyrel — 50mg & 100mg tabs',route:'PO',sections:['Sedation / Behavior'],species:['dog','cat'],type:'multi',
+ use:'Situational anxiety, kennel stress, post-op rest.',
+ options:[{key:'init',label:'Initial dose'},{key:'target',label:'Target dose'}],
+ note:'Dogs: Initial 2–3mg/kg; Target 5–7mg/kg. Cats: 3.5–6.9mg/lb. Tabs can be split.'},
+{id:'tresaderm',name:'Tresaderm',alias:'Thiabendazole / Dexamethasone / Neomycin',route:'Topical — Otic',sections:['Ear'],species:['dog','cat'],type:'topical',
+ use:'Otitis externa — bacterial + yeast + inflammation.',
+ note:'5–15 drops/ear q12h \u00d7 7–14 days. Refrigerate. Not with ruptured tympanum.'},
+{id:'vitk1',name:'Vitamin K1',alias:'Phytonadione 10mg/mL',route:'SQ / PO',sections:['Other'],species:['dog','cat'],type:'single',
+ use:'Rodenticide toxicity, coagulopathy.',
+ note:'2.5–5 mg/kg q12h \u00d7 4 weeks. SQ first dose (NOT IV), then oral. Give oral with fatty food.'},
+{id:'zorbium',name:'Zorbium',alias:'Buprenorphine ER 20mg/mL — Cats',route:'Transdermal',sections:['Pain / NSAID'],species:['cat'],type:'single',
+ use:'Extended-release pain — transdermal to inner pinna, lasts ~4 days. Cats only.',
+ note:'2.6–6.6 lbs: 0.4 mL | >6.6–16.5 lbs: 1.0 mL. Apply to back of neck at base of skull. Wear gloves. DEA Schedule III — log required.'},
+{id:'zn7spray',name:'ZN7 Spray',alias:'Zinc Compound Wound Spray',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
+ use:'Hot spots, minor wounds, skin irritation — zinc-based antiseptic and astringent spray.',
+ note:'Shake well. Apply to clean, dry affected area q12–24h. Keep away from eyes. Do not bandage tightly after application. Prevent licking — use e-collar if needed.'}
+]
+
+// ── CLINICAL PROBLEM MODULE ───────────────────
+// Each symptom: { label, sub, techText, vetText, ddx }
+// sub        — optional subtitle shown in checkbox list
+// techText   — sentence generated in Vet Tech mode
+// vetText    — sentence generated in Vet mode (may differ from techText)
+// ddx        — differential diagnoses string, shown in Vet mode only
+// groups     — optional group heading for visual separation within a category
+// To add a future category: add a new key with items array. No other changes needed.
+const CLINICAL = {
+  'General': {
+    items: [
+      { group: 'Skin / Dermatologic', major: true },
+      // ── Pruritus ──
+      { group: 'Pruritus' },
+      { label: 'Pruritus',
+        sub: 'unspecified / general',
+        techText: 'Dermatologic: pruritus noted on exam. Patient presents with scratching, rubbing, or self-trauma. Skin assessed for erythema, excoriations, and secondary lesions.',
+        vetText:  'Dermatologic: pruritus noted on presentation. Skin evaluated for primary and secondary lesion pattern; distribution and degree of self-trauma noted.',
+        ddx: 'allergic dermatitis (atopy, food), ectoparasites (fleas, mites), pyoderma, contact irritant' },
+      { label: 'Pruritus – generalized',
+        techText: 'Dermatologic: generalized pruritus noted. Patient presents with diffuse scratching, rubbing, or self-trauma. Distribution and secondary skin changes assessed.',
+        vetText:  'Dermatologic: generalized pruritus present. Diffuse distribution noted; PSSS or PVAS scoring considered. Primary lesion pattern evaluated.',
+        ddx: 'atopic dermatitis, flea allergy dermatitis, food hypersensitivity, sarcoptic mange, pyoderma' },
+      { label: 'Pruritus – face/head',
+        techText: 'Dermatologic: pruritus localized to the face and head. Patient exhibits rubbing, pawing, or self-trauma to periocular, perioral, or pinnae areas.',
+        vetText:  'Dermatologic: facial and head pruritus noted. Periocular, perioral, and pinnae regions examined for primary lesions, excoriations, and swelling.',
+        ddx: 'food hypersensitivity, atopy, Demodex (periocular), yeast otitis, contact irritant' },
+      { label: 'Pruritus – paws/interdigital',
+        techText: 'Dermatologic: pruritus noted at paws and interdigital spaces. Patient observed licking, chewing, or rubbing paws. Interdigital skin inspected for erythema and exudate.',
+        vetText:  'Dermatologic: pedal pruritus present. Interdigital erythema, salivary staining, and furuncles assessed bilaterally.',
+        ddx: 'atopy, food allergy, Malassezia pododermatitis, Demodex, contact dermatitis' },
+      // ── Alopecia ──
+      { group: 'Alopecia' },
+      { label: 'Alopecia',
+        sub: 'unspecified',
+        techText: 'Dermatologic: alopecia identified on exam. Pattern, symmetry, and skin surface condition assessed.',
+        vetText:  'Dermatologic: alopecia noted on exam. Distribution, symmetry, and associated skin changes evaluated. Pruritic vs non-pruritic pattern assessed.',
+        ddx: 'dermatophytosis, Demodex, endocrinopathy (hypothyroidism, hyperadrenocorticism), self-trauma, telogen effluvium' },
+      { label: 'Alopecia – focal',
+        techText: 'Dermatologic: focal alopecia identified on exam. Circumscribed area of hair loss noted; skin surface inspected for scale, crust, and erythema.',
+        vetText:  'Dermatologic: focal alopecia present. Lesion borders, skin texture, and hair shaft integrity assessed. Fungal culture and trichogram considered.',
+        ddx: 'dermatophytosis (ringworm), focal Demodex, injection site reaction, scarring alopecia, trauma' },
+      { label: 'Alopecia – generalized',
+        techText: 'Dermatologic: generalized alopecia observed. Diffuse or multifocal hair loss present across the body. Skin condition and overall body condition scored.',
+        vetText:  'Dermatologic: generalized alopecia noted. Symmetric vs asymmetric pattern evaluated; thyroid, adrenal, and sex hormone workup considered.',
+        ddx: 'hypothyroidism, hyperadrenocorticism, sex hormone imbalance, nutritional deficiency, telogen effluvium, generalized Demodex' },
+      { label: 'Alopecia – symmetric / endocrine pattern',
+        techText: 'Dermatologic: bilaterally symmetric alopecia noted. Hair loss involves trunk and flanks in a pattern suggestive of hormonal influence. Coat quality assessed.',
+        vetText:  'Dermatologic: bilaterally symmetric, non-pruritic alopecia consistent with endocrine pattern. Trunk and flank distribution; thyroid and adrenal screening indicated.',
+        ddx: 'hypothyroidism, hyperadrenocorticism (Cushing\'s), sex hormone-responsive alopecia, growth hormone deficiency' },
+      // ── Dermatitis ──
+      { group: 'Dermatitis' },
+      { label: 'Dermatitis',
+        sub: 'unspecified',
+        techText: 'Dermatologic: dermatitis noted on exam. Affected skin inspected for erythema, scaling, crusting, and discharge. Distribution and severity assessed.',
+        vetText:  'Dermatologic: dermatitis identified. Lesion morphology, distribution, and secondary changes (lichenification, hyperpigmentation) assessed.',
+        ddx: 'allergic dermatitis, bacterial pyoderma, Malassezia, contact irritant, parasitic' },
+      { label: 'Dermatitis – interdigital',
+        techText: 'Dermatologic: interdigital dermatitis present. Erythema, swelling, or exudate noted between digits; patient observed licking or chewing paws.',
+        vetText:  'Dermatologic: interdigital furunculosis or dermatitis identified. Unilateral vs bilateral distribution noted; cytology of expressed material collected.',
+        ddx: 'allergic (atopic or food), bacterial furunculosis, Malassezia, Demodex, foreign body' },
+      { label: 'Dermatitis – ventral abdomen',
+        techText: 'Dermatologic: ventral abdominal dermatitis identified. Erythema and possible papules or pustules noted on the inguinal and ventral abdominal skin surface.',
+        vetText:  'Dermatologic: ventral abdominal dermatitis with papules, pustules, or epidermal collarettes noted. Cytology obtained to differentiate bacterial from Malassezia involvement.',
+        ddx: 'superficial bacterial pyoderma, Malassezia dermatitis, contact hypersensitivity, puppy impetigo' },
+      { label: 'Dermatitis – generalized',
+        techText: 'Dermatologic: generalized dermatitis present. Widespread erythema, scaling, or crusting noted across multiple body regions.',
+        vetText:  'Dermatologic: generalized dermatitis with multifocal lesions. Lesion morphology (macule, papule, pustule, crust) and stage of evolution characterized.',
+        ddx: 'generalized pyoderma, Malassezia dermatitis, adverse food reaction, atopy, pemphigus foliaceus' },
+      { label: 'Dermatitis – skin fold / intertriginous',
+        techText: 'Dermatologic: skin fold dermatitis identified. Erythema, moisture, and malodor noted in affected fold(s). Affected site(s) cleaned and inspected.',
+        vetText:  'Dermatologic: intertriginous dermatitis in skin fold region. Maceration, erythema, and secondary infection present. Cytology obtained from fold exudate.',
+        ddx: 'bacterial intertrigo, Malassezia overgrowth, moisture-associated skin damage' },
+      // ── Other skin ──
+      { group: 'Other' },
+      { label: 'Hot spot (acute moist dermatitis)',
+        techText: 'Dermatologic: acute moist dermatitis (hot spot) identified. Focal area of erythematous, exudative, and alopecic skin lesion noted consistent with self-induced trauma.',
+        vetText:  'Dermatologic: acute moist dermatitis (pyotraumatic dermatitis) present. Lesion clipped and cleaned; cytology obtained. Underlying pruritic trigger assessed.',
+        ddx: 'pyotraumatic dermatitis secondary to: flea allergy, atopy, otitis, anal sacculitis, local irritant' },
+      { label: 'Otitis externa',
+        techText: 'Dermatologic / Otic: otitis externa present. Erythema, malodor, and discharge noted; pinna and canal inspected.',
+        vetText:  'Otic: otitis externa confirmed on otoscopic exam. Discharge character (ceruminous, purulent, hemorrhagic) and tympanic membrane integrity assessed. Cytology obtained.',
+        ddx: 'bacterial (Staphylococcus, Pseudomonas), Malassezia, ear mites, foreign body, allergic otitis' },
+      { label: 'Scaling / seborrhea',
+        techText: 'Dermatologic: excessive scaling or seborrhea noted on coat and skin. Scale distribution and greasiness assessed. Patient overall coat and skin condition evaluated.',
+        vetText:  'Dermatologic: seborrhea sicca or oleosa noted. Primary vs secondary seborrheic condition evaluated; endocrine, allergic, and parasitic underlying causes considered.',
+        ddx: 'primary seborrhea (breed-related), secondary to allergy, hypothyroidism, Malassezia, cheyletiellosis' },
+      { label: 'Skin mass / nodule',
+        techText: 'Dermatologic: cutaneous mass or nodule identified on exam. Size, location, consistency, and mobility noted. Mass aspirated or biopsied per veterinarian instruction.',
+        vetText:  'Dermatologic: cutaneous/subcutaneous mass identified. Dimensions, fixation, surface character, and regional lymph node status assessed. FNA and cytology obtained.',
+        ddx: 'lipoma, mast cell tumor, sebaceous cyst, follicular cyst, soft tissue sarcoma, abscess' },
+      { group: 'Gastrointestinal (GI)', major: true },
+      { group: 'Vomiting' },
+      { label: 'Vomiting',
+        sub: 'unspecified',
+        techText: 'Gastrointestinal: vomiting reported. Frequency, content, and relationship to feeding noted. Patient assessed for dehydration and abdominal discomfort.',
+        vetText:  'Gastrointestinal: vomiting noted. Onset, frequency, character (food, bile, blood, foreign material), and relationship to meals assessed.',
+        ddx: 'dietary indiscretion, gastroenteritis, foreign body obstruction, pancreatitis, renal/hepatic disease, parvovirus' },
+      { label: 'Vomiting – acute',
+        techText: 'Gastrointestinal: acute vomiting reported. Onset within the past 24–72 hours; frequency, content, and relationship to feeding noted. Patient assessed for dehydration and abdominal pain.',
+        vetText:  'Gastrointestinal: acute vomiting present (onset <72 hrs). Hydration, mucous membrane color, and abdominal palpation performed. Radiographs considered to rule out obstruction.',
+        ddx: 'dietary indiscretion, acute gastritis, foreign body, pancreatitis, parvovirus (if unvaccinated), intussusception' },
+      { label: 'Vomiting – chronic / intermittent',
+        techText: 'Gastrointestinal: chronic or recurring vomiting reported. History of intermittent emesis extending beyond 2–3 weeks noted.',
+        vetText:  'Gastrointestinal: chronic or recurrent vomiting (>2–3 weeks). Dietary history, weight trend, and systemic signs reviewed. Bloodwork and imaging recommended.',
+        ddx: 'IBD, food sensitivity, gastric motility disorder, chronic pancreatitis, hepatic/renal disease, hypoadrenocorticism' },
+      { label: 'Hematemesis (blood in vomit)',
+        techText: 'Gastrointestinal: blood noted in vomit (hematemesis). Frank blood vs coffee-ground material differentiated. Veterinarian notified promptly.',
+        vetText:  'Gastrointestinal: hematemesis present. Frank blood vs digested blood (coffee-ground) differentiated. Coagulation status and gastric mucosal integrity assessed. Urgent workup indicated.',
+        ddx: 'gastric ulceration, NSAID/steroid toxicity, foreign body, coagulopathy, hemorrhagic gastroenteritis, neoplasia' },
+      { group: 'Diarrhea' },
+      { label: 'Diarrhea',
+        sub: 'unspecified',
+        techText: 'Gastrointestinal: diarrhea present. Stool consistency, frequency, and presence of blood or mucus assessed. Patient hydration evaluated.',
+        vetText:  'Gastrointestinal: diarrhea noted. Small vs large bowel character, frequency, and systemic signs (fever, anorexia, lethargy) evaluated.',
+        ddx: 'dietary indiscretion, parasites, viral gastroenteritis, IBD, bacterial enteropathy, pancreatitis' },
+      { label: 'Diarrhea – acute',
+        techText: 'Gastrointestinal: acute diarrhea present. Loose to liquid stools of recent onset noted; frequency, consistency, and presence of blood or mucus assessed. Patient evaluated for dehydration.',
+        vetText:  'Gastrointestinal: acute diarrhea (onset <72 hrs). Fecal flotation and direct smear obtained. Hydration and electrolyte status assessed. Parvovirus snap test considered if unvaccinated.',
+        ddx: 'dietary indiscretion, parasites (Giardia, hookworms), viral gastroenteritis, bacterial enteropathy, parvovirus, stress colitis' },
+      { label: 'Diarrhea – chronic / intermittent',
+        techText: 'Gastrointestinal: chronic diarrhea reported. Persistent or intermittent loose stools for greater than 2–3 weeks.',
+        vetText:  'Gastrointestinal: chronic diarrhea (>2–3 weeks). Small vs large bowel pattern characterized; fecal culture, B12, and folate levels considered. Hypoproteinemia assessed.',
+        ddx: 'IBD, food-responsive diarrhea, antibiotic-responsive enteropathy, exocrine pancreatic insufficiency, neoplasia' },
+      { label: 'Hematochezia (bright red blood in stool)',
+        techText: 'Gastrointestinal: hematochezia noted. Bright red blood observed in or on the stool. Patient assessed for urgency, straining, and systemic signs.',
+        vetText:  'Gastrointestinal: hematochezia present. Large bowel or colorectal origin suggested. Rectal palpation performed; frequency and volume of blood assessed.',
+        ddx: 'stress colitis, hookworm infestation, whipworms, colorectal polyp, anal sacculitis, HGE, clotting disorder' },
+      { label: 'Melena (black, tarry stool)',
+        techText: 'Gastrointestinal: melena present. Dark, tarry stool noted; veterinarian notified for urgent evaluation.',
+        vetText:  'Gastrointestinal: melena confirmed. Upper GI hemorrhage suspected; PCV/TP obtained. Gastric ulceration, hepatic disease, and coagulopathy prioritized in workup.',
+        ddx: 'gastric/duodenal ulcer, NSAID toxicity, hepatic disease, coagulopathy, GI neoplasia, Addison\'s disease' },
+      { group: 'Appetite / Weight' },
+      { label: 'Anorexia / decreased appetite',
+        techText: 'Gastrointestinal: anorexia reported. Decreased or absent appetite noted; duration and degree of food refusal assessed. Patient evaluated for nausea and systemic illness.',
+        vetText:  'Gastrointestinal: anorexia present. Degree (partial vs complete), duration, and associated signs (nausea, pain, lethargy) assessed. Systemic and GI workup initiated.',
+        ddx: 'nausea of any cause, pain, systemic illness, hepatic disease, renal disease, pancreatitis, stress' },
+      { label: 'Weight loss',
+        techText: 'Gastrointestinal: weight loss noted. Body condition score assessed; change from prior weight noted if available.',
+        vetText:  'Gastrointestinal: unexplained weight loss noted. BCS and muscle condition scored. Caloric intake vs output assessed; bloodwork and UA initiated for systemic screening.',
+        ddx: 'malabsorption (EPI, IBD), neoplasia, diabetes mellitus, hyperthyroidism (cats), renal disease, parasites' },
+      { group: 'Musculoskeletal', major: true },
+      { group: 'Lameness' },
+      { label: 'Lameness',
+        sub: 'unspecified limb',
+        locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb','Both forelimbs','Both hindlimbs','All limbs'],
+        techText: 'Musculoskeletal: {location} lameness noted on gait evaluation.',
+        vetText:  'Musculoskeletal: {location} lameness observed. Degree graded (1–5 scale); neurologic vs orthopedic origin assessed. Orthopedic exam performed.',
+        ddx: 'OA/DJD, soft tissue injury, fracture, panosteitis (young large breed), septic joint, neoplasia' },
+      { label: 'Non-weight-bearing lameness',
+        locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb'],
+        techText: 'Musculoskeletal: non-weight-bearing lameness noted ({location}). Patient is not placing weight on affected limb at rest or during ambulation. Limb and foot inspected for injury.',
+        vetText:  'Musculoskeletal: non-weight-bearing lameness present ({location}). Fracture, luxation, and septic joint prioritized. Radiographs and joint tap considered urgently.',
+        ddx: 'acute fracture, joint luxation, septic arthritis, acute cruciate rupture, severe soft tissue injury, bite wound abscess' },
+      { group: 'Joints / Stiffness' },
+      { label: 'Generalized stiffness',
+        techText: 'Musculoskeletal: generalized stiffness noted on exam. Patient demonstrates reduced range of motion and reluctance to move, particularly after rest.',
+        vetText:  'Musculoskeletal: polyarthralgia or generalized stiffness noted. All limbs and axial skeleton assessed. Inflammatory vs degenerative origin evaluated.',
+        ddx: 'DJD/OA (polyarthritis), immune-mediated polyarthritis, tick-borne arthropathy, myopathy, discospondylitis' },
+      { label: 'Joint swelling',
+        locations: ['Right stifle','Left stifle','Right carpus','Left carpus','Right tarsus','Left tarsus','Right elbow','Left elbow','Right hip','Left hip','Right shoulder','Left shoulder'],
+        techText: 'Musculoskeletal: joint effusion or swelling identified at the {location} on palpation. Patient assessed for pain and instability on manipulation.',
+        vetText:  'Musculoskeletal: {location} effusion noted. Joint pain, instability, and range of motion assessed. Radiographs and possible joint tap planned.',
+        ddx: 'cranial cruciate ligament rupture, meniscal injury, immune-mediated arthritis, septic arthritis, OA' },
+      { label: 'Muscle atrophy',
+        locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb','Bilateral forelimbs','Bilateral hindlimbs','Masticatory muscles','Generalized'],
+        techText: 'Musculoskeletal: muscle atrophy noted ({location}). Reduction in muscle mass observed; bilateral symmetry compared. Veterinarian notified.',
+        vetText:  'Musculoskeletal: {location} muscle atrophy identified. Disuse, neurogenic, or systemic origin assessed. Muscle condition scored.',
+        ddx: 'disuse atrophy (orthopedic pain), neurogenic atrophy, cachexia/systemic illness, masticatory muscle myositis (head)' },
+      { label: 'Pain on spinal manipulation',
+        locations: ['Cervical','Cervicothoracic','Thoracic','Thoracolumbar','Lumbar','Lumbosacral'],
+        techText: 'Musculoskeletal / Neurologic: pain response elicited on spinal palpation ({location} region). Patient resists or vocalizes during dorsal vertebral pressure.',
+        vetText:  'Musculoskeletal / Neurologic: {location} spinal pain localized on palpation. Neurologic exam performed to assess for deficits. Imaging recommended.',
+        ddx: 'intervertebral disc disease, discospondylitis, vertebral fracture, meningitis, neoplasia' },
+      { group: 'Respiratory', major: true },
+      { group: 'Cough' },
+      { label: 'Cough',
+        sub: 'unspecified character',
+        techText: 'Respiratory: cough noted. Character, frequency, and duration assessed. Patient auscultated for abnormal lung sounds.',
+        vetText:  'Respiratory: cough present. Character (dry/productive, harsh/soft), timing (day/night, exercise), and duration evaluated. Auscultation and tracheal sensitivity assessed.',
+        ddx: 'infectious tracheobronchitis, collapsing trachea, bronchitis, pneumonia, cardiac disease, parasitic (heartworm, lungworm)' },
+      { label: 'Cough – dry / nonproductive',
+        techText: 'Respiratory: dry, nonproductive cough noted. Cough character described as harsh or honking. Tracheal sensitivity assessed on palpation.',
+        vetText:  'Respiratory: dry, nonproductive cough with tracheal sensitivity assessed. Radiographs considered to differentiate tracheobronchitis from bronchial or cardiac disease.',
+        ddx: 'infectious tracheobronchitis (kennel cough), collapsing trachea, eosinophilic bronchopneumopathy, early congestive heart failure' },
+      { label: 'Cough – productive / moist',
+        techText: 'Respiratory: productive cough with expectoration or post-tussive retching noted. Lower airway involvement suspected; auscultation findings noted.',
+        vetText:  'Respiratory: productive cough noted. Pulmonary auscultation reveals adventitial sounds. Thoracic radiographs and airway cytology (TTW/BAL) considered.',
+        ddx: 'bronchopneumonia, aspiration pneumonia, pulmonary edema (CHF), lungworm, primary ciliary dyskinesia' },
+      { group: 'Nasal / Discharge' },
+      { label: 'Nasal discharge – serous',
+        techText: 'Respiratory: serous nasal discharge present. Clear, watery discharge noted from one or both nares. Patient assessed for sneezing and ocular involvement.',
+        vetText:  'Respiratory: bilateral or unilateral serous nasal discharge noted. Early viral URI vs allergic rhinitis differentiated by signalment and associated signs.',
+        ddx: 'viral URI (herpesvirus, calicivirus in cats; adenovirus in dogs), allergic rhinitis, early bacterial rhinitis' },
+      { label: 'Nasal discharge – mucopurulent',
+        techText: 'Respiratory: mucopurulent nasal discharge present. Cloudy to purulent discharge noted from one or both nares. Facial and submandibular lymph nodes assessed.',
+        vetText:  'Respiratory: mucopurulent nasal discharge noted. Unilateral vs bilateral origin evaluated; nasal radiographs or CT and rhinoscopy considered. Culture submitted if chronic.',
+        ddx: 'secondary bacterial rhinitis, chronic rhinosinusitis, nasal foreign body (unilateral), fungal rhinitis (Aspergillus), neoplasia' },
+      { label: 'Sneezing / reverse sneezing',
+        techText: 'Respiratory: sneezing or reverse sneezing noted. Frequency and triggers assessed. Nasal discharge and ocular involvement evaluated.',
+        vetText:  'Respiratory: sneezing or paroxysmal inspiratory reverse sneezing noted. Nasal discharge character and laterality evaluated. Nasopharyngeal irritation vs structural cause assessed.',
+        ddx: 'URI, nasal foreign body, nasopharyngeal polyp (cats), nasal mites, allergic rhinitis, early neoplasia' },
+      { group: 'Breathing / Effort' },
+      { label: 'Dyspnea',
+        techText: 'Respiratory: dyspnea observed. Patient exhibits increased respiratory effort, open-mouth breathing, or orthopnea. Veterinarian notified promptly; oxygen supplementation considered.',
+        vetText:  'Respiratory: dyspnea present. Respiratory pattern (restrictive vs obstructive), auscultation, and mucous membrane color assessed. Oxygen supplementation initiated. Thoracic radiographs and FAST ultrasound performed.',
+        ddx: 'pleural effusion, pneumothorax, pulmonary edema (CHF), pneumonia, airway obstruction, diaphragmatic hernia' },
+      { label: 'Increased respiratory effort / tachypnea',
+        techText: 'Respiratory: increased respiratory effort or elevated respiratory rate noted on exam. Abdominal push, nostril flaring, or prolonged expiratory phase observed.',
+        vetText:  'Respiratory: tachypnea or increased respiratory effort present. RR counted; auscultation distinguishes crackles (pulmonary fluid) from muffled sounds (pleural space disease).',
+        ddx: 'pulmonary edema, pleural effusion, pneumonia, anemia, pain, anxiety, hyperthermia, laryngeal paralysis' },
+      { label: 'Stridor / stertor',
+        techText: 'Respiratory: upper airway noise (stridor or stertor) noted at rest or on exertion. Noise character and respiratory phase assessed.',
+        vetText:  'Respiratory: inspiratory stridor or stertor present. Upper airway obstruction localized; laryngeal function and nasopharyngeal anatomy evaluated. Brachycephalic obstructive airway syndrome assessed if applicable.',
+        ddx: 'laryngeal paralysis, brachycephalic obstructive airway syndrome, laryngeal mass/polyp, nasopharyngeal polyp, foreign body' },
+      { group: 'Eye / Ear', major: true },
+      // ── Eye ──
+      { group: 'Eye' },
+      { label: 'Ocular discharge',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: ocular discharge noted. Discharge character (serous, mucoid, or mucopurulent) and quantity assessed. Eye examined for additional signs of irritation or infection.',
+        vetText:  '{location} eye: ocular discharge present. Discharge character and volume assessed; fluorescein stain applied to evaluate corneal integrity. Conjunctiva and cornea examined.',
+        ddx: 'conjunctivitis (bacterial, viral, allergic), keratoconjunctivitis sicca (KCS), corneal ulcer, dacryocystitis, entropion' },
+      { label: 'Conjunctivitis',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: conjunctivitis noted. Conjunctival hyperemia, chemosis, and discharge assessed. Patient evaluated for discomfort and ocular rubbing.',
+        vetText:  '{location} eye: conjunctivitis identified. Conjunctival hyperemia, chemosis, and follicle formation assessed. Fluorescein stain performed; STT considered if KCS suspected.',
+        ddx: 'bacterial conjunctivitis, viral (feline herpesvirus, calicivirus), allergic conjunctivitis, KCS, chlamydiosis (cats)' },
+      { label: 'Corneal ulcer / abrasion',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: corneal ulcer or abrasion suspected. Patient exhibiting blepharospasm, epiphora, and photophobia. Fluorescein stain applied per veterinarian instruction.',
+        vetText:  '{location} eye: corneal ulceration confirmed on fluorescein stain. Ulcer depth, location, and margins assessed. Descemetocele, stromal involvement, and infected ulcer ruled out.',
+        ddx: 'traumatic ulcer, entropion, KCS, herpetic ulcer (cats), indolent ulcer (dogs), foreign body, bacterial superinfection' },
+      { label: 'Entropion',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: entropion noted. Inward rolling of the eyelid margin observed; corneal contact and irritation assessed. Veterinarian notified.',
+        vetText:  '{location} eye: entropion identified. Degree of lid inversion and corneal contact assessed; fluorescein stain performed to evaluate secondary ulceration. Surgical correction discussed.',
+        ddx: 'primary (breed-related) entropion, spastic entropion secondary to ocular pain, cicatricial entropion' },
+      { label: 'Epiphora / excessive tearing',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: epiphora noted. Excessive tearing and periocular staining observed. Nasolacrimal duct patency and eyelid conformation assessed.',
+        vetText:  '{location} eye: epiphora present. Nasolacrimal duct flushed for patency; eyelid conformation (entropion, distichiasis) and conjunctival/corneal irritants evaluated.',
+        ddx: 'nasolacrimal duct obstruction, entropion, distichiasis/ectopic cilia, corneal irritation, conjunctivitis, KCS (paradoxical)' },
+      { label: 'Blepharospasm / squinting',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: blepharospasm and squinting noted. Patient keeping affected eye partially or fully closed; consistent with ocular pain or irritation. Veterinarian notified promptly.',
+        vetText:  '{location} eye: blepharospasm present, indicating ocular pain. Corneal stain, IOP measurement, and thorough anterior segment exam performed urgently.',
+        ddx: 'corneal ulcer, anterior uveitis, glaucoma, foreign body, entropion, corneal laceration' },
+      { label: 'Uveitis / ocular redness',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: ocular redness and possible uveitis noted. Eye appears hyperemic; patient assessed for pain, tearing, and vision changes. Veterinarian notified for urgent evaluation.',
+        vetText:  '{location} eye: anterior uveitis suspected. Ciliary flush, aqueous flare, miosis, and hypopyon assessed. IOP measured; systemic workup for infectious and immune-mediated causes initiated.',
+        ddx: 'infectious uveitis (FIP, Toxoplasma, fungal), immune-mediated, lens-induced, traumatic, neoplastic, hypertensive' },
+      { label: 'Cloudiness / opacity',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: corneal or lenticular cloudiness noted. Opacity character and anatomic location assessed. Patient evaluated for vision impairment. Veterinarian notified.',
+        vetText:  '{location} eye: ocular opacity identified. Corneal edema, corneal lipidosis, cataract, and nuclear sclerosis differentiated by location and character. IOP and menace response assessed.',
+        ddx: 'nuclear sclerosis (normal aging), cataract, corneal edema, corneal lipid infiltrate, endothelial dystrophy' },
+      { label: 'Swollen eyelid / periocular swelling',
+        locations:['Right','Left','Both'],
+        techText: '{location} eye: eyelid or periocular swelling noted. Degree, firmness, and associated signs (discharge, pain, heat) assessed. Veterinarian notified.',
+        vetText:  '{location} eye: periocular or eyelid swelling present. Chalazion, hordeolum, abscess, and allergic/angioedema differentiated by distribution and character.',
+        ddx: 'chalazion, hordeolum (stye), periocular abscess, allergic reaction/angioedema, mass lesion, dacryocystitis' },
+      // ── Ear ──
+      { group: 'Ear' },
+      { label: 'Otitis externa',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: otitis externa present. Erythema, discharge, and malodor noted on visual exam of the external ear canal. Pinna and canal assessed.',
+        vetText:  '{location} ear: otitis externa confirmed on otoscopic exam. Discharge character (ceruminous, purulent, hemorrhagic) and tympanic membrane integrity assessed. Cytology obtained.',
+        ddx: 'bacterial (Staphylococcus, Pseudomonas), Malassezia, ear mites, allergic otitis, foreign body, polyp' },
+      { label: 'Ear discharge',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: ear discharge noted. Discharge character (waxy, brown, purulent, bloody), quantity, and odor assessed. Canal and pinna inspected.',
+        vetText:  '{location} ear: discharge present in external ear canal. Cytology obtained; otic culture considered if purulent or unresponsive to prior treatment. Tympanum assessed.',
+        ddx: 'bacterial otitis, Malassezia otitis, ear mites, foreign body, aural hematoma (secondary), polyp' },
+      { label: 'Pruritic ear / head shaking',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: pruritus and head shaking noted. Patient scratching at ear(s) and shaking head. Canal inspected for discharge, erythema, and foreign material.',
+        vetText:  '{location} ear: otic pruritus with head shaking. Otoscopic exam and cytology performed. Allergic, parasitic, and infectious causes assessed.',
+        ddx: 'allergic otitis (atopy, food), ear mites (Otodectes), bacterial or yeast infection, foreign body' },
+      { label: 'Aural hematoma',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: aural hematoma identified. Pinna is fluctuant and swollen. Patient assessed for ear canal disease as underlying cause. Veterinarian notified.',
+        vetText:  '{location} ear: aural hematoma confirmed. Pinna fluctuance and extent assessed. Underlying ear disease identified and treated concurrently. Surgical or aspiration intervention planned.',
+        ddx: 'secondary to: ear mite infestation, otitis externa, allergic otitis, trauma from head shaking or scratching' },
+      { label: 'Ear mites',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: ear mite infestation suspected. Dark, waxy, coffee-ground debris noted in canal. Patient observed scratching and head shaking. Veterinarian notified for confirmation.',
+        vetText:  '{location} ear: ear mites (Otodectes cynotis) suspected on otoscopic exam. Dark waxy debris present; mites identified under magnification or cytology. Treat both ears and environment.',
+        ddx: 'Otodectes cynotis (ear mites), dark ceruminous debris from yeast otitis, foreign body' },
+      { label: 'Aural polyp / mass',
+        locations:['Right','Left','Both'],
+        techText: '{location} ear: mass or polyp noted in ear canal or on pinna. Size, location, and character assessed. Veterinarian notified.',
+        vetText:  '{location} ear: aural mass or nasopharyngeal polyp identified. Otoscopic exam and gentle palpation performed. Imaging and biopsy/cytology considered.',
+        ddx: 'inflammatory polyp, ceruminous gland adenoma/adenocarcinoma, squamous cell carcinoma, papilloma' },
+    ]
+  },
+  'Feline-Specific': {
+    items: [
+      // ── Eosinophilic Complex ──
+      { group: 'Eosinophilic Complex' },
+      { label: 'Eosinophilic granuloma complex',
+        sub: 'unspecified / general',
+        techText: 'Dermatologic: eosinophilic skin lesion noted on exam. Lesion morphology and distribution assessed; veterinarian notified for classification and treatment plan.',
+        vetText:  'Dermatologic: eosinophilic granuloma complex lesion identified. Lesion type (indolent ulcer, eosinophilic plaque, linear granuloma) characterized; underlying allergic trigger assessed.',
+        ddx: 'atopic dermatitis, food hypersensitivity, flea allergy, mosquito-bite hypersensitivity, idiopathic' },
+      { label: 'Indolent ulcer (rodent ulcer)',
+        locations: ['Right upper lip','Left upper lip','Bilateral upper lip'],
+        techText: '{location}: indolent ulcer noted. Well-demarcated, crater-like ulcerative lesion present on the upper lip. Patient assessed for pain and secondary infection.',
+        vetText:  '{location}: indolent ulcer (eosinophilic ulcer) confirmed. Lesion depth, margins, and secondary infection assessed. Underlying hypersensitivity trigger pursued; biopsy considered if atypical.',
+        ddx: 'eosinophilic ulcer (most likely), squamous cell carcinoma (rule out if unresponsive), herpesvirus ulceration' },
+      { label: 'Eosinophilic plaque',
+        techText: 'Dermatologic: eosinophilic plaque identified. Raised, erythematous, well-demarcated lesion noted; patient exhibiting intense pruritus at affected site. Distribution assessed.',
+        vetText:  'Dermatologic: eosinophilic plaque present. Raised, ulcerated, intensely pruritic lesion characterized. Cytology and/or biopsy obtained; underlying allergic etiology pursued.',
+        ddx: 'eosinophilic plaque (food allergy, atopy, flea allergy), mast cell tumor, fungal granuloma' },
+      { label: 'Eosinophilic granuloma (linear)',
+        techText: 'Dermatologic: linear or nodular eosinophilic granuloma noted. Firm, raised lesion(s) present on the caudal thigh, chin, or oral cavity. Patient assessed for discomfort.',
+        vetText:  'Dermatologic: linear eosinophilic granuloma identified. Firm, yellow-pink plaques on caudal thighs or linear streaking pattern noted. Oral lesions assessed. Biopsy considered.',
+        ddx: 'eosinophilic granuloma, mosquito-bite hypersensitivity, mast cell tumor, infectious granuloma' },
+      // ── Feline Skin ──
+      { group: 'Feline Skin' },
+      { label: 'Miliary dermatitis',
+        techText: 'Dermatologic: miliary dermatitis present. Multiple small crusted papules palpated along the dorsum, neck, and head. Patient assessed for pruritus and flea evidence.',
+        vetText:  'Dermatologic: feline miliary dermatitis pattern identified. Distribution of crusted papules assessed; flea combing performed. Ectoparasite and hypersensitivity workup initiated.',
+        ddx: 'flea allergy dermatitis (most common), food hypersensitivity, atopy, Cheyletiella, dermatophytosis, pemphigus' },
+      { label: 'Feline acne',
+        locations: ['Chin','Chin and lower lip'],
+        techText: '{location}: feline acne noted. Comedones, papules, or pustules present on chin and/or lower lip. Area cleaned and assessed for secondary infection.',
+        vetText:  '{location}: feline acne confirmed. Degree of comedone formation, folliculitis, and furunculosis assessed. Plastic bowl use and chin trauma evaluated as contributing factors.',
+        ddx: 'feline acne, demodicosis (Demodex gatoi), dermatophytosis, eosinophilic plaque' },
+      { label: 'Overgrooming / psychogenic alopecia',
+        techText: 'Dermatologic: bilateral, symmetric alopecia on ventrum, medial thighs, or forelegs consistent with overgrooming. No primary skin lesions noted; broken hairs present on trichogram.',
+        vetText:  'Dermatologic: overgrooming-pattern alopecia noted. Trichogram confirms broken hairs. Primary dermatologic causes excluded before psychogenic etiology considered. Environmental stressors assessed.',
+        ddx: 'psychogenic/stress-induced alopecia, atopy, food hypersensitivity, flea allergy, hyperthyroidism, pain-related (cystitis)' },
+      { label: 'Degloving injury',
+        techText: 'Traumatic: degloving injury identified. Skin and soft tissue separation from underlying structures noted; wound extent, depth, and viability of remaining tissue assessed. Veterinarian notified promptly.',
+        vetText:  'Traumatic: degloving injury present. Wound margins, tissue viability, and underlying structure involvement (tendon, bone) assessed. Wound lavage initiated; reconstructive planning and analgesia prioritized.',
+        ddx: 'traumatic degloving (vehicular, predator, entrapment), avulsion injury' },
+      { label: 'Bite wound abscess',
+        techText: 'Integumentary: bite wound abscess identified. Focal swelling, pain, and possible draining tract noted. Hair clipped and wound explored. Veterinarian notified for treatment.',
+        vetText:  'Integumentary: bite wound abscess present. Wound opened, flushed, and explored for depth and tract formation. Culture considered if recurrent or non-responsive. FeLV/FIV status reviewed.',
+        ddx: 'cat bite abscess (Pasteurella, Bacteroides), injection site reaction, foreign body abscess, mast cell tumor (if firm)' },
+      { label: 'Chin/facial swelling',
+        techText: 'Integumentary: facial or chin swelling noted. Degree, firmness, and associated signs (pain, discharge, tooth root involvement) assessed. Veterinarian notified.',
+        vetText:  'Integumentary: facial swelling identified. Dental/tooth root abscess, bite wound abscess, and neoplasia differentiated by location, firmness, and oral exam findings.',
+        ddx: 'tooth root abscess (carnassial/canine), bite wound abscess, eosinophilic granuloma, neoplasia' },
+      // ── Feline GI / Urinary ──
+      { group: 'GI / Urinary' },
+      { label: 'Constipation / obstipation',
+        techText: 'Gastrointestinal: constipation or obstipation noted. Patient straining to defecate; small, hard stools or absence of fecal production reported. Abdomen palpated for colonic distension.',
+        vetText:  'Gastrointestinal: constipation or obstipation present. Colonic distension on palpation; radiographs obtained to quantify fecal burden and assess megacolon. Hydration and underlying cause assessed.',
+        ddx: 'idiopathic megacolon, pelvic canal narrowing (healed fracture), dehydration, neurologic, pain-associated, obstruction' },
+      { label: 'Hepatic lipidosis signs',
+        techText: 'Gastrointestinal: clinical signs consistent with possible hepatic lipidosis noted. History of anorexia, weight loss, and jaundice assessed. Veterinarian notified for urgent evaluation.',
+        vetText:  'Gastrointestinal: hepatic lipidosis suspected. Icteric mucous membranes, prolonged anorexia history, and weight loss present. Bloodwork, bilirubin, and liver enzyme panel obtained urgently.',
+        ddx: 'hepatic lipidosis (idiopathic or secondary), cholangiohepatitis, FIP, pancreatitis, neoplasia, toxin' },
+      { label: 'Lower urinary tract signs (FLUTD)',
+        techText: 'Urinary: lower urinary tract signs noted. Patient observed straining, vocalizing during urination, or producing small frequent urinations. Bladder palpated; veterinarian notified.',
+        vetText:  'Urinary: feline lower urinary tract disease (FLUTD) presentation. Dysuria, stranguria, and/or hematuria present. Bladder size and urethral patency assessed; urinalysis and imaging obtained.',
+        ddx: 'idiopathic cystitis (FIC, most common), urolithiasis, bacterial UTI, urethral obstruction, neoplasia' },
+      { label: 'Urethral obstruction',
+        techText: 'Urinary: urethral obstruction suspected. Male cat unable to urinate; distended, painful bladder palpated. Veterinarian notified immediately — urgent emergency.',
+        vetText:  'Urinary: urethral obstruction confirmed. Distended, turgid bladder with absent urine production. Emergency catheterization initiated; bloodwork obtained for azotemia, hyperkalemia, and metabolic acidosis.',
+        ddx: 'urethral plug (struvite/protein matrix), urolithiasis, urethral spasm, stricture, neoplasia' },
+      // ── Feline Behavior / Stress ──
+      { group: 'Behavior / Stress' },
+      { label: 'Hiding / fear response',
+        techText: 'Behavioral: significant hiding or fear response noted. Patient avoiding interaction, crouched at back of enclosure, or showing signs of acute stress. Handling minimized; environment assessed.',
+        vetText:  'Behavioral: marked fear or anxiety response present. Physiologic signs of stress (mydriasis, tachycardia, piloerection) noted. Underlying pain and illness ruled out before behavioral attribution.',
+        ddx: 'shelter stress/fear, pain (any cause), illness, prior trauma/abuse history, sensory deficit' },
+      { label: 'Inappropriate elimination',
+        techText: 'Behavioral / Urinary: inappropriate elimination noted. Urination or defecation outside litter box reported. Litter box hygiene, accessibility, and location assessed.',
+        vetText:  'Behavioral / Urinary: inappropriate elimination present. Medical causes (FLUTD, constipation, diarrhea, pain) excluded before behavioral diagnosis. Litter type, box number, and stress triggers evaluated.',
+        ddx: 'FLUTD/UTI, constipation, diarrhea, marking behavior, litter box aversion, cognitive dysfunction (older cats)' },
+      // ── Feline Infectious ──
+      { group: 'Infectious' },
+      { label: 'Upper respiratory infection (URI)',
+        locations: ['No oral ulcers noted','Oral ulcers present'],
+        techText: 'Respiratory: feline upper respiratory infection noted. Sneezing, nasal discharge, and/or ocular discharge present. {location}. Severity scored; appetite and hydration assessed.',
+        vetText:  'Respiratory: feline URI complex present. Sneezing, nasal discharge, and conjunctivitis assessed. {location}. Severity graded (mild/moderate/severe); oral ulcers suggest calicivirus, corneal ulcers and recurrence suggest herpesvirus.',
+        ddx: 'feline herpesvirus-1 (FHV-1) — corneal ulcers, recurrent; feline calicivirus (FCV) — oral ulcers, limping syndrome; Chlamydia felis, Bordetella bronchiseptica, Mycoplasma' },
+      { label: 'Panleukopenia suspected',
+        techText: 'Gastrointestinal: feline panleukopenia suspected. Acute vomiting, profuse diarrhea, lethargy, and anorexia noted in unvaccinated or incompletely vaccinated cat. Patient isolated immediately; veterinarian notified urgently.',
+        vetText:  'Gastrointestinal: feline panleukopenia (FPV) suspected. Severe hemorrhagic gastroenteritis, profound leukopenia, and depression present. Parvo SNAP test obtained (cross-reacts with FPV); strict isolation initiated. IV fluid resuscitation and supportive care prioritized.',
+        ddx: 'feline panleukopenia virus (FPV), salmonellosis, other viral gastroenteritis, foreign body obstruction, intussusception' },
+      { label: 'Ringworm (dermatophytosis)',
+        techText: 'Dermatologic: dermatophytosis (ringworm) suspected. Focal or multifocal alopecia with scaling, crusting, or broken hairs noted. Patient isolated; all in-contact animals assessed. Veterinarian notified.',
+        vetText:  'Dermatologic: dermatophytosis suspected. Lesion distribution and morphology assessed; Wood\'s lamp exam performed (positive in ~50% of Microsporum canis). DTM fungal culture submitted. Strict isolation and environmental decontamination initiated.',
+        ddx: 'Microsporum canis (most common), Trichophyton mentagrophytes, Microsporum gypseum; demodicosis, bacterial folliculitis, alopecia areata' },
+    ]
+  },
+  'Canine-Specific': {
+    items: [
+      // ── Infectious ──
+      { group: 'Infectious' },
+      { label: 'Kennel cough (CIRDC)',
+        locations: ['No cough noted','Dry / honking cough','Moist / productive cough','Intermittent cough','Paroxysmal cough'],
+        techText: 'Respiratory: canine infectious respiratory disease complex (CIRDC) suspected. {location}; nasal discharge and ocular involvement assessed. Severity scored; appetite and hydration assessed. Patient isolated per shelter protocol.',
+        vetText:  'Respiratory: CIRDC presentation. {location}; tracheal sensitivity, nasal discharge, and conjunctivitis assessed. Severity graded (mild/moderate/severe); auscultation performed to rule out lower airway involvement. Radiographs considered if systemic signs present.',
+        ddx: 'Bordetella bronchiseptica, canine parainfluenza virus, canine adenovirus-2, Mycoplasma, canine influenza (H3N2/H3N8)' },
+      { label: 'Parvovirus suspected',
+        techText: 'Gastrointestinal: parvovirus infection suspected. Acute vomiting, hemorrhagic diarrhea, lethargy, and anorexia noted in unvaccinated or incompletely vaccinated dog. Patient isolated immediately; veterinarian notified urgently.',
+        vetText:  'Gastrointestinal: canine parvovirus suspected. Hemorrhagic gastroenteritis, leukopenia, and severe depression present. SNAP parvo antigen test obtained; strict isolation initiated. IV fluid resuscitation prioritized.',
+        ddx: 'canine parvovirus (CPV-2), hemorrhagic gastroenteritis (AHDS), bacterial enteritis, intussusception, foreign body obstruction' },
+      { label: 'Distemper signs',
+        techText: 'Neurologic / Respiratory: canine distemper suspected. Combination of respiratory, GI, or neurologic signs noted in unvaccinated dog. Veterinarian notified immediately; patient isolated.',
+        vetText:  'Canine distemper suspected. Multisystemic signs assessed (oculonasal discharge, cough, GI signs, neurologic deficits, hyperkeratosis). Unvaccinated status confirmed. Isolation and prognostic discussion initiated.',
+        ddx: 'canine distemper virus (CDV), other causes of encephalitis, systemic fungal infection, toxin, severe CIRDC' },
+      { label: 'Bite wound / fight injury',
+        techText: 'Integumentary: bite wound or fight injury identified. Puncture wounds, lacerations, and underlying tissue trauma assessed. Area clipped and explored; veterinarian notified for wound management.',
+        vetText:  'Integumentary: bite wound injury present. Wound depth, tract formation, and muscle or body cavity involvement assessed. Thoracic/abdominal radiographs considered if wounds near body cavities. Broad-spectrum antibiotics initiated.',
+        ddx: 'dog-on-dog bite wound, puncture abscess, penetrating foreign body, bite from wildlife (rabies risk assessed)' },
+      // ── Dermatology ──
+      { group: 'Dermatology' },
+      { label: 'Demodicosis',
+        sub: 'generalized or localized',
+        techText: 'Dermatologic: demodicosis suspected. Focal or multifocal alopecia with comedones, erythema, and scaling noted. Deep skin scraping submitted; veterinarian notified.',
+        vetText:  'Dermatologic: demodicosis confirmed or suspected on deep skin scraping. Localized vs generalized pattern assessed; underlying immunosuppression evaluated in adult-onset cases. Secondary pyoderma treated concurrently.',
+        ddx: 'Demodex canis (generalized or localized), dermatophytosis, bacterial pyoderma, zinc-responsive dermatosis' },
+      { label: 'Sarcoptic mange',
+        techText: 'Dermatologic: sarcoptic mange suspected. Intense pruritus with erythema, crusting, and alopecia noted at pinnae, elbows, and ventrum. Patient isolated; all in-contact animals assessed.',
+        vetText:  'Dermatologic: sarcoptic mange (Sarcoptes scabiei) suspected. Distribution pattern (pinnae, elbows, hocks) and intense pruritus assessed. Superficial skin scraping performed; pinnal-pedal reflex tested. Highly contagious — isolation required.',
+        ddx: 'Sarcoptes scabiei, allergic dermatitis, Cheyletiella, Notoedres (rare in dogs), pediculosis' },
+      { label: 'Pyoderma – superficial',
+        techText: 'Dermatologic: superficial pyoderma identified. Papules, pustules, epidermal collarettes, or crusting noted on trunk or skin folds. Skin cytology assessed per veterinarian instruction.',
+        vetText:  'Dermatologic: superficial bacterial pyoderma present. Lesion distribution and morphology characterized; cytology obtained. Underlying atopy, hypothyroidism, or ectoparasites pursued as predisposing cause.',
+        ddx: 'Staphylococcus pseudintermedius (primary), Malassezia co-infection, demodicosis, dermatophytosis' },
+      { label: 'Pyoderma – deep / furunculosis',
+        techText: 'Dermatologic: deep pyoderma or furunculosis noted. Draining tracts, nodules, or cellulitis present. Area assessed for extent and pain. Veterinarian notified for systemic treatment.',
+        vetText:  'Dermatologic: deep pyoderma with furunculosis or cellulitis. Tissue depth and systemic involvement assessed. Culture and sensitivity obtained. Long-course systemic antibiotics required; underlying immunosuppression evaluated.',
+        ddx: 'deep bacterial pyoderma (Staphylococcus, gram-negatives), interdigital furunculosis, mycobacterial infection, foreign body' },
+      // ── Orthopedic / Breed-Related ──
+      { group: 'Orthopedic / Breed-Related' },
+      { label: 'Hip dysplasia signs',
+        techText: 'Musculoskeletal: clinical signs consistent with hip dysplasia noted. Hindlimb weakness, bunny-hopping gait, and pain on hip extension assessed. Veterinarian notified for evaluation.',
+        vetText:  'Musculoskeletal: hip dysplasia suspected. Reduced hip range of motion, crepitus, and pain on Ortolani test assessed. Pelvic radiographs obtained for scoring. Analgesia and management plan initiated.',
+        ddx: 'hip dysplasia (CHD), degenerative joint disease, iliopsoas strain, lumbosacral stenosis, bilateral cruciate disease' },
+      { label: 'Patellar luxation',
+        locations: ['Right stifle','Left stifle','Bilateral stifles'],
+        techText: 'Musculoskeletal: patellar luxation suspected at {location}. Intermittent hindlimb skipping or carrying noted; patella assessed for reducibility on manipulation.',
+        vetText:  'Musculoskeletal: patellar luxation identified at {location}. Grade assessed (I–IV); reducibility, trochlear groove depth, and tibial crest deviation evaluated. Surgical consultation considered for Grade III–IV.',
+        ddx: 'medial patellar luxation (most common small breed), lateral patellar luxation (large breed), cruciate disease' },
+      { label: 'Brachycephalic obstructive airway syndrome',
+        sub: 'BOAS — short-nosed breeds',
+        techText: 'Respiratory: brachycephalic obstructive airway signs noted. Stertor, inspiratory effort, and exercise intolerance assessed. Patient kept calm and cool; veterinarian notified.',
+        vetText:  'Respiratory: BOAS present. Stenotic nares, elongated soft palate, and everted laryngeal saccules assessed. SpO2 monitored; oxygen supplementation available. Surgical correction discussed with owner/staff.',
+        ddx: 'BOAS components: stenotic nares, elongated soft palate, everted laryngeal saccules, tracheal hypoplasia (Bulldogs)' },
+      // ── Behavior / Stress ──
+      { group: 'Behavior / Stress' },
+      { label: 'Kennel stress / barrier frustration',
+        techText: 'Behavioral: kennel stress or barrier frustration noted. Patient exhibiting repetitive behavior, fence-running, excessive vocalization, or redirected aggression. Enrichment and handling plan reviewed.',
+        vetText:  'Behavioral: shelter-related stress response present. Stereotypic behaviors, self-directed activity, and stress indicators scored. Medical causes of anxiety ruled out. Behavioral modification and anxiolytic therapy considered.',
+        ddx: 'situational anxiety, barrier frustration, noise phobia, prior trauma, separation anxiety, underlying pain or illness' },
+      { label: 'Aggression – fear-based',
+        techText: 'Behavioral: fear-based aggression noted on handling. Patient displaying warning signs (growling, snapping, lunging) in response to approach or restraint. Minimum-restraint handling used; veterinarian notified.',
+        vetText:  'Behavioral: fear-based aggression present. Body language assessment performed; pain as underlying trigger excluded. Low-stress handling protocol implemented. Behavioral evaluation and anxiolytic therapy considered.',
+        ddx: 'fear/anxiety-based aggression, pain-elicited aggression, redirected aggression, idiopathic aggression, neurologic cause' },
+      { label: 'Heartworm disease signs',
+        techText: 'Cardiovascular / Respiratory: clinical signs consistent with heartworm disease noted. Exercise intolerance, cough, and respiratory effort assessed. Heartworm antigen test submitted; veterinarian notified.',
+        vetText:  'Cardiovascular: heartworm disease suspected based on clinical signs or positive antigen test. Class of disease assessed (I–IV); thoracic radiographs and echo obtained. Treatment protocol and restrictions initiated.',
+        ddx: 'Dirofilaria immitis (heartworm), congestive heart failure, pneumonia, pulmonary thromboembolism, lung neoplasia' },
+      { label: 'Canine URI / kennel cough exposure',
+        techText: 'Respiratory: potential URI exposure or early upper respiratory signs noted. Patient monitored for cough, nasal discharge, and lethargy. Isolated per shelter protocol.',
+        vetText:  'Respiratory: early or subclinical CIRDC exposure noted. Surveillance monitoring initiated; tracheal sensitivity and nasal discharge assessed. Prophylactic or therapeutic protocol per shelter guidelines.',
+        ddx: 'Bordetella bronchiseptica, canine parainfluenza, canine adenovirus-2, canine influenza, Mycoplasma' },
+    ]
+  },
+};
+
+// ── CLINICAL STATE ────────────────────────────
+// selectedSymptoms: Set of keys 'catIndex_itemIndex'
+let clinicalRole = 'tech'; // 'tech' | 'vet'
+let footerOpt = 'none'; // 'none' | 'discuss' | 'proto' | 'eval'
+let selectedSymptoms = new Set(); // keys: 'catKey|||itemIndex'
+let catOpenState = {}; // catKey -> bool
+let lateralityState = new Map(); // safeSymKey -> location string
+let safeToSymKey = new Map();    // safeSymKey -> original symKey
+let species='dog', unit='lb', activeSection='All';
+// selectedMeds: Map<drugId, Set<optionKey>>  ('default' for single-checkbox drugs)
+const selectedMeds = new Map();
+
+function setSpecies(s){
+  species=s;
+  document.querySelectorAll('.sp-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(s)));
+  selectedMeds.clear();
+  render();
+}
+function setUnit(u){
+  unit=u;
+  document.getElementById('lbBtn').classList.toggle('active',u==='lb');
+  document.getElementById('kgBtn').classList.toggle('active',u==='kg');
+  render();
+}
+function getKg(){
+  const v=parseFloat(document.getElementById('weightInput').value);
+  if(isNaN(v)||v<=0)return null;
+  return unit==='lb'?v*0.4536:v;
+}
+function getLb(){
+  const v=parseFloat(document.getElementById('weightInput').value);
+  if(isNaN(v)||v<=0)return null;
+  return unit==='lb'?v:v*2.2046;
+}
+function isAnySelected(id){return selectedMeds.has(id)&&selectedMeds.get(id).size>0;}
+function isOptSelected(id,opt){return selectedMeds.has(id)&&selectedMeds.get(id).has(opt);}
+function toggleOpt(id,opt){
+  if(!selectedMeds.has(id))selectedMeds.set(id,new Set());
+  const s=selectedMeds.get(id);
+  s.has(opt)?s.delete(opt):s.add(opt);
+  if(s.size===0)selectedMeds.delete(id);
+  refreshCard(id);
+  updateCopyBar();
+}
+function toggleSingle(id){
+  isAnySelected(id)?selectedMeds.delete(id):selectedMeds.set(id,new Set(['default']));
+  refreshCard(id);
+  updateCopyBar();
+}
+function refreshCard(id){
+  const drug=DRUGS.find(d=>d.id===id);
+  const card=document.querySelector(`[data-id="${id}"]`);
+  if(!card)return;
+  card.classList.toggle('selected',isAnySelected(id));
+  if(drug.type==='multi'){
+    card.querySelectorAll('.opt-cb').forEach(el=>el.classList.toggle('checked',isOptSelected(id,el.dataset.opt)));
+  }else{
+    const cb=card.querySelector('.drug-checkbox');
+    if(cb)cb.classList.toggle('checked',isAnySelected(id));
+  }
+}
+
+// ── DOSE CALCULATION ─────────────────────────
+// Returns {html, plain} for single, or {opts:{key:{html,plain}}} for multi
+function calcDose(drug, kg){
+  if(!kg)return{html:`<p class="no-weight-msg">Enter weight above</p>`,plain:''};
+  const lb=kg*2.2046;
+  if(!drug.species.includes(species))return notFor(species);
+  if(drug.type==='topical')return topicalResult(drug.note);
+
+  const id=drug.id;
+
+  // ── MULTI-OPTION ──
+  if(drug.type==='multi'){
+    // CERENIA
+    if(id==='cerenia'){
+      // tablet: 2mg/kg, sizes 16/24/60mg; injectable 10mg/mL 1mg/kg
+      const tabMg=2*kg;
+      const tabParts=bestPillsHalf(tabMg,[{mg:60,unit:'tablet'},{mg:24,unit:'tablet'},{mg:16,unit:'tablet'}]);
+      const tabActual=parseFloat((tabParts?tabParts.reduce((s,p)=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);return s+(m?parseFloat(m[1])*parseFloat(m[2]):0);},0):tabMg).toFixed(1));
+      const maxTabMg=parseFloat((3*kg).toFixed(1));
+      const injVol=f(kg/10,2);
+      let poH,poP;
+      if(species==='cat'){
+        poH=blk('SQ preferred for cats','—','','Tablets not recommended in cats');
+        poP='Cerenia: tablets not recommended — use SQ';
+      }else{
+        const cerWarn=checkRange(tabActual,parseFloat((2*kg).toFixed(1)),maxTabMg,tabParts?tabParts.join(' + '):'','Use Cerenia injectable instead.');
+        if(cerWarn){poH=cerWarn.html;poP=cerWarn.plain;}
+        else{poH=blk('Tablet PO — 2mg/kg',tabActual+' mg',tabParts?tabParts.join(' + '):'','q24h');poP=`Cerenia: ${tabActual}mg PO q24h (${tabParts?tabParts.join(' + '):''})`;}
+      }
+      const injH=blk('SQ injection — 1mg/kg',injVol+' mL','10mg/mL','q24h');
+      const injP=`Cerenia: ${injVol}mL SQ q24h (10mg/mL, ${f(kg,1)}mg)`;
+      return{opts:{po:{html:poH,plain:poP},inj:{html:injH,plain:injP}}};
+    }
+    // MELOXICAM
+    if(id==='meloxicam'){
+      const oralMg=species==='dog'?0.1*kg:null;
+      const oralVol=oralMg?f(oralMg/1.5,2):null;
+      const injMg=species==='dog'?0.2*kg:0.1*kg;
+      const injVol=f(injMg/5,2);
+      const catD1Vol=f(0.1*kg/1.5,2);
+      const catD23Vol=f(0.05*kg/1.5,2);
+      const poH=species==='cat'?blk('Cat oral — 1.5mg/mL',catD1Vol+' mL day 1 / '+catD23Vol+' mL days 2–3','Day 1: 0.1mg/kg → Day 2–3: 0.05mg/kg','3-day max — monitor renal function closely'):blk('Oral — 1.5mg/mL',oralVol+' mL','','0.1mg/kg q24h (0.2mg/kg loading dose first)');
+      const poP=species==='cat'?`Meloxicam oral: ${catD1Vol}mL day 1 (0.1mg/kg), then ${catD23Vol}mL days 2–3 (0.05mg/kg), 1.5mg/mL — 3-day max`:`Meloxicam oral: ${oralVol}mL (1.5mg/mL) q24h`;
+      const injH=blk(species==='cat'?'SQ — SINGLE DOSE ONLY':'SQ loading — 5mg/mL',injVol+' mL','',species==='cat'?`${f(injMg,2)}mg — single dose only`:`${f(injMg,2)}mg — then switch to oral`,species==='cat'?'warn-block':'');
+      const injP=`Meloxicam injectable: ${injVol}mL SQ (5mg/mL, ${f(injMg,2)}mg)${species==='cat'?' — SINGLE DOSE ONLY':''}`;
+      return{opts:{po:{html:poH,plain:poP},inj:{html:injH,plain:injP}}};
+    }
+    // ACEPROMAZINE
+    if(id==='acepromazine'){
+      const mid=(species==='dog'?0.05:0.075)*kg;
+      const mgVal=f(Math.min(mid, species==='dog'?3:1),3);
+      const parts=bestPills(mgVal,[{mg:10,unit:'tablet'}]);
+      const tabCombo=parts?parts.join('+'):'see note';
+      const injVol=f(mgVal/10,3);
+      const poH=blk('Tablet PO — 0.025–0.1mg/kg',mgVal+' mg',tabCombo,'Max: dogs 3mg, cats 1mg total');
+      const poP=`Acepromazine: ${mgVal}mg PO (${tabCombo})`;
+      const injH=blk('Injectable — 10mg/mL',injVol+' mL','',`${mgVal}mg — max dogs 3mg, cats 1mg`);
+      const injP=`Acepromazine: ${injVol}mL IM/SQ (10mg/mL, ${mgVal}mg)`;
+      return{opts:{po:{html:poH,plain:poP},inj:{html:injH,plain:injP}}};
+    }
+    // FUROSEMIDE
+    if(id==='furosemide'){
+      const fMin=f(1*kg,1), fMax=f(4*kg,1), mid=2*kg;
+      const parts=bestPills(mid,[{mg:20,unit:'tablet'}],true);
+      let tabMg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)tabMg+=parseFloat(m[1])*parseFloat(m[2]);});
+      const liqMl=f(mid/10,2);
+      const injVol=f(mid/50,2);
+      const freq=species==='dog'?'q12h':'q12–24h';
+      const outOfRange=tabMg>fMax;
+      const poH=outOfRange
+        ?blk('Tablet too large','Safe range: '+fMin+'–'+fMax+'mg','','Use oral liquid 10mg/mL instead.','warn-block')
+        :blk('Oral tabs — 1–4mg/kg',tabMg+' mg',parts?parts.join(' + '):'',freq);
+      const poP=outOfRange
+        ?'Furosemide tablet: too large — use oral liquid instead'
+        :`Furosemide: ${tabMg}mg PO ${freq} (${parts?parts.join(' + '):''})`;
+      const liqH=blk('Oral liquid — 10mg/mL',liqMl+' mL',f(mid,1)+' mg • 2mg/kg','Range: '+fMin+'–'+fMax+'mg • '+freq);
+      const liqP=`Furosemide: ${liqMl}mL (10mg/mL liquid, ${f(mid,1)}mg) PO ${freq}`;
+      const injH=blk('Injectable 5% — 50mg/mL',injVol+' mL',`${f(mid,1)}mg`,'');
+      const injP=`Furosemide: ${injVol}mL SQ/IV (50mg/mL, ${f(mid,1)}mg)`;
+      return{opts:{po:{html:poH,plain:poP,warn:outOfRange},liq:{html:liqH,plain:liqP},inj:{html:injH,plain:injP}}};
+    }
+    // ENROFLOXACIN
+    if(id==='enro'){
+      function enroBestTab(targetMg){
+        let best=null,bd=[Infinity,Infinity];
+        for(let a=0;a<=6;a++)for(let b=0;b<=4;b++)for(let c2=0;c2<=4;c2+=0.5){
+          const dose=parseFloat((a*136+b*68+c2*22.7).toFixed(1));
+          if(dose<targetMg)continue;
+          const over=dose-targetMg,cnt=a+b+c2;
+          if(over<bd[0]||(Math.abs(over-bd[0])<0.05&&cnt<bd[1])){bd=[over,cnt];best={dose,a,b,c2};}
+        }
+        if(!best)return{mg:0,combo:''};
+        const pts=[];
+        if(best.a>0)pts.push(best.a+' × 136mg tablet'+(best.a>1?'s':''));
+        if(best.b>0)pts.push(best.b+' × 68mg tablet'+(best.b>1?'s':''));
+        if(best.c2>0)pts.push(best.c2+' × 22.7mg tablet'+(best.c2>1?'s':''));
+        return{mg:best.dose,combo:pts.join(' + ')};
+      }
+      const std=enroBestTab(5*kg);
+      const stdH=species==='cat'?blk('Cat MAX — 5mg/kg q24h',f(5*kg,1)+' mg','','NEVER exceed — retinal toxicity','warn-block'):blk('Standard — 5mg/kg q24h',std.mg+' mg',std.combo,'');
+      const stdP=species==='cat'?`Enrofloxacin: ${f(5*kg,1)}mg PO q24h (5mg/kg max — cat)`:`Enrofloxacin: ${std.mg}mg PO q24h (${std.combo})`;
+      const pneu=enroBestTab(10*kg);
+      const pneuH=species==='cat'?blk('Cat — NOT for 10mg/kg','—','','10mg/kg exceeds cat max — do not use','red-block'):blk('Pneumonia — 10mg/kg q24h',pneu.mg+' mg',pneu.combo,'');
+      const pneuP=species==='cat'?'Enrofloxacin 10mg/kg: contraindicated in cats':`Enrofloxacin: ${pneu.mg}mg PO q24h (${pneu.combo}) — pneumonia dose`;
+      const hi=enroBestTab(19*kg);
+      const hiH=species==='cat'?blk('Cat — NOT for high dose','—','','18-20mg/kg causes blindness in cats — do not use','red-block'):blk('High Dose 18–20mg/kg × 3 days',hi.mg+' mg',hi.combo,'⚠ 3-day course only — not for routine use');
+      const hiP=species==='cat'?'Enrofloxacin high dose: contraindicated in cats':`Enrofloxacin: ${hi.mg}mg PO q24h × 3 days (${hi.combo}) — high dose 3-day`;
+      const injMg=f(5*kg,1); const injVol=f(injMg/22.7,2);
+      const injH=blk('Injectable SQ — 22.7mg/mL',injVol+' mL',injMg+' mg • 5mg/kg q24h',species==='cat'?'Cat max — do not exceed':'');
+      const injP=`Enrofloxacin injectable: ${injVol}mL (22.7mg/mL, ${injMg}mg) SQ q24h`;
+      return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pneuH,plain:pneuP},high3:{html:hiH,plain:hiP},inj:{html:injH,plain:injP}}};
+    }
+  // GABAPENTIN
+    if(id==='gabapentin'){
+    if(species==='cat'){
+      return{opts:{
+        low:{html:blk('Fixed dose — cats','50–100 mg','0.5–1 × 100mg capsule','Open capsule and sprinkle on food • q12h or 1–2 hrs pre-visit'),plain:'Gabapentin: 50–100mg PO q12h (0.5–1 × 100mg capsule, sprinkle on food)'},
+        mid:{html:blk('Fixed dose — cats','50–100 mg','0.5–1 × 100mg capsule','Open capsule and sprinkle on food • q12h or 1–2 hrs pre-visit'),plain:'Gabapentin: 50–100mg PO q12h (0.5–1 × 100mg capsule, sprinkle on food)'},
+        high:{html:blk('Fixed dose — cats','50–100 mg','0.5–1 × 100mg capsule','Open capsule and sprinkle on food • q12h or 1–2 hrs pre-visit'),plain:'Gabapentin: 50–100mg PO q12h (0.5–1 × 100mg capsule, sprinkle on food)'}
+      }};
+    }
+    // Dog chart lookup — use chart values directly, interpolate between rows
+    function gabChart(lb,col){
+      const chart=[[10,[25,50,100]],[20,[50,100,200]],[30,[100,200,300]],[40,[100,200,400]],
+                   [50,[200,300,500]],[60,[200,300,600]],[70,[200,400,700]],[80,[200,400,800]],
+                   [90,[300,500,900]],[100,[300,500,1000]]];
+      if(lb<=10)return chart[0][1][col];
+      if(lb>=100)return chart[9][1][col];
+      for(let i=0;i<chart.length-1;i++){
+        const [w1,d1]=chart[i],[w2,d2]=chart[i+1];
+        if(lb>=w1&&lb<=w2){
+          const t=(lb-w1)/(w2-w1);
+          const raw=d1[col]+t*(d2[col]-d1[col]);
+          // Round to nearest 25mg step
+          return Math.round(raw/25)*25;
+        }
+      }
+      return chart[9][1][col];
+    }
+    function gabResult(dose, label){
+      const needsLiq=dose<100;
+      if(needsLiq){
+        // Under 100mg — show dose but suggest compounded liquid
+        return{
+          html:blk(label,dose+' mg','Consider compounded liquid','Smallest capsule is 100mg — use compounded gabapentin liquid for this dose • q12h'),
+          plain:`Gabapentin (${label}): ${dose}mg PO q12h — consider compounded liquid (smallest capsule is 100mg)`
+        };
+      }
+      const p=bestPills(dose,[{mg:300,unit:'capsule'},{mg:100,unit:'capsule'}]);
+      let actual=0;if(p)p.forEach(x=>{const m=x.match(/(\d+)\s*×\s*(\d+)mg/);if(m)actual+=parseInt(m[1])*parseInt(m[2]);});
+      return{
+        html:blk(label,actual+' mg',p?p.join(' + '):'','q12h • whole capsules only'),
+        plain:`Gabapentin (${label}): ${actual}mg PO q12h (${p?p.join(' + '):''})`
+      };
+    }
+    const loDose=gabChart(lb,0),midDose=gabChart(lb,1),hiDose=gabChart(lb,2);
+    return{opts:{
+      low:gabResult(loDose,'5–10mg/kg (Low)'),
+      mid:gabResult(midDose,'10–20mg/kg (Mid)'),
+      high:gabResult(hiDose,'20–30mg/kg (High)')
+    }};
+  }
+  // TRAZODONE
+    if(id==='trazodone'){
+    if(species==='cat'){
+      const catLo=f(3.5*lb,1), catHi=f(6.9*lb,1), catMid=f(5.2*lb,1);
+      const catP=bestPillsHalf(catMid,[{mg:100,unit:'tablet'},{mg:50,unit:'tablet'}]);
+      let catMg=0;if(catP)catP.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)catMg+=parseFloat(m[1])*parseFloat(m[2]);});
+      const catH=blk('3.5–6.9mg/lb — cats',catMg+' mg',catP?catP.join(' + '):'','Range: '+catLo+'–'+catHi+'mg • q12–24h or 1–2 hrs before event');
+      const catP2=catH;
+      return{opts:{init:{html:catH,plain:`Trazodone: ${catMg}mg PO (${catP?catP.join(' + '):''})`},target:{html:catH,plain:`Trazodone: ${catMg}mg PO (${catP?catP.join(' + '):''})`}}};
+    }
+    // Dogs: Initial 2-3mg/kg, Target 5-7mg/kg — allow half tabs
+    const initMid=f(2.5*kg,1), targMid=f(6*kg,1);
+    const initLo=f(2*kg,1), initHi=f(3*kg,1);
+    const targLo=f(5*kg,1), targHi=f(7*kg,1);
+    const initP=bestPillsHalf(initMid,[{mg:100,unit:'tablet'},{mg:50,unit:'tablet'}]);
+    const targP=bestPillsHalf(targMid,[{mg:100,unit:'tablet'},{mg:50,unit:'tablet'}]);
+    let initMg=0;if(initP)initP.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)initMg+=parseFloat(m[1])*parseFloat(m[2]);});
+    let targMg=0;if(targP)targP.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)targMg+=parseFloat(m[1])*parseFloat(m[2]);});
+    const initH=blk('Initial — 2–3mg/kg',initMg+' mg',initP?initP.join(' + '):'','Range: '+initLo+'–'+initHi+'mg • q12–24h • tabs can be split');
+    const targH=blk('Target — 5–7mg/kg',targMg+' mg',targP?targP.join(' + '):'','Range: '+targLo+'–'+targHi+'mg • q12–24h • tabs can be split');
+    return{opts:{
+      init:{html:initH,plain:`Trazodone (Initial): ${initMg}mg PO q12–24h (${initP?initP.join(' + '):''})`},
+      target:{html:targH,plain:`Trazodone (Target): ${targMg}mg PO q12–24h (${targP?targP.join(' + '):''})`}
+    }};
+  }
+
+    return{opts:{}};
+  }
+
+  // ── SINGLE DOSE ───
+  // CONVENIA
+  if(id==='convenia'){
+    const mg=f(8*kg,1);const vol=f(mg/80,2);
+    return{html:blk('8mg/kg SQ — single injection',mg+' mg',vol+' mL of 80mg/mL',species==='cat'?'~14-day coverage':'~7-day coverage'),plain:`Convenia: ${mg}mg (${vol}mL of 80mg/mL) SQ once`};
+  }
+  // CEFPODOXIME
+  if(id==='cefpod'){
+    if(lb<15)return{html:blk('< 15 lbs','Redirect','','Use Clavamox drops instead','warn-block'),plain:''};
+    const r=cefpodDose(lb);
+    return{html:blk('Once daily q24h',r.mg+' mg',r.combo,''),plain:`Cefpodoxime: ${r.mg}mg PO q24h (${r.combo})`};
+  }
+  // CLAVAMOX
+  if(id==='clavamox'){
+    if(species==='cat'||(species==='dog'&&lb<10)){
+      // Drops: 6.25mg/lb = 1mL per 10lbs (62.5mg/mL concentration)
+      const dropsMl=f(lb/10,2);
+      const dropsMg=f(6.25*lb,1);
+      return{html:blk('Clavamox Drops — 1mL/10lb — q12h',dropsMl+' mL','6.25mg/lb → '+dropsMg+' mg','Shake well — give with food'),plain:`Clavamox drops: ${dropsMl}mL q12h (1mL/10lb, ${dropsMg}mg)`};
+    }
+    const r=clavDose(lb);
+    return{html:blk('6.25mg/lb — q12h',r.mg+' mg',r.combo,''),plain:`Clavamox: ${r.mg}mg PO q12h (${r.combo})`};
+  }
+  // CLINDAMYCIN
+  if(id==='clinda'){
+    if(species==='cat'){
+      const ml=f(lb*0.2,1); // 1mL/5lbs of 25mg/mL
+      return{html:blk('Liquid — 1mL/5 lbs',ml+' mL','25mg/mL • q24h',''),plain:`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`};
+    }
+    const r=clindaDogDose(lb);
+    return{html:blk('~5–11mg/kg q12h',r.mg+' mg',r.combo,''),plain:`Clindamycin: ${r.mg}mg PO q12h (${r.combo})`};
+  }
+  // DOXYCYCLINE
+  if(id==='doxy'){
+    if(species==='cat'){
+      const ml=f(lb*0.1,2);
+      return{html:blk('Liquid — 0.1mL/lb',ml+' mL','50mg/mL • q12h',''),plain:`Doxycycline: ${ml}mL (50mg/mL liquid) PO q12h`};
+    }
+    const r=doxyDogDose(kg);
+    if(!r)return{html:`<p class="na-msg">Weight out of range</p>`,plain:''};
+    return{html:blk('10mg/kg q12h',r.dose+' mg',r.combo,'Whole pills only — no splitting'),plain:`Doxycycline: ${r.dose}mg PO q12h (${r.combo})`};
+  }
+  // AZITHROMYCIN — tablet for dogs > ~5kg, liquid for cats/small dogs
+  if(id==='azithro'){
+    const day1Mg=f(10*kg,1), maintMg=f(5*kg,1);
+    if(species==='cat'||kg<=5){
+      // 200mg/5mL = 40mg/mL
+      const day1Ml=f(day1Mg/40,1), maintMl=f(maintMg/40,1);
+      return{html:blk('Oral susp — 200mg/5mL',day1Ml+' mL day 1 / '+maintMl+' mL days 2–7','40mg/mL','Day 1: 10mg/kg; Days 2–7: 5mg/kg q24h (5–7 day total)'),plain:`Azithromycin: ${day1Ml}mL day 1 (10mg/kg), then ${maintMl}mL q24h days 2–7 (200mg/5mL susp)`};
+    }
+    // Dogs >5kg: tablets for loading, liquid for maintenance if small
+    const day1Parts=bestPills(day1Mg,[{mg:250,unit:'tablet'}],true);
+    const maintParts=bestPills(maintMg,[{mg:250,unit:'tablet'}],true);
+    let d1mg=0;if(day1Parts)day1Parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)d1mg+=parseFloat(m[1])*parseFloat(m[2]);});
+    let mmg=0;if(maintParts)maintParts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)mmg+=parseFloat(m[1])*parseFloat(m[2]);});
+    return{html:blk('Day 1: 10mg/kg / Days 2–7: 5mg/kg',d1mg+' mg / '+mmg+' mg','Day 1: '+(day1Parts?day1Parts.join(' + '):'')+' | Maint: '+(maintParts?maintParts.join(' + '):''),'5–7 day total course q24h'),plain:`Azithromycin: Day 1 ${d1mg}mg (${day1Parts?day1Parts.join(' + '):''}), then ${mmg}mg q24h days 2–7`};
+  }
+  // METRONIDAZOLE
+  if(id==='metro'){
+    if(species==='cat'){
+      const ml=f((22*kg)/80,1);
+      return{html:blk('Liquid — 22mg/kg',ml+' mL','80mg/mL • q24h Giardia / q12h infection',''),plain:`Metronidazole: ${ml}mL (80mg/mL liquid) PO q24h (Giardia) or q12h`};
+    }
+    if(lb<=10){
+      // Small dogs: offer both liquid and tablet as separate checked options
+      // Use drug.type override — render both options inline with their own dose blocks
+      const liqMl=f((22*kg)/80,2);
+      const r=metroDose(lb,kg);
+      const liqH=blk('Liquid — 80mg/mL',liqMl+' mL',f(22*kg,1)+' mg • q24h Giardia / q12h infection','');
+      const tabH=blk('Tablet — 22mg/kg',r.mg+' mg',r.combo,'q24h Giardia / q12h infection');
+      return{html:liqH+tabH,plain:`Metronidazole liquid: ${liqMl}mL (80mg/mL) OR tablet: ${r.mg}mg (${r.combo}) PO q24h (Giardia) or q12h`};
+    }
+    const r=metroDose(lb,kg);
+    return{html:blk('22mg/kg',r.mg+' mg',r.combo,'q24h Giardia / q12h infection'),plain:`Metronidazole: ${r.mg}mg PO q24h (Giardia) or q12h (${r.combo})`};
+  }
+  // SMZ/TMP
+  if(id==='smztmp'){
+    const mid=22.5*kg;
+    if(species==='cat'&&kg<4.5){
+      // Smallest tablet is 480mg; at <10 lbs cats cannot safely dose — tablet far exceeds range
+      return{html:blk('Tablet too large','Use compounded TMP/SMZ suspension or Clavamox instead.','','','warn-block'),plain:'SMZ/TMP: tablet dose exceeds safe range for this cat — consider compounded suspension or alternate antibiotic'};
+    }
+    const maxMg=30*kg;
+    if(maxMg<240){
+      return{html:blk('Tablet too large','Safe max: '+f(maxMg,0)+'mg','','Use compounded TMP/SMZ suspension or Clavamox instead.','warn-block'),plain:`SMZ/TMP: tablet too large — use compounded suspension or Clavamox`};
+    }
+    const parts=bestPills(mid,[{mg:960,unit:'tablet'},{mg:480,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    return{html:blk('15–30mg/kg q12h',mg+' mg',parts?parts.join(' + '):'',''),plain:`SMZ/TMP: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // CEPHALEXIN
+  if(id==='cephalexin'){
+    const maxMg=15*kg;
+    if(maxMg<125){
+      return{html:blk('Capsule too large','Safe max: '+f(maxMg,0)+'mg','','Use Clavamox drops or Convenia injectable instead.','warn-block'),plain:`Cephalexin: 250mg cap too large — use Clavamox drops or Convenia`};
+    }
+    const mid=12.5*kg;
+    const parts=bestPills(mid,[{mg:500,unit:'capsule'},{mg:250,unit:'capsule'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    return{html:blk('10–15mg/kg q12h',mg+' mg',parts?parts.join(' + '):'',''),plain:`Cephalexin: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // CIPRO
+  if(id==='cipro'){
+    const cipMin=f(5*kg,1), cipMax=f(10*kg,1);
+    const mid=7.5*kg;
+    const parts=bestPills(mid,[{mg:250,unit:'tablet'}],true);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)mg+=parseFloat(m[1])*parseFloat(m[2]);});
+    const cipWarn=checkRange(mg,cipMin,cipMax,parts?parts.join(' + '):'','Use enrofloxacin or compounded ciprofloxacin liquid.');
+    if(cipWarn)return cipWarn;
+    return{html:blk('5–10mg/kg q12h',mg+' mg',parts?parts.join(' + '):'',''),plain:`Ciprofloxacin: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // FAMOTIDINE — cats: not available; dogs: threshold check
+  if(id==='famotidine'){
+    if(species==='cat'){
+      return{html:blk('Tablet too large for cats','Use injectable (0.5mg/kg SQ) or compounded suspension.','','','warn-block'),plain:'Famotidine: tablets not suitable for cats — use injectable (0.5mg/kg SQ) or compounded susp'};
+    }
+    const fMinMg=f(0.5*kg,2), fMaxMg=f(1.0*kg,2);
+    if(10>fMaxMg){
+      return{html:blk('Tablet too large','Safe range: '+fMinMg+'–'+fMaxMg+'mg','','Use famotidine injectable (0.5mg/kg SQ) or compounded suspension.','warn-block'),plain:`Famotidine: 10mg tab too large — safe range ${fMinMg}–${fMaxMg}mg, use injectable or compounded susp`};
+    }
+    const mid=0.75*kg;
+    const parts=bestPills(mid,[{mg:20,unit:'tablet'},{mg:10,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    const famWarn=checkRange(mg,fMinMg,fMaxMg,parts?parts.join(' + '):'','Use famotidine injectable or compounded suspension.');
+    if(famWarn)return famWarn;
+    return{html:blk('0.5–1mg/kg q12–24h',mg+' mg',parts?parts.join(' + '):'',''),plain:`Famotidine: ${mg}mg PO q12–24h (${parts?parts.join(' + '):''})`};
+  }
+  // OMEPRAZOLE — cats: not available in tablet; dogs: weight-band dosing per label
+  if(id==='omeprazole'){
+    if(species==='cat'){
+      return{html:blk('Capsule too large for cats','Use famotidine injectable (0.5mg/kg SQ) or compounded omeprazole susp.','','','warn-block'),plain:'Omeprazole: not suitable for cats — use famotidine injectable or compounded suspension'};
+    }
+    // Dog weight-band chart: 15-56lb=10mg (0.5 tab), 57-87lb=20mg (1 tab), 88-115lb=30mg (1.5 tabs)
+    if(lb<15){
+      return{html:blk('Capsule too large','Use compounded omeprazole suspension or famotidine instead.','','','warn-block'),plain:'Omeprazole: too small for tablet — use compounded susp or famotidine'};
+    }
+    let omepMg, omepCombo;
+    if(lb<=56)     {omepMg=10; omepCombo='0.5 × 20mg tablet';}
+    else if(lb<=87){omepMg=20; omepCombo='1 × 20mg tablet';}
+    else if(lb<=115){omepMg=30; omepCombo='1.5 × 20mg tablets';}
+    else            {omepMg=40; omepCombo='2 × 20mg tablets';}
+    return{html:blk('Per weight chart — q24h',omepMg+' mg',omepCombo,'Give 30 min before food'),plain:`Omeprazole: ${omepMg}mg PO q24h (${omepCombo})`};
+  }
+  // CARAFATE — 1g/10mL = 0.1g/mL; dogs 0.5-1g BID, cats 0.25-0.5g BID
+  if(id==='carafate'){
+    // 1g/10mL suspension — 0.1g per mL
+    // Cats + small dogs (<20lb): 0.25-0.5g (2.5-5mL) q12h
+    // Larger dogs (>=20lb): 0.5-1g (5-10mL) q12h
+    if(species==='cat'){
+      return{html:blk('Cats — q12h — 1g/10mL susp','2.5–5 mL','0.25–0.5 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 2.5–5mL (0.25–0.5g of 1g/10mL susp) PO q12h'};
+    }
+    if(lb<20){
+      return{html:blk('Small dog — q12h — 1g/10mL susp','2.5–5 mL','0.25–0.5 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 2.5–5mL (0.25–0.5g of 1g/10mL susp) PO q12h'};
+    }
+    return{html:blk('Dog — q12h — 1g/10mL susp','5–10 mL','0.5–1 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 5–10mL (0.5–1g of 1g/10mL susp) PO q12h'};
+  }
+  // METOCLOPRAMIDE — BID dosing
+  if(id==='metoclopramide'){
+    const mid=0.35*kg;const ml=f(mid/1,2); // 5mg/5mL = 1mg/mL
+    return{html:blk('0.2–0.5mg/kg q12h',ml+' mL','5mg/5mL syrup',''),plain:`Metoclopramide: ${ml}mL (5mg/5mL syrup) PO q12h`};
+  }
+  // ONDANSETRON — cats: 2mg small / 4mg large; dogs: best pill
+  if(id==='ondansetron'){
+    if(species==='cat'){
+      // Cats: 0.22mg/kg q12h; flag if 4mg tab > 1.5x max
+      const catTgt=f(0.22*kg,2), catMax=f(1.0*kg,2);
+      if(4>catMax*1.5){
+        return{html:blk('Tablet too large','Safe range: '+catTgt+'–'+catMax+'mg','','Use compounded ondansetron liquid.','warn-block'),
+               plain:`Ondansetron: tablet too large for this cat — use compounded liquid (target ${catTgt}mg)`};
+      }
+      const catParts=bestPills(catTgt,[{mg:4,unit:'tablet'}],true);
+      let catMg=0;if(catParts)catParts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)catMg+=parseFloat(m[1])*parseFloat(m[2]);});
+      const catWarn=checkRange(catMg,catTgt,catMax,catParts?catParts.join(' + '):'','Use compounded ondansetron liquid for small cats.');
+      if(catWarn)return catWarn;
+      return{html:blk('0.22mg/kg q12h',catMg+' mg',catParts?catParts.join(' + '):'',''),plain:`Ondansetron: ${catMg}mg PO q12h (${catParts?catParts.join(' + '):''})`};
+    }
+    // Dogs: 0.05–0.5mg/lb (0.1–1.0mg/kg) q12–24h
+    // Dogs: 0.1-1.0mg/kg q12h — flag immediately if 4mg tab exceeds max dose
+    const loMg=f(0.1*kg,2), hiMg=f(1.0*kg,2);
+    if(4>hiMg){
+      return{html:blk('Tablet too large','Safe range: '+loMg+'–'+hiMg+'mg','','Use compounded ondansetron liquid.','warn-block'),plain:`Ondansetron: tablet too large — use compounded liquid (${loMg}–${hiMg}mg)`};
+    }
+    const targetMg=f(0.5*kg,2);
+    const parts=bestPills(targetMg,[{mg:4,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    return{html:blk('0.1–1.0mg/kg — q12h',mg+' mg',parts?parts.join(' + '):'',''),plain:`Ondansetron: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // LACTULOSE
+  if(id==='lactulose'){
+    const ml=species==='cat'?'0.25–0.5':f(0.25*kg,1)+'–'+f(0.5*kg,1);
+    return{html:blk('0.25–0.5mL/kg q12h',ml+' mL','10g/15mL solution','Titrate to soft stool'),plain:`Lactulose: ${ml}mL PO q12h`};
+  }
+  // MIRTAZAPINE
+  if(id==='mirtazapine'){
+    if(species==='cat')return{html:blk('Mirataz Transdermal','0.1 mL','Apply to LEFT ear pinna (inner surface) q24h','1.88mg/0.1mL — wear gloves — alternate ears weekly'),plain:`Mirtazapine: Mirataz 0.1mL transdermal to left ear pinna (inner surface) q24h`};
+    // Dogs weight-band chart: <12lb=too small, 12-29lb=7.5mg SID, 30-75lb=15mg SID, >75lb=15mg BID or 30mg SID
+    if(lb<12){
+      return{html:blk('Too small','—','','Mirtazapine not recommended under 12 lbs. Consult veterinarian.','warn-block'),plain:'Mirtazapine: not recommended under 12 lbs'};
+    }
+    let mirtMg,mirtCombo,mirtFreq,mirtFreqP;
+    if(lb<=29)     {mirtMg=7.5; mirtCombo='0.5 × 15mg tablet'; mirtFreq='q24h (SID)'; mirtFreqP='q24h';}
+    else if(lb<=75){mirtMg=15;  mirtCombo='1 × 15mg tablet';   mirtFreq='q24h (SID)'; mirtFreqP='q24h';}
+    else           {mirtMg=15;  mirtCombo='1 × 15mg tablet';   mirtFreq='q12h BID or 30mg (2 tabs) q24h'; mirtFreqP='q12h BID or 30mg q24h';}
+    return{html:blk('Per weight chart — '+mirtFreq,mirtMg+' mg',mirtCombo,''),plain:`Mirtazapine: ${mirtMg}mg PO ${mirtFreqP} (${mirtCombo})`};
+  }
+  // ENTYCE
+  if(id==='entyce'){
+    const ml=f(3*kg/30,2);
+    return{html:blk('3mg/kg q24h — 30mg/mL',ml+' mL','','Shake well before use'),plain:`Entyce: ${ml}mL (30mg/mL) PO q24h`};
+  }
+  // SECNIDAZOLE
+  if(id==='secnidazole'){
+    const ml=f((40*kg)/150,1);
+    return{html:blk('30–50mg/kg',ml+' mL','150mg/mL susp','Single dose or q24h \u00d7 3 days'),plain:`Secnidazole: ${ml}mL (150mg/mL) PO — single dose or q24h \u00d7 3 days`};
+  }
+  // PONAZURIL
+  if(id==='ponazuril'){
+    // 227mg/mL, dosed at 0.1mL/lb
+    const ml=f(lb*0.1,2);
+    const mg=f(ml*227,0);
+    return{html:blk('0.1mL/lb — 227mg/mL',ml+' mL',mg+' mg','q24h × 1–3 days'),plain:`Ponazuril: ${ml}mL (227mg/mL, ${mg}mg) PO q24h × 1–3 days`};
+  }
+  // PREVICOX — per label weight chart (image)
+  if(id==='previcox'){
+    let dose,combo;
+    if(lb<12.5)  {dose=14.25;combo='0.25 × 57mg tablet';}
+    else if(lb<=18)  {dose=28.5; combo='0.5 × 57mg tablet';}
+    else if(lb<=35)  {dose=57;   combo='1 × 57mg tablet';}
+    else if(lb<=71)  {dose=113.5;combo='0.5 × 227mg tablet';}
+    else if(lb<=120) {dose=227;  combo='1 × 227mg tablet';}
+    else if(lb<=160) {dose=340.5;combo='1.5 × 227mg tablets';}
+    else             {dose=454;  combo='2 × 227mg tablets';}
+    return{html:blk('Per label chart — q24h',dose+' mg',combo,'5mg/kg COX-2 NSAID — give with food'),plain:`Previcox: ${dose}mg PO q24h (${combo})`};
+  }
+  // CARPROFEN injectable
+  if(id==='carprofen'){
+    const mg=f(4.4*kg,1);const vol=f(mg/50,2);
+    return{html:blk('4.4mg/kg SQ/IV — once',mg+' mg',vol+' mL of 50mg/mL','Peri-op single dose'),plain:`Carprofen: ${mg}mg (${vol}mL of 50mg/mL) SQ once`};
+  }
+  // TRAMADOL — cats: not applicable; dogs: threshold check
+  if(id==='tramadol'){
+    if(species==='cat'){
+      return{html:blk('Tablet too large for cats','Use buprenorphine SL or Zorbium transdermal instead.','','','warn-block'),plain:'Tramadol: not suitable for cats — use buprenorphine SL or Zorbium'};
+    }
+    const tramMin=f(2*kg,1), tramMax=f(5*kg,1);
+    const maxMg=5*kg;
+    if(maxMg<25){
+      return{html:blk('Tablet too large','Safe max: '+tramMax+'mg','','Use compounded tramadol liquid or buprenorphine.','warn-block'),plain:`Tramadol: 50mg tab too large for ${f(lb,1)} lb dog — use compounded liquid or buprenorphine`};
+    }
+    const mid=f(3.5*kg,1);
+    const parts=bestPills(mid,[{mg:50,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    const tramWarn=checkRange(mg,tramMin,tramMax,parts?parts.join(' + '):'','Use compounded tramadol liquid or buprenorphine.');
+    if(tramWarn)return tramWarn;
+    return{html:blk('2–5mg/kg q12h',mg+' mg',parts?parts.join(' + '):'','Tabs 50mg — no splitting'),plain:`Tramadol: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // BUPRENORPHINE — volume first, mg detail below; BID
+  if(id==='buprenorphine'){
+    const lo=f(0.01*kg,3),hi=f(0.03*kg,3);
+    const loV=f(lo/0.3,3),hiV=f(hi/0.3,3);
+    return{html:blk('SL/SQ — 0.3mg/mL — q12h',loV+'–'+hiV+' mL','0.01–0.03mg/kg → '+lo+'–'+hi+'mg','DEA Schedule III — log required'),plain:`Buprenorphine: ${loV}–${hiV}mL (0.3mg/mL, ${lo}–${hi}mg) SL/SQ q12h`};
+  }
+  // BUPRENORPHINE SR — volume prominent, mg detail below
+  if(id==='bupsr'){
+    const lo=f(0.1*kg,2),hi=f(0.2*kg,2);
+    const loV=f(lo/3,3),hiV=f(hi/3,3);
+    return{html:blk('SQ — 3mg/mL — single dose',loV+'–'+hiV+' mL','0.1–0.2mg/kg → '+lo+'–'+hi+'mg','24–72 hr duration — DEA Schedule III'),plain:`Buprenorphine SR: ${loV}–${hiV}mL (3mg/mL, ${lo}–${hi}mg) SQ once`};
+  }
+  // ZORBIUM
+  if(id==='zorbium'){
+    const r=zorbiumDose(lb);
+    if(!r)return{html:blk('Weight out of range','—','','2.6–16.5 lbs only','warn-block'),plain:''};
+    return{html:blk('Transdermal — per weight',r.ml+' mL','Apply to back of neck at base of skull','20mg/mL — lasts ~4 days — DEA Schedule III'),plain:`Zorbium: ${r.ml}mL transdermal to back of neck (base of skull), lasts ~4 days`};
+  }
+  // METHOCARBAMOL
+  if(id==='methocarbamol'){
+    const maxMg=45*kg;
+    if(maxMg<375){
+      return{html:blk('Tablet too large','Safe max: '+f(maxMg,0)+'mg','','Use injectable methocarbamol or consult vet.','warn-block'),plain:`Methocarbamol: 750mg tab too large for this ${species} — use injectable`};
+    }
+    const mid=32*kg;
+    const parts=bestPills(mid,[{mg:750,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    return{html:blk('20–45mg/kg q12h',mg+' mg',parts?parts.join(' + '):'',''),plain:`Methocarbamol: ${mg}mg PO q12h (${parts?parts.join(' + '):''})`};
+  }
+  // PREDNISONE (dogs only)
+  if(id==='prednisone'){
+    const loMg=f(0.5*kg,1), hiMg=f(1.0*kg,1);
+    // Solve against low end of range — any combo at or above minimum is valid;
+    // bestPillsHalf then picks the fewest/simplest tablets naturally.
+    const parts=bestPillsHalf(loMg,[{mg:20,unit:'tablet'},{mg:10,unit:'tablet'},{mg:5,unit:'tablet'}]);
+    return{html:blk('0.5–1mg/kg q24h',loMg+'–'+hiMg+' mg',parts?parts.join(' + '):'','Tablets can be split. Immunosuppression: 1–2mg/kg/day; taper > 2 wks'),plain:`Prednisone: ${loMg}–${hiMg}mg PO q24h (${parts?parts.join(' + '):''})`};
+  }
+  // PREDNISOLONE liquid (cats only)
+  if(id==='prednisolone'){
+    // 15mg/5mL = 3mg/mL
+    const loMl=f(1*kg/3,1), hiMl=f(2*kg/3,1);
+    const loMg=f(1*kg,1), hiMg=f(2*kg,1);
+    return{html:blk('1–2mg/kg q24h — 15mg/5mL',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg — taper > 2 wks',''),plain:`Prednisolone: ${loMl}–${hiMl}mL (${loMg}–${hiMg}mg of 15mg/5mL) PO q24h`};
+  }
+  // DEXAMETHASONE
+  if(id==='dex'){
+    const ml=f(0.5*kg/2,2);
+    return{html:blk('0.5mg/kg — 2mg/mL',ml+' mL','',''),plain:`Dexamethasone: ${ml}mL SQ/IV (2mg/mL, ${f(0.5*kg,1)}mg)`};
+  }
+  // DEX SP
+  if(id==='dexsp'){
+    const ml=f(0.15*kg/4,2);
+    return{html:blk('0.15mg/kg — 4mg/mL',ml+' mL','',''),plain:`Dexamethasone SP: ${ml}mL SQ/IV (4mg/mL, ${f(0.15*kg,1)}mg)`};
+  }
+  // DIAZEPAM
+  if(id==='diazepam'){
+    const lo=f(0.25*kg,2),hi=f(0.5*kg,2);
+    const loV=f(lo/5,2),hiV=f(hi/5,2);
+    return{html:blk('0.25–0.5mg/kg — 5mg/mL',lo+'–'+hi+' mg',loV+'–'+hiV+' mL','Seizure: 0.5mg/kg IV or rectal — DEA Sch IV'),plain:`Diazepam: ${lo}–${hi}mg (${loV}–${hiV}mL of 5mg/mL) IV/rectal`};
+  }
+  // CLONIDINE
+  if(id==='clonidine'){
+    const lo=f(0.01*kg,3),hi=f(0.05*kg,3);
+    return{html:blk('0.01–0.05mg/kg q12h',lo+'–'+hi+' mg','Compounded','1–2 hrs before stressor'),plain:`Clonidine: ${lo}–${hi}mg PO q12h (compounded)`};
+  }
+  // DEPOMEDROL — cats only, 20mg/mL SQ/IM
+  if(id==='depomedrol'){
+    const loMg=f(1*kg,2), hiMg=f(2*kg,2);
+    const loMl=f(loMg/20,2), hiMl=f(hiMg/20,2);
+    return{html:blk('1–2mg/kg SQ/IM — 20mg/mL',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','Shake well — duration 2–8 weeks — cannot be reversed if adverse reaction'),plain:`Depo-Medrol: ${loMl}–${hiMl}mL SQ/IM (20mg/mL, ${loMg}–${hiMg}mg)`};
+  }
+  // DIPHENHYDRAMINE — multi: tablet PO + injectable IM/SQ
+  if(id==='diphenhydramine'){
+    const loMg=f(2*kg,1), hiMg=f(4*kg,1), midMg=f(3*kg,1);
+    const loMl=f(loMg/50,2), hiMl=f(hiMg/50,2);
+    const injH=blk('Injectable IM/SQ — 50mg/mL',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','2–4mg/kg q8–12h');
+    const injP=`Diphenhydramine injectable: ${loMl}–${hiMl}mL IM/SQ (50mg/mL, ${loMg}–${hiMg}mg)`;
+
+    // Cats: injectable only — no tablet
+    if(species==='cat'){
+      const catPoH=blk('Injectable only for cats','Use SQ/IM injection','','Tablets not recommended for cats — use 50mg/mL injectable','warn-block');
+      const catPoP='Diphenhydramine: tablet not recommended for cats — use injectable';
+      return{opts:{po:{html:catPoH,plain:catPoP},inj:{html:injH,plain:injP}}};
+    }
+
+    // Dogs: try half-tabs; if result falls outside 2–4mg/kg range → redirect to injectable
+    const parts=bestPillsHalf(loMg,[{mg:25,unit:'tablet'}]);
+    let tabMg=0;
+    if(parts)parts.forEach(p=>{const m=p.match(/([\d.]+)\s*×\s*([\d.]+)mg/);if(m)tabMg+=parseFloat(m[1])*parseFloat(m[2]);});
+    let poH, poP;
+    if(!parts||tabMg<loMg||tabMg>hiMg){
+      poH=blk('Tablet out of range','Use injectable instead',loMg+'–'+hiMg+' mg needed','25mg tablet cannot be split to fit this weight — use 50mg/mL injectable','warn-block');
+      poP=`Diphenhydramine: tablet out of range for this weight — use injectable (${loMg}–${hiMg}mg needed)`;
+    } else {
+      poH=blk('Tablet PO — 2–4mg/kg',tabMg+' mg',parts.join(' + '),'q8–12h — plain formulation only, no decongestants — tablets can be split');
+      poP=`Diphenhydramine: ${tabMg}mg PO q8–12h (${parts.join(' + ')})`;
+    }
+    return{opts:{po:{html:poH,plain:poP},inj:{html:injH,plain:injP}}};
+  }
+  // PENTOXIFYLLINE — liquid for cats + small dogs, tablet for larger dogs
+  if(id==='pentoxifylline'){
+    // Per weight chart — suspension for <30lb, tablets for larger dogs
+    let pentoMl=null,pentoMg=null,pentoCombo=null,pentoForm;
+    if(lb<5){
+      return{html:blk('Below minimum weight','—','','Under 5 lbs — consult veterinarian.','warn-block'),plain:'Pentoxifylline: below minimum weight'};
+    } else if(lb<=10){
+      pentoMl=f(lb*0.06,2); pentoMg=Math.round(lb*7); pentoForm='susp';
+    } else if(lb<=15){
+      pentoMl=f(lb*0.053,2); pentoMg=Math.round(lb*6.7); pentoForm='susp';
+    } else if(lb<=20){
+      pentoMl=f(lb*0.055,2); pentoMg=Math.round(lb*6.75); pentoForm='susp';
+    } else if(lb<=30){
+      pentoMl=f(lb*0.055,2); pentoMg=Math.round(lb*6.75); pentoCombo='½ tab (200mg) option'; pentoForm='susp';
+    } else if(lb<=40){
+      pentoMg=200; pentoCombo='0.5 × 400mg tablet'; pentoForm='tab';
+    } else if(lb<=60){
+      pentoMg=400; pentoCombo='1 × 400mg tablet'; pentoForm='tab';
+    } else if(lb<=80){
+      pentoMg=400; pentoCombo='1 × 400mg tablet (up to 1.5 tabs if needed)'; pentoForm='tab';
+    } else if(lb<=100){
+      pentoMg=600; pentoCombo='1.5 × 400mg tablets'; pentoForm='tab';
+    } else {
+      pentoMg=800; pentoCombo='2 × 400mg tablets'; pentoForm='tab';
+    }
+    if(pentoForm==='susp'){
+      return{html:blk('Oral susp — 125mg/mL',pentoMl+' mL',pentoMg+'mg'+(pentoCombo?' • '+pentoCombo:''),'q12h'),
+             plain:`Pentoxifylline: ${pentoMl}mL (125mg/mL susp, ~${pentoMg}mg) PO q12h`};
+    } else {
+      return{html:blk('Tablet — q12h',pentoMg+' mg',pentoCombo,'Tabs can be halved'),
+             plain:`Pentoxifylline: ${pentoMg}mg PO q12h (${pentoCombo})`};
+    }
+  }
+  // TEMARIL-P
+  if(id==='temarilp'){
+    const {init,half}=temarilDose(lb);
+    const detail='Each tab = 5mg trimeprazine + 2mg prednisolone';
+    const taper='Phase 1 (days 1–4): '+init+' q12h • Phase 2 (days 5–8): '+half+' q24h • Phase 3: '+half+' every other day';
+    return{
+      html:blk('Per label chart',init+' BID × 4 days',detail,'Then: '+half+' SID × 4 days → then '+half+' EOD'),
+      plain:'Temaril-P: '+init+' BID x 4 days, then '+half+' SID x 4 days, then '+half+' EOD'
+    };
+  }
+  // SELAMECTIN
+  if(id==='selamectin'){
+    const vol=species==='dog'?selaDog(lb):selaCat(lb);
+    return{html:blk('120mg/mL — monthly',vol+' mL','Apply to back of neck',''),plain:`Selamectin: ${vol}mL topical monthly (back of neck)`};
+  }
+  // STRONGID
+  if(id==='strongid'){
+    const r=strongid(lb);
+    return{html:blk('1mL per 5 lbs — round UP',r.ml+' mL','','Rounded to '+r.rounded+' lbs'),plain:`Pyrantel pamoate: ${r.ml}mL PO`};
+  }
+  // FENBENDAZOLE
+  if(id==='fenbendazole'){
+    const dMg=species==='dog'?50*kg:30*kg;
+    const ml=f(dMg/100,1);
+    const rate=species==='dog'?'50mg/kg (dogs)':'30mg/kg (cats)';
+    return{html:blk(rate+' q24h — Panacur 100mg/mL',ml+' mL','','\u00d7 3–5 days with food • Giardia: 5-day course'),plain:`Fenbendazole (Panacur): ${ml}mL (100mg/mL) PO q24h \u00d7 3–5 days`};
+  }
+  // DRONCIT
+  if(id==='droncit'){
+    const mid=6.25*kg;
+    const parts=bestPillsHalf(mid,[{mg:34,unit:'tablet'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/([\d.]+)\s*×\s*([\d.]+)mg/);if(m)mg+=parseFloat(m[1])*parseFloat(m[2]);});
+    return{html:blk('5–7.5mg/kg — single dose',f(mg,1)+' mg',parts?parts.join(' + '):'',''),plain:`Praziquantel: ${f(mg,1)}mg PO single dose (${parts?parts.join(' + '):''})`};
+  }
+  // CAPSTAR
+  if(id==='capstar'){
+    const r=capstarDose(lb);
+    if(!r)return{html:blk('Too small','< 2 lbs','','Not approved under 2 lbs','warn-block'),plain:''};
+    return{html:blk('Single dose — immediate flea kill',r.mg+' mg',r.combo,'Kills adult fleas within 30 min — can redose q24h'),plain:`Capstar: ${r.mg}mg PO once (${r.combo})`};
+  }
+  // IVERMECTIN
+  if(id==='ivermectin'){
+    const ml=f(0.3*kg/10,2);
+    return{html:blk('0.2–0.4mg/kg SQ',ml+' mL','1% = 10mg/mL','⚠ CONTRAINDICATED in MDR1/ABCB1 breeds','warn-block'),plain:`Ivermectin: ${ml}mL SQ (1%, 0.3mg/kg) — verify breed safety`};
+  }
+  // ITRACONAZOLE
+  if(id==='itraconazole'){
+    const ml=f(5*kg/10,2);
+    return{html:blk('5mg/kg q24h — 10mg/mL',ml+' mL','','Pulse: 1 wk on / 1 wk off for ringworm'),plain:`Itraconazole: ${ml}mL (10mg/mL) PO q24h`};
+  }
+  // KETOCONAZOLE
+  if(id==='ketoconazole'){
+    const ketoMin=f(5*kg,1), ketoMax=f(10*kg,1);
+    const mid=7.5*kg;
+    const parts=bestPills(mid,[{mg:200,unit:'tablet'}],true);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)mg+=parseFloat(m[1])*parseFloat(m[2]);});
+    const ketoWarn=checkRange(mg,ketoMin,ketoMax,parts?parts.join(' + '):'','Use compounded ketoconazole suspension or itraconazole.');
+    if(ketoWarn)return ketoWarn;
+    return{html:blk('5–10mg/kg q12–24h',mg+' mg',parts?parts.join(' + '):'','Give with food'),plain:`Ketoconazole: ${mg}mg PO q12–24h (${parts?parts.join(' + '):''})`};
+  }
+  // APOQUEL
+  if(id==='apoquel'){
+    if(lb<6.6)return{html:blk('Below minimum','< 6.6 lbs','','Not approved < 6.6 lbs','warn-block'),plain:''};
+    const r=apoquelDose(lb);
+    if(!r)return{html:`<p class="na-msg">Weight out of range</p>`,plain:''};
+    return{html:blk('Per label chart — q12h \u00d7 14d then q24h',r.mg+' mg',r.combo,''),plain:`Apoquel: ${r.mg}mg PO q12h \u00d7 14 days then q24h (${r.combo})`};
+  }
+  // CYTOPOINT
+  if(id==='cytopoint'){
+    const loMg=f(2*kg,1), hiMg=f(3*kg,1);
+    // Vials: 10, 20, 30, 40mg — pick smallest combination >= loMg
+    const parts=bestPills(loMg,[{mg:40,unit:'vial'},{mg:30,unit:'vial'},{mg:20,unit:'vial'},{mg:10,unit:'vial'}]);
+    let mg=0;if(parts)parts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseInt(m[1])*parseInt(m[2]);});
+    return{html:blk('2–3mg/kg SQ — once monthly',loMg+'–'+hiMg+' mg',parts?parts.join(' + '):'',''),plain:`Cytopoint: ${loMg}–${hiMg}mg (${parts?parts.join(' + '):''}) SQ once monthly`};
+  }
+  // VITAMIN K1
+  if(id==='cytopoint'){
+    // Weight-band dosing: 1-2 mg/kg SQ monthly
+    // Vials: 10mg/mL (small) and 40mg/mL (large)
+    const loMg=f(1*kg,1), hiMg=f(2*kg,1);
+    const conc=kg<=10?10:40;
+    const loMl=f(loMg/conc,2), hiMl=f(hiMg/conc,2);
+    return{html:blk('1–2mg/kg SQ — monthly',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg • '+conc+'mg/mL vial','Duration 4–8 weeks'),plain:`Cytopoint: ${loMl}–${hiMl}mL (${loMg}–${hiMg}mg, ${conc}mg/mL) SQ monthly`};
+  }
+  if(id==='vitk1'){
+    const lo=f(2.5*kg,1),hi=f(5*kg,1);
+    return{html:blk('2.5–5mg/kg q12h',lo+'–'+hi+' mg','','SQ first dose (NOT IV), then oral \u00d7 4 weeks with fatty food'),plain:`Vitamin K1: ${lo}–${hi}mg PO/SQ q12h \u00d7 4 weeks`};
+  }
+  // MANNITOL
+  if(id==='mannitol'){
+    const lo=f(0.25*kg,1),hi=f(1*kg,1);const mlLo=f(lo/0.2,1),mlHi=f(hi/0.2,1);
+    return{html:blk('0.25–1g/kg IV over 15–20 min',lo+'–'+hi+' g',mlLo+'–'+mlHi+' mL of 20%','Fresh solution only'),plain:`Mannitol: ${lo}–${hi}g IV over 15–20 min (${mlLo}–${mlHi}mL of 20%)`};
+  }
+  // OXYTOCIN
+  if(id==='oxytocin'){
+    const loIU=f(0.5*kg,1),hiIU=f(2*kg,1);
+    const loMl=f(loIU/10,2),hiMl=f(hiIU/10,2);
+    return{html:blk('0.5–2 IU/kg SQ/IM — 10 IU/mL',loMl+'–'+hiMl+' mL',loIU+'–'+hiIU+' IU','Max \u00d73 q30min — rule out obstruction first'),plain:`Oxytocin: ${loMl}–${hiMl}mL SQ/IM (10 IU/mL, ${loIU}–${hiIU} IU)`};
+  }
+  // DOPRAM
+  if(id==='dopram'){
+    return{html:blk('Neonatal SL','1–2 drops','Under tongue at birth','IV: 5–10mg/kg if needed'),plain:'Doxapram: 1–2 drops SL under tongue at birth'};
+  }
+
+  return{html:`<p class="no-weight-msg">See notes</p>`,plain:''};
+}
+
+// ── COPY BAR ─────────────────────────────────
+function updateCopyBar(){
+  const bar=document.getElementById('copyBar');
+  const txt=document.getElementById('copyText');
+  const clinicalLines=getClinicalLines();
+  const completeLines=clinicalLines.filter(l=>l.text);
+  const hasClinical=completeLines.length>0;
+  const hasAny=clinicalLines.length>0;
+  const hasMeds=selectedMeds.size>0;
+  if(!hasClinical&&!hasMeds){bar.classList.add('hidden');return;}
+  bar.classList.remove('hidden');
+  const kg=getKg();
+  const lines=[];
+
+  // ── Clinical findings first ──
+  if(hasClinical){
+    completeLines.forEach(l=>lines.push(l.text));
+    const footer=getFooterLine();
+    if(footer){ lines.push(''); lines.push(footer); }
+    if(hasMeds) lines.push('');
+  }
+
+  // ── Medication lines ──
+  if(hasMeds)lines.push('Medications Started:');
+  DRUGS.forEach(drug=>{
+    if(!selectedMeds.has(drug.id))return;
+    const opts=selectedMeds.get(drug.id);
+    if(drug.type==='multi'){
+      const result=calcDose(drug,kg);
+      opts.forEach(optKey=>{
+        const o=result.opts&&result.opts[optKey];
+        if(o&&o.plain)lines.push(o.plain);
+        else if(!kg){const lbl=drug.options?drug.options.find(x=>x.key===optKey):'';lines.push(drug.name+(lbl?' ('+lbl.label+')':'')+': [enter weight]');}
+      });
+    }else{
+      const result=calcDose(drug,kg);
+      if(result.plain){
+        const needsName=drug.type==='topical'||!result.plain.toLowerCase().startsWith(drug.name.toLowerCase().split(' ')[0].toLowerCase());
+        lines.push(needsName?drug.name+': '+result.plain:result.plain);
+      }
+      else if(!kg)lines.push(drug.name+': [enter weight to calculate]');
+    }
+  });
+  txt.textContent=lines.length?lines.join('\n'):'Select medications above…';
+}
+function copyToClipboard(){
+  const txt=document.getElementById('copyText').textContent;
+  if(!txt.trim())return;
+  const flash=()=>{const fl=document.getElementById('copiedFlash');fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),2000);};
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(flash).catch(()=>fallbackCopy(txt,flash));
+  } else {
+    fallbackCopy(txt,flash);
+  }
+}
+function selectCopyText(){
+  const el=document.getElementById('copyText');
+  if(!el||!el.textContent.trim())return;
+  if(window.getSelection&&document.createRange){
+    const range=document.createRange();
+    range.selectNodeContents(el);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  copyToClipboard();
+}
+function fallbackCopy(txt,flash){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');flash();}catch(e){}
+  document.body.removeChild(ta);
+}
+function clearAll(){
+  selectedMeds.clear();
+  document.querySelectorAll('.drug-checkbox.checked,.opt-cb.checked').forEach(el=>el.classList.remove('checked'));
+  document.querySelectorAll('.drug-card.selected').forEach(el=>el.classList.remove('selected'));
+  clearClinical();
+  document.getElementById('copyBar').classList.add('hidden');
+}
+
+// ── RENDER ───────────────────────────────────
+function buildTabs(){
+  const el=document.getElementById('tabs');el.innerHTML='';
+  SECTIONS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='sec-btn'+(s===activeSection?' active':'');
+    b.textContent=s;
+    b.onclick=()=>{activeSection=s;buildTabs();render();};
+    el.appendChild(b);
+  });
+}
+
+function makeCard(drug,kg,lb){
+  const ok=drug.species.includes(species);
+  const card=document.createElement('div');
+  card.className='drug-card'+(ok?'':' na-card')+(isAnySelected(drug.id)?' selected':'');
+  card.dataset.id=drug.id;
+
+  const warn=ok&&species==='cat'&&drug.catWarning?`<div class="cat-warn">${drug.catWarning}</div>`:'';
+
+  let checkHtml='',doseHtml='';
+
+  if(!ok){
+    checkHtml='';
+    doseHtml=`<p class="na-msg">Not indicated for ${species}s</p>`;
+  } else if(drug.type==='multi'){
+    // Each option gets its own checkbox row + dose block
+    const result=calcDose(drug,kg);
+    doseHtml=drug.options.map(opt=>{
+      const isChk=isOptSelected(drug.id,opt.key);
+      const od=result.opts&&result.opts[opt.key];
+      const isWarn=od&&od.warn;
+      return `<div style="margin-bottom:7px;">
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:4px;" onclick="toggleOpt('${drug.id}','${opt.key}')">
+          <div class="opt-cb${isChk?' checked':''}" data-opt="${opt.key}"></div>
+          <span class="opt-label" style="${isWarn?'color:var(--amber);font-weight:600;':''}">${opt.label}${isWarn?' ⚠️ Tablet too large':''}</span>
+        </div>
+        <div style="padding-left:24px;">${od?od.html:(kg?'':'<p class="no-weight-msg">Enter weight</p>')}</div>
+      </div>`;
+    }).join('');
+  } else {
+    const isChk=isAnySelected(drug.id);
+    checkHtml=`<div class="drug-checkbox${isChk?' checked':''}" onclick="toggleSingle('${drug.id}')"></div>`;
+    const result=calcDose(drug,kg);
+    doseHtml=result.html||'';
+  }
+
+  card.innerHTML=`
+    <div class="card-top">
+      <div class="card-top-left">
+        ${checkHtml}
+        <div><div class="drug-name">${drug.name}</div><div class="drug-alias">${drug.alias}</div></div>
+      </div>
+      <span class="route-pill">${drug.route}</span>
+    </div>
+    <div class="drug-use">${drug.use}</div>
+    <hr class="divider">
+    ${doseHtml}
+    ${warn}
+    <div class="divider"></div>
+    <div class="drug-note">${drug.note}</div>
+  `;
+  return card;
+}
+
+function render(){
+  const kg=getKg(), lb=kg?kg*2.2046:null;
+  const grid=document.getElementById('grid');grid.innerHTML='';
+  const seen=new Set();
+  DRUGS.forEach(drug=>{
+    if(seen.has(drug.id))return;seen.add(drug.id);
+    const inSec=activeSection==='All'||drug.sections.some(s=>s===activeSection);
+    if(!inSec)return;
+    grid.appendChild(makeCard(drug,kg,lb));
+  });
+  if(!grid.children.length)grid.innerHTML=`<div class="empty-state">No medications in this category.</div>`;
+  updateCopyBar();
+}
+
+// ── CLINICAL MODULE ───────────────────────────
+function setRole(r){
+  clinicalRole=r;
+  document.getElementById('roleTechBtn').className='role-btn'+(r==='tech'?' active':'');
+  document.getElementById('roleVetBtn').className='role-btn'+(r==='vet'?' vet-active':'');
+  const footerRow=document.getElementById('clinicalFooterRow');
+  if(r==='vet'){
+    footerOpt='none';
+    if(footerRow) footerRow.style.display='none';
+    updateFooterBtns();
+  } else {
+    if(footerRow&&selectedSymptoms.size>0) footerRow.style.display='block';
+  }
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function setFooterOpt(opt){
+  footerOpt=opt;
+  updateFooterBtns();
+  renderClinicalPreview();
+  updateCopyBar();
+}
+function updateFooterBtns(){
+  ['none','discuss','proto','eval'].forEach(o=>{
+    const btn=document.getElementById('fopt_'+o);
+    if(btn) btn.classList.toggle('active', o===footerOpt);
+  });
+}
+
+function toggleClinical(){
+  const body=document.getElementById('clinicalBody');
+  const chev=document.getElementById('clinicalChevron');
+  const open=body.classList.toggle('open');
+  chev.classList.toggle('open',open);
+}
+
+function toggleCatBlock(catKey){
+  catOpenState[catKey]=!catOpenState[catKey];
+  const safeKey=catKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const body=document.getElementById('catbody_'+safeKey);
+  const chev=document.getElementById('catchev_'+safeKey);
+  if(body)body.classList.toggle('open',catOpenState[catKey]);
+  if(chev)chev.classList.toggle('open',catOpenState[catKey]);
+}
+
+function toggleSymptom(symKey){
+  const safeSymKey=symKey.replace(/[^a-zA-Z0-9]/g,'_');
+  if(selectedSymptoms.has(symKey)){
+    selectedSymptoms.delete(symKey);
+    lateralityState.delete(safeSymKey);
+  } else {
+    selectedSymptoms.add(symKey);
+  }
+  const cb=document.getElementById('symcb_'+safeSymKey);
+  if(cb)cb.classList.toggle('checked',selectedSymptoms.has(symKey));
+  const lat=document.getElementById('lat_'+safeSymKey);
+  if(lat){
+    lat.classList.toggle('show',selectedSymptoms.has(symKey));
+    if(!selectedSymptoms.has(symKey)){
+      const sel=lat.querySelector('select');
+      if(sel){sel.value='';sel.style.borderColor='';}
+    }
+  }
+  document.getElementById('clinicalFooterRow').style.display=clinicalRole==='tech'&&selectedSymptoms.size>0?'block':'none';
+  if(selectedSymptoms.size===0){footerOpt='none';updateFooterBtns();}
+  updateClinicalBadge();
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function setLocation(symKey, val){
+  if(val) lateralityState.set(symKey, val);
+  else lateralityState.delete(symKey);
+  const safeKey=symKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const sel=document.getElementById('locsel_'+safeKey);
+  if(sel) sel.style.borderColor=val?'var(--teal)':'';
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function updateClinicalBadge(){
+  const n=selectedSymptoms.size;
+  const badge=document.getElementById('clinicalBadge');
+  const sub=document.getElementById('clinicalSubtitle');
+  if(n===0){
+    badge.style.display='none';
+    sub.textContent='Select role, then check symptoms to add to notes';
+  }else{
+    badge.style.display='';
+    badge.textContent=n+' selected';
+    // Summarize selected labels
+    const labels=[];
+    selectedSymptoms.forEach(k=>{
+      const item=getItemFromKey(k);
+      if(item)labels.push(item.label);
+    });
+    sub.textContent=labels.slice(0,2).join(', ')+(labels.length>2?' +' +(labels.length-2)+' more':'');
+  }
+}
+
+function getItemFromKey(k){
+  const [catKey,idx]=k.split('|||');
+  const cat=CLINICAL[catKey];
+  if(!cat)return null;
+  const items=cat.items.filter(x=>!x.group);
+  return items[parseInt(idx)]||null;
+}
+
+function resolveLocation(text, symKey){
+  const safeSymKey=symKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const loc=lateralityState.get(safeSymKey);
+  if(!loc) return null;
+  return text.replace(/\{location\}/g, loc);
+}
+
+function buildClinicalText(item, symKey){
+  const base=clinicalRole==='vet'?item.vetText:item.techText;
+  let text=item.locations?resolveLocation(base,symKey):base;
+  if(!text) return null;
+  if(clinicalRole==='vet'&&item.ddx) return text+' DDx: '+item.ddx+'.';
+  return text;
+}
+
+function getFooterLine(){
+  const map={
+    discuss: 'Findings and treatment plan discussed with attending veterinarian.',
+    proto:   'Treatment initiated per shelter protocol.',
+    eval:    'Veterinarian evaluation recommended.',
+    none:    null,
+  };
+  return map[footerOpt]||null;
+}
+
+function getClinicalLines(){
+  const out=[];
+  selectedSymptoms.forEach(k=>{
+    const item=getItemFromKey(k);
+    if(!item) return;
+    const safeK=k.replace(/[^a-zA-Z0-9]/g,'_');
+    const needsLocation=!!(item.locations);
+    const hasLocation=needsLocation?!!lateralityState.get(safeK):true;
+    const text=hasLocation?buildClinicalText(item,k):null;
+    out.push({text, needsLocation, hasLocation, label:item.label});
+  });
+  return out;
+}
+
+function renderClinicalPreview(){
+  if(selectedSymptoms.size===0){
+    document.getElementById('clinicalPreview').classList.remove('show');
+    return;
+  }
+  const lines=getClinicalLines();
+  const footer=getFooterLine();
+  document.getElementById('clinicalPreview').classList.add('show');
+  const html=lines.map(l=>{
+    if(!l.hasLocation) return `<div class="clinical-preview-line incomplete">⚠ Select a location for: ${l.label}</div>`;
+    return `<div class="clinical-preview-line">${l.text}</div>`;
+  }).join('');
+  const footerHtml=footer?`<div class="clinical-preview-line" style="border-left:3px solid var(--amber);background:rgba(245,158,11,.08);font-style:italic;">${footer}</div>`:'';
+  document.getElementById('clinicalPreviewLines').innerHTML=html+footerHtml;
+}
+
+
+
+function clearClinical(e){
+  if(e)e.stopPropagation();
+  selectedSymptoms.clear();
+  lateralityState.clear();
+  footerOpt='none';
+  updateFooterBtns();
+  document.querySelectorAll('.sym-cb').forEach(el=>el.classList.remove('checked'));
+  document.querySelectorAll('.lat-toggle').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.lat-toggle select').forEach(el=>{el.value='';el.style.borderColor='';});
+  document.getElementById('clinicalFooterRow').style.display='none';
+  updateClinicalBadge();
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function initClinical(){
+  const acc=document.getElementById('catAccordion');
+  acc.innerHTML='';
+  Object.keys(CLINICAL).forEach(catKey=>{
+    catOpenState[catKey]=false;
+    const safeKey=catKey.replace(/[^a-zA-Z0-9]/g,'_');
+    const allItems=CLINICAL[catKey].items;
+    const realItems=allItems.filter(x=>!x.group);
+
+    const block=document.createElement('div');
+    block.className='cat-block';
+
+    // Header
+    const hdr=document.createElement('div');
+    hdr.className='cat-block-header';
+    hdr.setAttribute('onclick',`toggleCatBlock(${JSON.stringify(catKey)})`);
+    hdr.innerHTML=`<span class="cat-block-title">${catKey}</span>
+      <div class="cat-block-meta">
+        <span class="cat-count" id="catcount_${safeKey}" style="display:none">0</span>
+        <svg class="cat-chev" id="catchev_${safeKey}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>`;
+
+    // Body
+    const body=document.createElement('div');
+    body.className='cat-block-body';
+    body.id='catbody_'+safeKey;
+
+    // Build items — track real item index separately from all items
+    let realIdx=0;
+    allItems.forEach(item=>{
+      if(item.group){
+        const gl=document.createElement('div');
+        gl.className=item.major?'symptom-group-major':'symptom-group-label';
+        gl.textContent=item.group;
+        body.appendChild(gl);
+        return;
+      }
+      const symKey=catKey+'|||'+realIdx;
+      const safeSymKey=symKey.replace(/[^a-zA-Z0-9]/g,'_');
+      safeToSymKey.set(safeSymKey, symKey);
+      const row=document.createElement('div');
+      row.className='symptom-row';
+      row.setAttribute('onclick',`toggleSymptom(${JSON.stringify(symKey)})`);
+      const hasDdx=!!item.ddx;
+      const locOptions=item.locations||null;
+      const latHtml=locOptions?`
+        <div class="lat-toggle" id="lat_${safeSymKey}" onclick="event.stopPropagation()">
+          <select class="clinical-select" id="locsel_${safeSymKey}" data-symkey="${safeSymKey}" style="font-size:11px;padding:3px 24px 3px 7px;flex:none;width:auto;min-width:140px;"
+            onchange="setLocation(this.dataset.symkey,this.value)">
+            <option value="">— select location —</option>
+            ${locOptions.map(o=>`<option value="${o}">${o}</option>`).join('')}
+          </select>
+        </div>`:'';
+      row.innerHTML=`<div class="sym-cb" id="symcb_${safeSymKey}"></div>
+        <div style="flex:1">
+          <div class="sym-label">${item.label}${hasDdx?'<span class="ddx-tag" id="ddxtag_'+safeSymKey+'">DDx</span>':''}</div>
+          ${item.sub?`<div class="sym-label-sub">${item.sub}</div>`:''}
+          ${latHtml}
+        </div>`;
+      body.appendChild(row);
+      realIdx++;
+    });
+
+    block.appendChild(hdr);
+    block.appendChild(body);
+    acc.appendChild(block);
+  });
+
+  // Hide DDx tags in tech mode initially (they're in vet mode only visually)
+  updateDdxTags();
+}
+
+function updateDdxTags(){
+  document.querySelectorAll('.ddx-tag').forEach(el=>{
+    el.style.display=clinicalRole==='vet'?'':'none';
+  });
+}
+
+// Override setRole to also update DDx tags
+const _origSetRole=setRole;
+
+function init(){
+  buildTabs();
+  initClinical();
+  render();
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+// ── SERVICE WORKER REGISTRATION ──────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js')
+      .catch(err=>console.log('SW registration failed (normal for local file):', err));
+  });
+}
+</script>
+</body>
+</html>
