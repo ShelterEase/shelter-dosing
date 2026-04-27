@@ -2172,7 +2172,7 @@ function setRole(r){
     if(footerRow) footerRow.style.display='none';
     updateFooterBtns();
   } else {
-    if(footerRow&&selectedSymptoms.size>0) footerRow.style.display='block';
+    if(footerRow&&hasAnyFindings()) footerRow.style.display='block';
   }
   renderClinicalPreview();
   updateCopyBar();
@@ -2225,8 +2225,8 @@ function toggleSymptom(symKey){
       if(sel){sel.value='';sel.style.borderColor='';}
     }
   }
-  document.getElementById('clinicalFooterRow').style.display=clinicalRole==='tech'&&selectedSymptoms.size>0?'block':'none';
-  if(selectedSymptoms.size===0){footerOpt='none';updateFooterBtns();}
+  document.getElementById('clinicalFooterRow').style.display=clinicalRole==='tech'&&hasAnyFindings()?'block':'none';
+  if(selectedSymptoms.size===0&&!getCustomFindings()){footerOpt='none';updateFooterBtns();}
   updateClinicalBadge();
   renderClinicalPreview();
   updateCopyBar();
@@ -2295,7 +2295,14 @@ function getFooterLine(){
   return map[footerOpt]||null;
 }
 
+function hasAnyFindings(){
+  return selectedSymptoms.size>0 || !!(getCustomFindings());
+}
+
 function onCustomFindingsChange(){
+  // Show/hide footer row based on whether anything is entered
+  const footerRow=document.getElementById('clinicalFooterRow');
+  if(footerRow) footerRow.style.display=clinicalRole==='tech'&&hasAnyFindings()?'block':'none';
   renderClinicalPreview();
   updateCopyBar();
 }
