@@ -146,7 +146,12 @@
   .sym-label-sub{font-size:11px;color:var(--text3);margin-top:1px;}
   /* Vet-only DDx badge on symptom */
   .ddx-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;background:rgba(13,126,107,.1);color:var(--teal);border:1px solid var(--teal-mid);margin-left:5px;vertical-align:middle;white-space:nowrap;}
-  /* Footer disposition row (tech mode) */
+  /* Custom free-text findings */
+  .custom-findings-row{margin-top:10px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);}
+  .custom-findings-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;}
+  .custom-findings-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;resize:vertical;box-sizing:border-box;transition:border-color .15s;}
+  .custom-findings-input:focus{outline:none;border-color:var(--teal);}
+  .custom-findings-input::placeholder{color:var(--text3);}
   .clinical-footer-row{margin-top:12px;padding:10px 12px;background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-sm);}
   .clinical-footer-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:7px;}
   .clinical-footer-opts{display:flex;flex-wrap:wrap;gap:6px;}
@@ -219,6 +224,11 @@
       </div>
       <!-- Symptom accordion rendered by JS -->
       <div class="cat-accordion" id="catAccordion"></div>
+      <!-- Custom free-text findings -->
+      <div class="custom-findings-row">
+        <div class="custom-findings-label">Additional findings <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);">— type anything to add to notes</span></div>
+        <textarea id="customFindings" class="custom-findings-input" placeholder="e.g. Patient is bright, alert and responsive. Mucous membranes pink and moist..." oninput="onCustomFindingsChange()" rows="3" spellcheck="true" autocorrect="on"></textarea>
+      </div>
       <!-- Footer disposition (tech mode only, shown when symptoms selected) -->
       <div class="clinical-footer-row" id="clinicalFooterRow" style="display:none;">
         <div class="clinical-footer-label">Add closing statement:</div>
@@ -1956,8 +1966,8 @@ function updateCopyBar(){
   const txt=document.getElementById('copyText');
   const clinicalLines=getClinicalLines();
   const completeLines=clinicalLines.filter(l=>l.text);
-  const hasClinical=completeLines.length>0;
-  const hasAny=clinicalLines.length>0;
+  const custom=getCustomFindings();
+  const hasClinical=completeLines.length>0||!!custom;
   const hasMeds=selectedMeds.size>0;
   if(!hasClinical&&!hasMeds){bar.classList.add('hidden');return;}
   bar.classList.remove('hidden');
@@ -1967,6 +1977,7 @@ function updateCopyBar(){
   // ── Clinical findings first ──
   if(hasClinical){
     completeLines.forEach(l=>lines.push(l.text));
+    if(custom) lines.push(custom);
     const footer=getFooterLine();
     if(footer){ lines.push(''); lines.push(footer); }
     if(hasMeds) lines.push('');
@@ -2284,6 +2295,16 @@ function getFooterLine(){
   return map[footerOpt]||null;
 }
 
+function onCustomFindingsChange(){
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function getCustomFindings(){
+  const el=document.getElementById('customFindings');
+  return el?el.value.trim():'';
+}
+
 function getClinicalLines(){
   const out=[];
   selectedSymptoms.forEach(k=>{
@@ -2299,19 +2320,19 @@ function getClinicalLines(){
 }
 
 function renderClinicalPreview(){
-  if(selectedSymptoms.size===0){
-    document.getElementById('clinicalPreview').classList.remove('show');
-    return;
-  }
   const lines=getClinicalLines();
+  const custom=getCustomFindings();
   const footer=getFooterLine();
-  document.getElementById('clinicalPreview').classList.add('show');
-  const html=lines.map(l=>{
+  const prev=document.getElementById('clinicalPreview');
+  if(selectedSymptoms.size===0&&!custom&&!footer){prev.classList.remove('show');return;}
+  prev.classList.add('show');
+  const structuredHtml=lines.map(l=>{
     if(!l.hasLocation) return `<div class="clinical-preview-line incomplete">⚠ Select a location for: ${l.label}</div>`;
     return `<div class="clinical-preview-line">${l.text}</div>`;
   }).join('');
+  const customHtml=custom?`<div class="clinical-preview-line" style="border-left:3px solid var(--teal);background:var(--teal-light);">${custom}</div>`:'';
   const footerHtml=footer?`<div class="clinical-preview-line" style="border-left:3px solid var(--amber);background:rgba(245,158,11,.08);font-style:italic;">${footer}</div>`:'';
-  document.getElementById('clinicalPreviewLines').innerHTML=html+footerHtml;
+  document.getElementById('clinicalPreviewLines').innerHTML=structuredHtml+customHtml+footerHtml;
 }
 
 
@@ -2326,6 +2347,8 @@ function clearClinical(e){
   document.querySelectorAll('.lat-toggle').forEach(el=>el.classList.remove('show'));
   document.querySelectorAll('.lat-toggle select').forEach(el=>{el.value='';el.style.borderColor='';});
   document.getElementById('clinicalFooterRow').style.display='none';
+  const cf=document.getElementById('customFindings');
+  if(cf) cf.value='';
   updateClinicalBadge();
   renderClinicalPreview();
   updateCopyBar();
