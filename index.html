@@ -248,6 +248,7 @@
     <div style="flex:1;">
       <div class="copy-bar-label">Clinical notes — ready to copy</div>
       <div class="copy-bar-text" id="copyText" onclick="selectCopyText()"></div>
+      <textarea id="copyBuffer" readonly style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;"></textarea>
       <div class="copy-bar-tap-hint">Tap text to select all · then copy with your keyboard or long-press</div>
     </div>
     <div class="copy-bar-actions">
@@ -1993,12 +1994,17 @@ function updateCopyBar(){
       else if(!kg)lines.push(drug.name+': [enter weight to calculate]');
     }
   });
-  txt.textContent=lines.length?lines.join('\n'):'Select medications above…';
+  const out=lines.length?lines.join('\n'):'Select medications above…';
+  txt.textContent=out;
+  const buf=document.getElementById('copyBuffer');
+  if(buf) buf.value=out;
 }
 function copyToClipboard(){
-  const txt=document.getElementById('copyText').textContent;
-  if(!txt.trim())return;
+  const buf=document.getElementById('copyBuffer');
+  const txt=buf?buf.value:document.getElementById('copyText').textContent;
+  if(!txt||!txt.trim()||txt.startsWith('Select medications'))return;
   const flash=()=>{const fl=document.getElementById('copiedFlash');fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),2000);};
+  // Try modern clipboard API first
   if(navigator.clipboard&&window.isSecureContext){
     navigator.clipboard.writeText(txt).then(flash).catch(()=>fallbackCopy(txt,flash));
   } else {
@@ -2006,21 +2012,55 @@ function copyToClipboard(){
   }
 }
 function selectCopyText(){
-  const el=document.getElementById('copyText');
-  if(!el||!el.textContent.trim())return;
-  if(window.getSelection&&document.createRange){
-    const range=document.createRange();
-    range.selectNodeContents(el);
-    const sel=window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
+  const buf=document.getElementById('copyBuffer');
+  if(!buf||!buf.value.trim()||buf.value.startsWith('Select medications'))return;
+  // Select the textarea content — iOS treats this as plain text
+  buf.style.position='fixed';
+  buf.style.left='0';
+  buf.style.top='0';
+  buf.style.width='100vw';
+  buf.style.height='60px';
+  buf.style.opacity='0.01';
+  buf.style.zIndex='9999';
+  buf.style.pointerEvents='auto';
+  buf.focus();
+  buf.select();
+  buf.setSelectionRange(0, buf.value.length);
+  // Also try clipboard API
   copyToClipboard();
+  // Reset after a moment
+  setTimeout(()=>{
+    buf.style.position='absolute';
+    buf.style.left='-9999px';
+    buf.style.top='-9999px';
+    buf.style.width='1px';
+    buf.style.height='1px';
+    buf.style.opacity='0';
+    buf.style.zIndex='';
+    buf.style.pointerEvents='none';
+  },3000);
 }
 function fallbackCopy(txt,flash){
+  const buf=document.getElementById('copyBuffer');
+  if(buf){
+    buf.style.position='fixed';
+    buf.style.left='0';
+    buf.style.top='0';
+    buf.style.opacity='0.01';
+    buf.focus();
+    buf.select();
+    buf.setSelectionRange(0,buf.value.length);
+    try{
+      const ok=document.execCommand('copy');
+      if(ok){flash();buf.style.position='absolute';buf.style.left='-9999px';buf.style.opacity='0';return;}
+    }catch(e){}
+    buf.style.position='absolute';buf.style.left='-9999px';buf.style.opacity='0';
+  }
+  // Final fallback — create temp textarea
   const ta=document.createElement('textarea');
-  ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  ta.value=txt;ta.style.cssText='position:fixed;left:0;top:0;opacity:0.01;';
   document.body.appendChild(ta);ta.focus();ta.select();
+  ta.setSelectionRange(0,ta.value.length);
   try{document.execCommand('copy');flash();}catch(e){}
   document.body.removeChild(ta);
 }
