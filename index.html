@@ -74,9 +74,8 @@
   .copy-bar{position:fixed;bottom:0;left:0;right:0;background:var(--text);box-shadow:0 -4px 20px rgba(0,0,0,.25);z-index:200;transition:transform .25s ease;}
   .copy-bar.hidden{transform:translateY(100%);}
   .copy-bar-inner{max-width:1150px;margin:0 auto;padding:12px 16px 16px;display:flex;gap:12px;align-items:flex-start;}
-  .copy-bar-text{flex:1;font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,.85);line-height:1.65;white-space:pre-wrap;word-break:break-word;min-height:34px;cursor:text;-webkit-user-select:text;user-select:text;}
-  .copy-bar-tap-hint{font-size:10px;color:rgba(255,255,255,.45);margin-top:3px;display:none;}
-  @media(hover:none){.copy-bar-tap-hint{display:block;}}
+  .copy-bar-text{display:none;}
+  .copy-bar-textarea{flex:1;font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,.9);line-height:1.65;white-space:pre-wrap;word-break:break-word;min-height:60px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 10px;resize:none;width:100%;box-sizing:border-box;-webkit-user-select:text;user-select:text;}
   .copy-bar-actions{display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
   .copy-btn{padding:8px 15px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s;}
   .copy-btn:hover{background:rgba(255,255,255,.18);}
@@ -247,9 +246,9 @@
   <div class="copy-bar-inner">
     <div style="flex:1;">
       <div class="copy-bar-label">Clinical notes — ready to copy</div>
-      <div class="copy-bar-text" id="copyText" onclick="selectCopyText()"></div>
-      <textarea id="copyBuffer" readonly style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;"></textarea>
-      <div class="copy-bar-tap-hint">Tap text to select all · then copy with your keyboard or long-press</div>
+      <div class="copy-bar-text" id="copyText"></div>
+      <textarea id="copyBuffer" class="copy-bar-textarea" readonly onclick="this.select();this.setSelectionRange(0,this.value.length);" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:4px;">Tap text box to select all — then copy normally</div>
     </div>
     <div class="copy-bar-actions">
       <button class="copy-btn primary" onclick="copyToClipboard()">Copy to clipboard</button>
