@@ -580,7 +580,7 @@ const DRUGS=[
  note:'Neonates: 1–2 drops SL at birth. IV: 5–10 mg/kg.'},
 {id:'doxy',name:'Doxycycline',alias:'Vibramycin',route:'PO',sections:['Antibiotic','Respiratory','Eye'],species:['dog','cat'],type:'single',
  use:'URI, Bordetella, Mycoplasma, Chlamydophila, tick-borne disease.',
- note:'Dogs: 10 mg/kg q12h — whole pills only, 100mg tabs + 50mg caps. Cats: 50mg/mL liquid 0.1 mL/lb q12h. Always give with food/water.'},
+ note:'Dogs: 10 mg/kg q12–24h — whole pills only, 100mg tabs + 50mg caps. Cats: 50mg/mL liquid 0.1 mL/lb q12–24h. Always give with food/water.'},
 {id:'enro',name:'Enrofloxacin',alias:'Baytril',route:'PO / SQ / Injectable',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'multi',
  catWarning:'CATS: 5 mg/kg/day MAX — higher doses cause irreversible retinal blindness.',
  use:'UTI, skin, gram-negative, respiratory — fluoroquinolone.',
@@ -909,7 +909,7 @@ const CLINICAL = {
         ddx: 'cranial cruciate ligament rupture, meniscal injury, immune-mediated arthritis, septic arthritis, OA' },
       { label: 'Muscle atrophy',
         locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb','Bilateral forelimbs','Bilateral hindlimbs','Masticatory muscles','Generalized'],
-        techText: 'Musculoskeletal: muscle atrophy noted ({location}). Reduction in muscle mass observed; bilateral symmetry compared. Veterinarian notified.',
+        techText: 'Musculoskeletal: muscle atrophy noted ({location}). Reduction in muscle mass observed; bilateral symmetry compared.',
         vetText:  'Musculoskeletal: {location} muscle atrophy identified. Disuse, neurogenic, or systemic origin assessed. Muscle condition scored.',
         ddx: 'disuse atrophy (orthopedic pain), neurogenic atrophy, cachexia/systemic illness, masticatory muscle myositis (head)' },
       { label: 'Pain on spinal manipulation',
@@ -978,7 +978,7 @@ const CLINICAL = {
         ddx: 'traumatic ulcer, entropion, KCS, herpetic ulcer (cats), indolent ulcer (dogs), foreign body, bacterial superinfection' },
       { label: 'Entropion',
         locations:['Right','Left','Both'],
-        techText: '{location} eye: entropion noted. Inward rolling of the eyelid margin observed; corneal contact and irritation assessed. Veterinarian notified.',
+        techText: '{location} eye: entropion noted. Inward rolling of the eyelid margin observed; corneal contact and irritation assessed.',
         vetText:  '{location} eye: entropion identified. Degree of lid inversion and corneal contact assessed; fluorescein stain performed to evaluate secondary ulceration. Surgical correction discussed.',
         ddx: 'primary (breed-related) entropion, spastic entropion secondary to ocular pain, cicatricial entropion' },
       { label: 'Epiphora / excessive tearing',
@@ -998,12 +998,12 @@ const CLINICAL = {
         ddx: 'infectious uveitis (FIP, Toxoplasma, fungal), immune-mediated, lens-induced, traumatic, neoplastic, hypertensive' },
       { label: 'Cloudiness / opacity',
         locations:['Right','Left','Both'],
-        techText: '{location} eye: corneal or lenticular cloudiness noted. Opacity character and anatomic location assessed. Patient evaluated for vision impairment. Veterinarian notified.',
+        techText: '{location} eye: corneal or lenticular cloudiness noted. Opacity character and anatomic location assessed. Patient evaluated for vision impairment.',
         vetText:  '{location} eye: ocular opacity identified. Corneal edema, corneal lipidosis, cataract, and nuclear sclerosis differentiated by location and character. IOP and menace response assessed.',
         ddx: 'nuclear sclerosis (normal aging), cataract, corneal edema, corneal lipid infiltrate, endothelial dystrophy' },
       { label: 'Swollen eyelid / periocular swelling',
         locations:['Right','Left','Both'],
-        techText: '{location} eye: eyelid or periocular swelling noted. Degree, firmness, and associated signs (discharge, pain, heat) assessed. Veterinarian notified.',
+        techText: '{location} eye: eyelid or periocular swelling noted. Degree, firmness, and associated signs (discharge, pain, heat) assessed.',
         vetText:  '{location} eye: periocular or eyelid swelling present. Chalazion, hordeolum, abscess, and allergic/angioedema differentiated by distribution and character.',
         ddx: 'chalazion, hordeolum (stye), periocular abscess, allergic reaction/angioedema, mass lesion, dacryocystitis' },
       // ── Ear ──
@@ -1025,7 +1025,7 @@ const CLINICAL = {
         ddx: 'allergic otitis (atopy, food), ear mites (Otodectes), bacterial or yeast infection, foreign body' },
       { label: 'Aural hematoma',
         locations:['Right','Left','Both'],
-        techText: '{location} ear: aural hematoma identified. Pinna is fluctuant and swollen. Patient assessed for ear canal disease as underlying cause. Veterinarian notified.',
+        techText: '{location} ear: aural hematoma identified. Pinna is fluctuant and swollen. Patient assessed for ear canal disease as underlying cause.',
         vetText:  '{location} ear: aural hematoma confirmed. Pinna fluctuance and extent assessed. Underlying ear disease identified and treated concurrently. Surgical or aspiration intervention planned.',
         ddx: 'secondary to: ear mite infestation, otitis externa, allergic otitis, trauma from head shaking or scratching' },
       { label: 'Ear mites',
@@ -1035,7 +1035,7 @@ const CLINICAL = {
         ddx: 'Otodectes cynotis (ear mites), dark ceruminous debris from yeast otitis, foreign body' },
       { label: 'Aural polyp / mass',
         locations:['Right','Left','Both'],
-        techText: '{location} ear: mass or polyp noted in ear canal or on pinna. Size, location, and character assessed. Veterinarian notified.',
+        techText: '{location} ear: mass or polyp noted in ear canal or on pinna. Size, location, and character assessed.',
         vetText:  '{location} ear: aural mass or nasopharyngeal polyp identified. Otoscopic exam and gentle palpation performed. Imaging and biopsy/cytology considered.',
         ddx: 'inflammatory polyp, ceruminous gland adenoma/adenocarcinoma, squamous cell carcinoma, papilloma' },
     ]
@@ -1086,7 +1086,7 @@ const CLINICAL = {
         vetText:  'Integumentary: bite wound abscess present. Wound opened, flushed, and explored for depth and tract formation. Culture considered if recurrent or non-responsive. FeLV/FIV status reviewed.',
         ddx: 'cat bite abscess (Pasteurella, Bacteroides), injection site reaction, foreign body abscess, mast cell tumor (if firm)' },
       { label: 'Chin/facial swelling',
-        techText: 'Integumentary: facial or chin swelling noted. Degree, firmness, and associated signs (pain, discharge, tooth root involvement) assessed. Veterinarian notified.',
+        techText: 'Integumentary: facial or chin swelling noted. Degree, firmness, and associated signs (pain, discharge, tooth root involvement) assessed.',
         vetText:  'Integumentary: facial swelling identified. Dental/tooth root abscess, bite wound abscess, and neoplasia differentiated by location, firmness, and oral exam findings.',
         ddx: 'tooth root abscess (carnassial/canine), bite wound abscess, eosinophilic granuloma, neoplasia' },
       // ── Feline GI / Urinary ──
@@ -1129,7 +1129,7 @@ const CLINICAL = {
         vetText:  'Gastrointestinal: feline panleukopenia (FPV) suspected. Severe hemorrhagic gastroenteritis, profound leukopenia, and depression present. Parvo SNAP test obtained (cross-reacts with FPV); strict isolation initiated. IV fluid resuscitation and supportive care prioritized.',
         ddx: 'feline panleukopenia virus (FPV), salmonellosis, other viral gastroenteritis, foreign body obstruction, intussusception' },
       { label: 'Ringworm (dermatophytosis)',
-        techText: 'Dermatologic: dermatophytosis (ringworm) suspected. Focal or multifocal alopecia with scaling, crusting, or broken hairs noted. Patient isolated; all in-contact animals assessed. Veterinarian notified.',
+        techText: 'Dermatologic: dermatophytosis (ringworm) suspected. Focal or multifocal alopecia with scaling, crusting, or broken hairs noted. Patient isolated; all in-contact animals assessed.',
         vetText:  'Dermatologic: dermatophytosis suspected. Lesion distribution and morphology assessed; Wood\'s lamp exam performed (positive in ~50% of Microsporum canis). DTM fungal culture submitted. Strict isolation and environmental decontamination initiated.',
         ddx: 'Microsporum canis (most common), Trichophyton mentagrophytes, Microsporum gypseum; demodicosis, bacterial folliculitis, alopecia areata' },
     ]
@@ -1501,11 +1501,11 @@ function calcDose(drug, kg){
   if(id==='doxy'){
     if(species==='cat'){
       const ml=f(lb*0.1,2);
-      return{html:blk('Liquid — 0.1mL/lb',ml+' mL','50mg/mL • q12h',''),plain:`Doxycycline: ${ml}mL (50mg/mL liquid) PO q12h`};
+      return{html:blk('Liquid — 0.1mL/lb',ml+' mL','50mg/mL • q12–24h',''),plain:`Doxycycline: ${ml}mL (50mg/mL liquid) PO q12–24h`};
     }
     const r=doxyDogDose(kg);
     if(!r)return{html:`<p class="na-msg">Weight out of range</p>`,plain:''};
-    return{html:blk('10mg/kg q12h',r.dose+' mg',r.combo,'Whole pills only — no splitting'),plain:`Doxycycline: ${r.dose}mg PO q12h (${r.combo})`};
+    return{html:blk('10mg/kg q12–24h',r.dose+' mg',r.combo,'Whole pills only — no splitting'),plain:`Doxycycline: ${r.dose}mg PO q12–24h (${r.combo})`};
   }
   // AZITHROMYCIN — tablet for dogs > ~5kg, liquid for cats/small dogs
   if(id==='azithro'){
