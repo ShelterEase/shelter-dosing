@@ -146,7 +146,14 @@
   .sym-label-sub{font-size:11px;color:var(--text3);margin-top:1px;}
   /* Vet-only DDx badge on symptom */
   .ddx-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;background:rgba(13,126,107,.1);color:var(--teal);border:1px solid var(--teal-mid);margin-left:5px;vertical-align:middle;white-space:nowrap;}
-  /* Custom free-text findings */
+  /* Findings dropdowns — appear after symptom checked */
+  .findings-row{display:none;flex-direction:column;gap:5px;margin-top:6px;padding:7px 10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+  .findings-row.show{display:flex;}
+  .finding-item{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .finding-label{font-size:11px;font-weight:500;color:var(--text2);min-width:90px;flex-shrink:0;}
+  .finding-select{font-size:11px;padding:3px 24px 3px 7px;border:1px solid var(--border2);border-radius:5px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6860' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;flex:1;min-width:130px;max-width:220px;}
+  .finding-select:focus{outline:none;border-color:var(--teal);}
+  .finding-select.selected{border-color:var(--teal);background-color:var(--teal-light);}
   .custom-findings-row{margin-top:10px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);}
   .custom-findings-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;}
   .custom-findings-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;resize:vertical;box-sizing:border-box;transition:border-color .15s;}
@@ -761,30 +768,36 @@ const CLINICAL = {
         sub: 'unspecified / general',
         techText: 'Dermatologic: pruritus noted on exam. Patient presents with scratching, rubbing, or self-trauma. Skin assessed for erythema, excoriations, and secondary lesions.',
         vetText:  'Dermatologic: pruritus noted on presentation. Skin evaluated for primary and secondary lesion pattern; distribution and degree of self-trauma noted.',
-        ddx: 'allergic dermatitis (atopy, food), ectoparasites (fleas, mites), pyoderma, contact irritant' },
+        ddx: 'allergic dermatitis (atopy, food), ectoparasites (fleas, mites), pyoderma, contact irritant' ,
+        findings: [{'key': 'intensity', 'label': 'Intensity', 'opts': ['Mild', 'Moderate', 'Severe', 'Self-trauma present']}, {'key': 'distribution', 'label': 'Distribution', 'opts': ['Focal', 'Multifocal', 'Generalized', 'Ventral', 'Dorsal', 'Facial']}]},
       { label: 'Pruritus – generalized',
         techText: 'Dermatologic: generalized pruritus noted. Patient presents with diffuse scratching, rubbing, or self-trauma. Distribution and secondary skin changes assessed.',
         vetText:  'Dermatologic: generalized pruritus present. Diffuse distribution noted; PSSS or PVAS scoring considered. Primary lesion pattern evaluated.',
-        ddx: 'atopic dermatitis, flea allergy dermatitis, food hypersensitivity, sarcoptic mange, pyoderma' },
+        ddx: 'atopic dermatitis, flea allergy dermatitis, food hypersensitivity, sarcoptic mange, pyoderma' ,
+        findings: [{'key': 'intensity', 'label': 'Intensity', 'opts': ['Mild', 'Moderate', 'Severe', 'Self-trauma present']}, {'key': 'secondary', 'label': 'Secondary lesions', 'opts': ['None', 'Excoriations', 'Erythema', 'Papules/pustules', 'Crusting', 'Alopecia']}]},
       { label: 'Pruritus – face/head',
         techText: 'Dermatologic: pruritus localized to the face and head. Patient exhibits rubbing, pawing, or self-trauma to periocular, perioral, or pinnae areas.',
         vetText:  'Dermatologic: facial and head pruritus noted. Periocular, perioral, and pinnae regions examined for primary lesions, excoriations, and swelling.',
-        ddx: 'food hypersensitivity, atopy, Demodex (periocular), yeast otitis, contact irritant' },
+        ddx: 'food hypersensitivity, atopy, Demodex (periocular), yeast otitis, contact irritant' ,
+        findings: [{'key': 'intensity', 'label': 'Intensity', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'location', 'label': 'Focus', 'opts': ['Periocular', 'Perioral', 'Pinnae', 'Muzzle', 'Generalized face']}]},
       { label: 'Pruritus – paws/interdigital',
         techText: 'Dermatologic: pruritus noted at paws and interdigital spaces. Patient observed licking, chewing, or rubbing paws. Interdigital skin inspected for erythema and exudate.',
         vetText:  'Dermatologic: pedal pruritus present. Interdigital erythema, salivary staining, and furuncles assessed bilaterally.',
-        ddx: 'atopy, food allergy, Malassezia pododermatitis, Demodex, contact dermatitis' },
+        ddx: 'atopy, food allergy, Malassezia pododermatitis, Demodex, contact dermatitis' ,
+        findings: [{'key': 'intensity', 'label': 'Intensity', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'changes', 'label': 'Skin changes', 'opts': ['Erythema only', 'Salivary staining', 'Swelling', 'Furunculosis', 'All paws', 'Forepaws only', 'Hindpaws only']}]},
       // ── Alopecia ──
       { group: 'Alopecia' },
       { label: 'Alopecia',
         sub: 'unspecified',
         techText: 'Dermatologic: alopecia identified on exam. Pattern, symmetry, and skin surface condition assessed.',
         vetText:  'Dermatologic: alopecia noted on exam. Distribution, symmetry, and associated skin changes evaluated. Pruritic vs non-pruritic pattern assessed.',
-        ddx: 'dermatophytosis, Demodex, endocrinopathy (hypothyroidism, hyperadrenocorticism), self-trauma, telogen effluvium' },
+        ddx: 'dermatophytosis, Demodex, endocrinopathy (hypothyroidism, hyperadrenocorticism), self-trauma, telogen effluvium' ,
+        findings: [{'key': 'pattern', 'label': 'Pattern', 'opts': ['Focal', 'Multifocal', 'Generalized', 'Bilaterally symmetric']}, {'key': 'skin', 'label': 'Skin surface', 'opts': ['Normal', 'Scaling', 'Crusting', 'Erythema', 'Hyperpigmentation', 'Lichenification']}]},
       { label: 'Alopecia – focal',
         techText: 'Dermatologic: focal alopecia identified on exam. Circumscribed area of hair loss noted; skin surface inspected for scale, crust, and erythema.',
         vetText:  'Dermatologic: focal alopecia present. Lesion borders, skin texture, and hair shaft integrity assessed. Fungal culture and trichogram considered.',
-        ddx: 'dermatophytosis (ringworm), focal Demodex, injection site reaction, scarring alopecia, trauma' },
+        ddx: 'dermatophytosis (ringworm), focal Demodex, injection site reaction, scarring alopecia, trauma' ,
+        findings: [{'key': 'skin', 'label': 'Skin surface', 'opts': ['Normal', 'Scaling', 'Crusting', 'Erythematous', 'Hyperpigmented']}, {'key': 'borders', 'label': 'Borders', 'opts': ['Well-demarcated', 'Irregular', 'Expanding']}]},
       { label: 'Alopecia – generalized',
         techText: 'Dermatologic: generalized alopecia observed. Diffuse or multifocal hair loss present across the body. Skin condition and overall body condition scored.',
         vetText:  'Dermatologic: generalized alopecia noted. Symmetric vs asymmetric pattern evaluated; thyroid, adrenal, and sex hormone workup considered.',
@@ -799,19 +812,23 @@ const CLINICAL = {
         sub: 'unspecified',
         techText: 'Dermatologic: dermatitis noted on exam. Affected skin inspected for erythema, scaling, crusting, and discharge. Distribution and severity assessed.',
         vetText:  'Dermatologic: dermatitis identified. Lesion morphology, distribution, and secondary changes (lichenification, hyperpigmentation) assessed.',
-        ddx: 'allergic dermatitis, bacterial pyoderma, Malassezia, contact irritant, parasitic' },
+        ddx: 'allergic dermatitis, bacterial pyoderma, Malassezia, contact irritant, parasitic' ,
+        findings: [{'key': 'erythema', 'label': 'Erythema', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Serous', 'Mucoid', 'Mucopurulent', 'Hemorrhagic']}, {'key': 'lesions', 'label': 'Lesion type', 'opts': ['Macules', 'Papules', 'Pustules', 'Epidermal collarettes', 'Crusting', 'Lichenification']}]},
       { label: 'Dermatitis – interdigital',
         techText: 'Dermatologic: interdigital dermatitis present. Erythema, swelling, or exudate noted between digits; patient observed licking or chewing paws.',
         vetText:  'Dermatologic: interdigital furunculosis or dermatitis identified. Unilateral vs bilateral distribution noted; cytology of expressed material collected.',
-        ddx: 'allergic (atopic or food), bacterial furunculosis, Malassezia, Demodex, foreign body' },
+        ddx: 'allergic (atopic or food), bacterial furunculosis, Malassezia, Demodex, foreign body' ,
+        findings: [{'key': 'erythema', 'label': 'Erythema', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Serous', 'Mucopurulent', 'Hemorrhagic']}, {'key': 'severity', 'label': 'Severity', 'opts': ['Mild swelling', 'Moderate swelling', 'Furunculosis', 'Draining tracts']}]},
       { label: 'Dermatitis – ventral abdomen',
         techText: 'Dermatologic: ventral abdominal dermatitis identified. Erythema and possible papules or pustules noted on the inguinal and ventral abdominal skin surface.',
         vetText:  'Dermatologic: ventral abdominal dermatitis with papules, pustules, or epidermal collarettes noted. Cytology obtained to differentiate bacterial from Malassezia involvement.',
-        ddx: 'superficial bacterial pyoderma, Malassezia dermatitis, contact hypersensitivity, puppy impetigo' },
+        ddx: 'superficial bacterial pyoderma, Malassezia dermatitis, contact hypersensitivity, puppy impetigo' ,
+        findings: [{'key': 'erythema', 'label': 'Erythema', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'lesions', 'label': 'Lesions', 'opts': ['Macules only', 'Papules', 'Pustules', 'Epidermal collarettes', 'Crusting']}]},
       { label: 'Dermatitis – generalized',
         techText: 'Dermatologic: generalized dermatitis present. Widespread erythema, scaling, or crusting noted across multiple body regions.',
         vetText:  'Dermatologic: generalized dermatitis with multifocal lesions. Lesion morphology (macule, papule, pustule, crust) and stage of evolution characterized.',
-        ddx: 'generalized pyoderma, Malassezia dermatitis, adverse food reaction, atopy, pemphigus foliaceus' },
+        ddx: 'generalized pyoderma, Malassezia dermatitis, adverse food reaction, atopy, pemphigus foliaceus' ,
+        findings: [{'key': 'erythema', 'label': 'Erythema', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'lesions', 'label': 'Dominant lesion', 'opts': ['Scaling', 'Papules/pustules', 'Crusting', 'Lichenification', 'Mixed']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Serous', 'Mucopurulent']}]},
       { label: 'Dermatitis – skin fold / intertriginous',
         techText: 'Dermatologic: skin fold dermatitis identified. Erythema, moisture, and malodor noted in affected fold(s). Affected site(s) cleaned and inspected.',
         vetText:  'Dermatologic: intertriginous dermatitis in skin fold region. Maceration, erythema, and secondary infection present. Cytology obtained from fold exudate.',
@@ -821,11 +838,13 @@ const CLINICAL = {
       { label: 'Hot spot (acute moist dermatitis)',
         techText: 'Dermatologic: acute moist dermatitis (hot spot) identified. Focal area of erythematous, exudative, and alopecic skin lesion noted consistent with self-induced trauma.',
         vetText:  'Dermatologic: acute moist dermatitis (pyotraumatic dermatitis) present. Lesion clipped and cleaned; cytology obtained. Underlying pruritic trigger assessed.',
-        ddx: 'pyotraumatic dermatitis secondary to: flea allergy, atopy, otitis, anal sacculitis, local irritant' },
+        ddx: 'pyotraumatic dermatitis secondary to: flea allergy, atopy, otitis, anal sacculitis, local irritant' ,
+        findings: [{'key': 'size', 'label': 'Size', 'opts': ['Small (<2cm)', 'Medium (2-5cm)', 'Large (>5cm)']}, {'key': 'depth', 'label': 'Depth', 'opts': ['Superficial', 'Deep/ulcerated']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['Serous', 'Serosanguineous', 'Purulent']}]},
       { label: 'Otitis externa',
         techText: 'Dermatologic / Otic: otitis externa present. Erythema, malodor, and discharge noted; pinna and canal inspected.',
         vetText:  'Otic: otitis externa confirmed on otoscopic exam. Discharge character (ceruminous, purulent, hemorrhagic) and tympanic membrane integrity assessed. Cytology obtained.',
-        ddx: 'bacterial (Staphylococcus, Pseudomonas), Malassezia, ear mites, foreign body, allergic otitis' },
+        ddx: 'bacterial (Staphylococcus, Pseudomonas), Malassezia, ear mites, foreign body, allergic otitis' ,
+        findings: [{'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Ceruminous', 'Purulent', 'Hemorrhagic']}, {'key': 'erythema', 'label': 'Canal erythema', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'stenosis', 'label': 'Canal', 'opts': ['Open', 'Mildly stenotic', 'Moderately stenotic', 'Severely stenotic/occluded']}]},
       { label: 'Scaling / seborrhea',
         techText: 'Dermatologic: excessive scaling or seborrhea noted on coat and skin. Scale distribution and greasiness assessed. Patient overall coat and skin condition evaluated.',
         vetText:  'Dermatologic: seborrhea sicca or oleosa noted. Primary vs secondary seborrheic condition evaluated; endocrine, allergic, and parasitic underlying causes considered.',
@@ -959,23 +978,35 @@ const CLINICAL = {
         vetText:  'Respiratory: inspiratory stridor or stertor present. Upper airway obstruction localized; laryngeal function and nasopharyngeal anatomy evaluated. Brachycephalic obstructive airway syndrome assessed if applicable.',
         ddx: 'laryngeal paralysis, brachycephalic obstructive airway syndrome, laryngeal mass/polyp, nasopharyngeal polyp, foreign body' },
       { group: 'Eye / Ear', major: true },
+      // ── Cardiovascular ──
+      { group: 'Cardiovascular', major: true },
+      { label: 'Heart murmur',
+        findings:[
+          {key:'grade',label:'Grade',opts:['Grade I/VI','Grade II/VI','Grade III/VI','Grade IV/VI','Grade V/VI','Grade VI/VI']},
+        ],
+        techText: 'Cardiovascular: heart murmur auscultated.',
+        vetText:  'Cardiovascular: cardiac murmur identified on auscultation. Pulse quality, rhythm, and femoral pulse deficit assessed. Thoracic radiographs and echocardiography considered.',
+        ddx: 'mitral valve disease (MVD), dilated cardiomyopathy (DCM), pulmonic stenosis, aortic stenosis, tricuspid dysplasia, physiologic/innocent murmur (young animals)' },
       // ── Eye ──
       { group: 'Eye' },
       { label: 'Ocular discharge',
         locations:['Right','Left','Both'],
         techText: '{location} eye: ocular discharge noted. Discharge character (serous, mucoid, or mucopurulent) and quantity assessed. Eye examined for additional signs of irritation or infection.',
         vetText:  '{location} eye: ocular discharge present. Discharge character and volume assessed; fluorescein stain applied to evaluate corneal integrity. Conjunctiva and cornea examined.',
-        ddx: 'conjunctivitis (bacterial, viral, allergic), keratoconjunctivitis sicca (KCS), corneal ulcer, dacryocystitis, entropion' },
+        ddx: 'conjunctivitis (bacterial, viral, allergic), keratoconjunctivitis sicca (KCS), corneal ulcer, dacryocystitis, entropion' ,
+        findings: [{'key': 'character', 'label': 'Character', 'opts': ['Serous', 'Mucoid', 'Mucopurulent', 'Hemorrhagic']}, {'key': 'quantity', 'label': 'Quantity', 'opts': ['Scant', 'Moderate', 'Copious']}]},
       { label: 'Conjunctivitis',
         locations:['Right','Left','Both'],
         techText: '{location} eye: conjunctivitis noted. Conjunctival hyperemia, chemosis, and discharge assessed. Patient evaluated for discomfort and ocular rubbing.',
         vetText:  '{location} eye: conjunctivitis identified. Conjunctival hyperemia, chemosis, and follicle formation assessed. Fluorescein stain performed; STT considered if KCS suspected.',
-        ddx: 'bacterial conjunctivitis, viral (feline herpesvirus, calicivirus), allergic conjunctivitis, KCS, chlamydiosis (cats)' },
+        ddx: 'bacterial conjunctivitis, viral (feline herpesvirus, calicivirus), allergic conjunctivitis, KCS, chlamydiosis (cats)' ,
+        findings: [{'key': 'hyperemia', 'label': 'Hyperemia', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'chemosis', 'label': 'Chemosis', 'opts': ['None', 'Mild', 'Moderate', 'Severe']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Serous', 'Mucoid', 'Mucopurulent']}]},
       { label: 'Corneal ulcer / abrasion',
         locations:['Right','Left','Both'],
         techText: '{location} eye: corneal ulcer or abrasion suspected. Patient exhibiting blepharospasm, epiphora, and photophobia. Fluorescein stain applied per veterinarian instruction.',
         vetText:  '{location} eye: corneal ulceration confirmed on fluorescein stain. Ulcer depth, location, and margins assessed. Descemetocele, stromal involvement, and infected ulcer ruled out.',
-        ddx: 'traumatic ulcer, entropion, KCS, herpetic ulcer (cats), indolent ulcer (dogs), foreign body, bacterial superinfection' },
+        ddx: 'traumatic ulcer, entropion, KCS, herpetic ulcer (cats), indolent ulcer (dogs), foreign body, bacterial superinfection' ,
+        findings: [{'key': 'depth', 'label': 'Depth', 'opts': ['Superficial (epithelial)', 'Stromal', 'Deep/descemetocele']}, {'key': 'size', 'label': 'Size', 'opts': ['Punctate', 'Small (<5mm)', 'Large (>5mm)', 'Diffuse']}, {'key': 'infection', 'label': 'Appearance', 'opts': ['Clean margins', 'Infected/melting', 'Vascularized']}]},
       { label: 'Entropion',
         locations:['Right','Left','Both'],
         techText: '{location} eye: entropion noted. Inward rolling of the eyelid margin observed; corneal contact and irritation assessed.',
@@ -985,22 +1016,36 @@ const CLINICAL = {
         locations:['Right','Left','Both'],
         techText: '{location} eye: epiphora noted. Excessive tearing and periocular staining observed. Nasolacrimal duct patency and eyelid conformation assessed.',
         vetText:  '{location} eye: epiphora present. Nasolacrimal duct flushed for patency; eyelid conformation (entropion, distichiasis) and conjunctival/corneal irritants evaluated.',
-        ddx: 'nasolacrimal duct obstruction, entropion, distichiasis/ectopic cilia, corneal irritation, conjunctivitis, KCS (paradoxical)' },
+        ddx: 'nasolacrimal duct obstruction, entropion, distichiasis/ectopic cilia, corneal irritation, conjunctivitis, KCS (paradoxical)' ,
+        findings: [{'key': 'severity', 'label': 'Severity', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'staining', 'label': 'Periocular staining', 'opts': ['None', 'Mild', 'Moderate/severe']}]},
       { label: 'Blepharospasm / squinting',
         locations:['Right','Left','Both'],
         techText: '{location} eye: blepharospasm and squinting noted. Patient keeping affected eye partially or fully closed; consistent with ocular pain or irritation. Veterinarian notified promptly.',
         vetText:  '{location} eye: blepharospasm present, indicating ocular pain. Corneal stain, IOP measurement, and thorough anterior segment exam performed urgently.',
-        ddx: 'corneal ulcer, anterior uveitis, glaucoma, foreign body, entropion, corneal laceration' },
+        ddx: 'corneal ulcer, anterior uveitis, glaucoma, foreign body, entropion, corneal laceration' ,
+        findings: [{'key': 'severity', 'label': 'Severity', 'opts': ['Mild', 'Moderate', 'Severe (complete closure)']}]},
       { label: 'Uveitis / ocular redness',
         locations:['Right','Left','Both'],
         techText: '{location} eye: ocular redness and possible uveitis noted. Eye appears hyperemic; patient assessed for pain, tearing, and vision changes. Veterinarian notified for urgent evaluation.',
         vetText:  '{location} eye: anterior uveitis suspected. Ciliary flush, aqueous flare, miosis, and hypopyon assessed. IOP measured; systemic workup for infectious and immune-mediated causes initiated.',
-        ddx: 'infectious uveitis (FIP, Toxoplasma, fungal), immune-mediated, lens-induced, traumatic, neoplastic, hypertensive' },
+        ddx: 'infectious uveitis (FIP, Toxoplasma, fungal), immune-mediated, lens-induced, traumatic, neoplastic, hypertensive' ,
+        findings: [{'key': 'type', 'label': 'Redness type', 'opts': ['Conjunctival hyperemia', 'Ciliary flush', 'Mixed']}, {'key': 'flare', 'label': 'Aqueous flare', 'opts': ['None visible', 'Mild', 'Moderate/severe']}, {'key': 'other', 'label': 'Other findings', 'opts': ['Miosis', 'Hypopyon', 'Iris changes', 'IOP abnormal']}]},
       { label: 'Cloudiness / opacity',
         locations:['Right','Left','Both'],
         techText: '{location} eye: corneal or lenticular cloudiness noted. Opacity character and anatomic location assessed. Patient evaluated for vision impairment.',
         vetText:  '{location} eye: ocular opacity identified. Corneal edema, corneal lipidosis, cataract, and nuclear sclerosis differentiated by location and character. IOP and menace response assessed.',
-        ddx: 'nuclear sclerosis (normal aging), cataract, corneal edema, corneal lipid infiltrate, endothelial dystrophy' },
+        ddx: 'nuclear sclerosis (normal aging), cataract, corneal edema, corneal lipid infiltrate, endothelial dystrophy' ,
+        findings: [{'key': 'location', 'label': 'Location', 'opts': ['Corneal', 'Lenticular (cataract)', 'Nuclear sclerosis', 'Aqueous']}, {'key': 'severity', 'label': 'Degree', 'opts': ['Mild haze', 'Moderate opacity', 'Dense opacity']}]},
+      { label: 'Cherry eye (nictitans prolapse)',
+        locations:['Right','Left','Both'],
+        findings:[
+          {key:'reducible',label:'Reducibility',opts:['Reducible','Non-reducible','Intermittently reducible']},
+          {key:'size',label:'Size',opts:['Small','Moderate','Large']},
+          {key:'conjunctiva',label:'Conjunctiva',opts:['Normal','Mildly inflamed','Moderately inflamed','Ulcerated']},
+        ],
+        techText: '{location} eye: prolapse of the nictitating membrane gland (cherry eye) noted.',
+        vetText:  '{location} eye: third eyelid gland prolapse (cherry eye) present. Gland reducibility, size, and secondary conjunctival changes assessed. Surgical repositioning recommended; excision avoided to preserve tear production.',
+        ddx: 'nictitating membrane gland prolapse (cherry eye), nictitans mass/cyst, conjunctival prolapse' },
       { label: 'Swollen eyelid / periocular swelling',
         locations:['Right','Left','Both'],
         techText: '{location} eye: eyelid or periocular swelling noted. Degree, firmness, and associated signs (discharge, pain, heat) assessed.',
@@ -1017,12 +1062,14 @@ const CLINICAL = {
         locations:['Right','Left','Both'],
         techText: '{location} ear: ear discharge noted. Discharge character (waxy, brown, purulent, bloody), quantity, and odor assessed. Canal and pinna inspected.',
         vetText:  '{location} ear: discharge present in external ear canal. Cytology obtained; otic culture considered if purulent or unresponsive to prior treatment. Tympanum assessed.',
-        ddx: 'bacterial otitis, Malassezia otitis, ear mites, foreign body, aural hematoma (secondary), polyp' },
+        ddx: 'bacterial otitis, Malassezia otitis, ear mites, foreign body, aural hematoma (secondary), polyp' ,
+        findings: [{'key': 'character', 'label': 'Character', 'opts': ['Ceruminous/waxy', 'Brown/dark', 'Purulent', 'Hemorrhagic']}, {'key': 'quantity', 'label': 'Quantity', 'opts': ['Scant', 'Moderate', 'Copious']}, {'key': 'odor', 'label': 'Odor', 'opts': ['None', 'Mild', 'Moderate', 'Strong/fetid']}]},
       { label: 'Pruritic ear / head shaking',
         locations:['Right','Left','Both'],
         techText: '{location} ear: pruritus and head shaking noted. Patient scratching at ear(s) and shaking head. Canal inspected for discharge, erythema, and foreign material.',
         vetText:  '{location} ear: otic pruritus with head shaking. Otoscopic exam and cytology performed. Allergic, parasitic, and infectious causes assessed.',
-        ddx: 'allergic otitis (atopy, food), ear mites (Otodectes), bacterial or yeast infection, foreign body' },
+        ddx: 'allergic otitis (atopy, food), ear mites (Otodectes), bacterial or yeast infection, foreign body' ,
+        findings: [{'key': 'severity', 'label': 'Severity', 'opts': ['Mild', 'Moderate', 'Severe']}, {'key': 'discharge', 'label': 'Discharge', 'opts': ['None', 'Ceruminous', 'Purulent']}]},
       { label: 'Aural hematoma',
         locations:['Right','Left','Both'],
         techText: '{location} ear: aural hematoma identified. Pinna is fluctuant and swollen. Patient assessed for ear canal disease as underlying cause.',
@@ -1067,7 +1114,8 @@ const CLINICAL = {
       { label: 'Miliary dermatitis',
         techText: 'Dermatologic: miliary dermatitis present. Multiple small crusted papules palpated along the dorsum, neck, and head. Patient assessed for pruritus and flea evidence.',
         vetText:  'Dermatologic: feline miliary dermatitis pattern identified. Distribution of crusted papules assessed; flea combing performed. Ectoparasite and hypersensitivity workup initiated.',
-        ddx: 'flea allergy dermatitis (most common), food hypersensitivity, atopy, Cheyletiella, dermatophytosis, pemphigus' },
+        ddx: 'flea allergy dermatitis (most common), food hypersensitivity, atopy, Cheyletiella, dermatophytosis, pemphigus' ,
+        findings: [{'key': 'severity', 'label': 'Severity', 'opts': ['Mild (few lesions)', 'Moderate', 'Severe (diffuse)']}, {'key': 'flea', 'label': 'Flea evidence', 'opts': ['Flea dirt present', 'No flea dirt found', 'Fleas seen']}]},
       { label: 'Feline acne',
         locations: ['Chin','Chin and lower lip'],
         techText: '{location}: feline acne noted. Comedones, papules, or pustules present on chin and/or lower lip. Area cleaned and assessed for secondary infection.',
@@ -1140,8 +1188,8 @@ const CLINICAL = {
       { group: 'Infectious' },
       { label: 'Kennel cough (CIRDC)',
         locations: ['No cough noted','Dry / honking cough','Moist / productive cough','Intermittent cough','Paroxysmal cough'],
-        techText: 'Respiratory: canine infectious respiratory disease complex (CIRDC) suspected. {location}; nasal discharge and ocular involvement assessed. Severity scored; appetite and hydration assessed. Patient isolated per shelter protocol.',
-        vetText:  'Respiratory: CIRDC presentation. {location}; tracheal sensitivity, nasal discharge, and conjunctivitis assessed. Severity graded (mild/moderate/severe); auscultation performed to rule out lower airway involvement. Radiographs considered if systemic signs present.',
+        techText: 'Respiratory: canine infectious respiratory disease complex (CIRDC) suspected. {location}; nasal discharge and ocular involvement assessed. Appetite and hydration assessed. Patient isolated per shelter protocol.',
+        vetText:  'Respiratory: CIRDC presentation. {location}; tracheal sensitivity, nasal discharge, and conjunctivitis assessed. Auscultation performed to rule out lower airway involvement. Radiographs considered if systemic signs present.',
         ddx: 'Bordetella bronchiseptica, canine parainfluenza virus, canine adenovirus-2, Mycoplasma, canine influenza (H3N2/H3N8)' },
       { label: 'Parvovirus suspected',
         techText: 'Gastrointestinal: parvovirus infection suspected. Acute vomiting, hemorrhagic diarrhea, lethargy, and anorexia noted in unvaccinated or incompletely vaccinated dog. Patient isolated immediately; veterinarian notified urgently.',
@@ -1220,6 +1268,7 @@ let selectedSymptoms = new Set(); // keys: 'catKey|||itemIndex'
 let catOpenState = {}; // catKey -> bool
 let lateralityState = new Map(); // safeSymKey -> location string
 let safeToSymKey = new Map();    // safeSymKey -> original symKey
+let findingsState = new Map();   // 'safeSymKey|||findingIdx' -> selected value
 let species='dog', unit='lb', activeSection='All';
 // selectedMeds: Map<drugId, Set<optionKey>>  ('default' for single-checkbox drugs)
 const selectedMeds = new Map();
@@ -2212,6 +2261,8 @@ function toggleSymptom(symKey){
   if(selectedSymptoms.has(symKey)){
     selectedSymptoms.delete(symKey);
     lateralityState.delete(safeSymKey);
+    // Clear any findings for this symptom
+    findingsState.forEach((v,k)=>{ if(k.startsWith(safeSymKey+'|||')) findingsState.delete(k); });
   } else {
     selectedSymptoms.add(symKey);
   }
@@ -2225,11 +2276,32 @@ function toggleSymptom(symKey){
       if(sel){sel.value='';sel.style.borderColor='';}
     }
   }
+  const frow=document.getElementById('frow_'+safeSymKey);
+  if(frow){
+    frow.classList.toggle('show',selectedSymptoms.has(symKey));
+    if(!selectedSymptoms.has(symKey)){
+      frow.querySelectorAll('select').forEach(s=>{s.value='';s.classList.remove('selected');});
+    }
+  }
   document.getElementById('clinicalFooterRow').style.display=clinicalRole==='tech'&&hasAnyFindings()?'block':'none';
   if(selectedSymptoms.size===0&&!getCustomFindings()){footerOpt='none';updateFooterBtns();}
   updateClinicalBadge();
   renderClinicalPreview();
   updateCopyBar();
+}
+
+function setFinding(safeSymKey, findingIdx, val){
+  const fkey=safeSymKey+'|||'+findingIdx;
+  if(val) findingsState.set(fkey, val);
+  else findingsState.delete(fkey);
+  const sel=document.getElementById('fsel_'+safeSymKey+'_'+findingIdx);
+  if(sel) sel.classList.toggle('selected', !!val);
+  renderClinicalPreview();
+  updateCopyBar();
+}
+
+function getFindingValue(safeSymKey, findingIdx){
+  return findingsState.get(safeSymKey+'|||'+findingIdx)||null;
 }
 
 function setLocation(symKey, val){
@@ -2281,6 +2353,16 @@ function buildClinicalText(item, symKey){
   const base=clinicalRole==='vet'?item.vetText:item.techText;
   let text=item.locations?resolveLocation(base,symKey):base;
   if(!text) return null;
+  // Append any selected findings
+  if(item.findings&&item.findings.length>0){
+    const safeK=symKey.replace(/[^a-zA-Z0-9]/g,'_');
+    const parts=[];
+    item.findings.forEach((f,i)=>{
+      const val=getFindingValue(safeK,i);
+      if(val) parts.push(f.label+': '+val);
+    });
+    if(parts.length>0) text=text.replace(/\.$/,'')+'. '+parts.join('; ')+'.';
+  }
   if(clinicalRole==='vet'&&item.ddx) return text+' DDx: '+item.ddx+'.';
   return text;
 }
@@ -2348,11 +2430,14 @@ function clearClinical(e){
   if(e)e.stopPropagation();
   selectedSymptoms.clear();
   lateralityState.clear();
+  findingsState.clear();
   footerOpt='none';
   updateFooterBtns();
   document.querySelectorAll('.sym-cb').forEach(el=>el.classList.remove('checked'));
   document.querySelectorAll('.lat-toggle').forEach(el=>el.classList.remove('show'));
   document.querySelectorAll('.lat-toggle select').forEach(el=>{el.value='';el.style.borderColor='';});
+  document.querySelectorAll('.findings-row').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.finding-select').forEach(el=>{el.value='';el.classList.remove('selected');});
   document.getElementById('clinicalFooterRow').style.display='none';
   const cf=document.getElementById('customFindings');
   if(cf) cf.value='';
@@ -2414,11 +2499,25 @@ function initClinical(){
             ${locOptions.map(o=>`<option value="${o}">${o}</option>`).join('')}
           </select>
         </div>`:'';
+      // Findings dropdowns
+      const findingsHtml=item.findings&&item.findings.length>0?`
+        <div class="findings-row" id="frow_${safeSymKey}" onclick="event.stopPropagation()">
+          ${item.findings.map((f,i)=>`
+          <div class="finding-item">
+            <span class="finding-label">${f.label}</span>
+            <select class="finding-select" id="fsel_${safeSymKey}_${i}" data-skey="${safeSymKey}" data-fidx="${i}"
+              onchange="setFinding(this.dataset.skey,this.dataset.fidx,this.value)">
+              <option value="">—</option>
+              ${f.opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>`).join('')}
+        </div>`:'';
       row.innerHTML=`<div class="sym-cb" id="symcb_${safeSymKey}"></div>
         <div style="flex:1">
           <div class="sym-label">${item.label}${hasDdx?'<span class="ddx-tag" id="ddxtag_'+safeSymKey+'">DDx</span>':''}</div>
           ${item.sub?`<div class="sym-label-sub">${item.sub}</div>`:''}
           ${latHtml}
+          ${findingsHtml}
         </div>`;
       body.appendChild(row);
       realIdx++;
