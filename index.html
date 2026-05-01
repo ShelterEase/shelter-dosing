@@ -86,7 +86,9 @@
   .copied-flash.show{opacity:1;}
   .clear-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.13);background:transparent;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
   .clear-btn:hover{color:rgba(255,255,255,.65);}
-  footer{background:var(--text);color:rgba(255,255,255,.38);text-align:center;padding:16px;font-size:11px;}
+  footer{background:var(--text);color:rgba(255,255,255,.38);text-align:center;padding:20px 24px;font-size:11px;line-height:1.7;}
+  footer .footer-copyright{color:rgba(255,255,255,.55);font-weight:500;margin-bottom:4px;}
+  footer .footer-liability{color:rgba(255,255,255,.32);font-size:10.5px;max-width:680px;margin:0 auto;}
   footer strong{color:rgba(255,255,255,.65);font-weight:500;}
   @media(max-width:600px){.drug-grid{grid-template-columns:1fr;}.site-header{padding:12px 14px;}.header-controls{gap:6px;}.sp-btn{font-size:11px;padding:5px 10px;}}
   html,body{overflow-x:hidden;}
@@ -146,14 +148,15 @@
   .sym-label-sub{font-size:11px;color:var(--text3);margin-top:1px;}
   /* Vet-only DDx badge on symptom */
   .ddx-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;background:rgba(13,126,107,.1);color:var(--teal);border:1px solid var(--teal-mid);margin-left:5px;vertical-align:middle;white-space:nowrap;}
-  /* Findings dropdowns — appear after symptom checked */
-  .findings-row{display:none;flex-direction:column;gap:5px;margin-top:6px;padding:7px 10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+  /* Findings multi-select pills — appear after symptom checked */
+  .findings-row{display:none;flex-direction:column;gap:7px;margin-top:6px;padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
   .findings-row.show{display:flex;}
-  .finding-item{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .finding-label{font-size:11px;font-weight:500;color:var(--text2);min-width:90px;flex-shrink:0;}
-  .finding-select{font-size:11px;padding:3px 24px 3px 7px;border:1px solid var(--border2);border-radius:5px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6860' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;flex:1;min-width:130px;max-width:220px;}
-  .finding-select:focus{outline:none;border-color:var(--teal);}
-  .finding-select.selected{border-color:var(--teal);background-color:var(--teal-light);}
+  .finding-item{display:flex;flex-direction:column;gap:4px;}
+  .finding-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);}
+  .finding-pills{display:flex;flex-wrap:wrap;gap:4px;}
+  .finding-pill{padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .12s;user-select:none;}
+  .finding-pill:hover{border-color:var(--teal);color:var(--teal);}
+  .finding-pill.active{background:var(--teal);border-color:var(--teal);color:#fff;}
   .custom-findings-row{margin-top:10px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);}
   .custom-findings-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;}
   .custom-findings-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;resize:vertical;box-sizing:border-box;transition:border-color .15s;}
@@ -274,7 +277,10 @@
     </div>
   </div>
 </div>
-<footer><strong>For shelter staff use only.</strong> &nbsp;Always verify doses with a licensed veterinarian.</footer>
+<footer>
+  <div class="footer-copyright">© 2026 R.A. All rights reserved. Unauthorized copying, modification, or redistribution prohibited.</div>
+  <div class="footer-liability">This tool is provided as a convenience aid for shelter veterinary staff only. All medication doses, calculations, and clinical guidance must be verified by a licensed veterinarian before use. No liability is assumed for errors, omissions, or outcomes resulting from use of this tool.</div>
+</footer>
 <script>
 // ── helpers ──────────────────────────────────
 function f(n,d=2){return parseFloat(n.toFixed(d));}
@@ -2281,7 +2287,7 @@ function toggleSymptom(symKey){
   if(frow){
     frow.classList.toggle('show',selectedSymptoms.has(symKey));
     if(!selectedSymptoms.has(symKey)){
-      frow.querySelectorAll('select').forEach(s=>{s.value='';s.classList.remove('selected');});
+      frow.querySelectorAll('.finding-pill').forEach(p=>p.classList.remove('active'));
     }
   }
   document.getElementById('clinicalFooterRow').style.display=clinicalRole==='tech'&&hasAnyFindings()?'block':'none';
@@ -2291,18 +2297,26 @@ function toggleSymptom(symKey){
   updateCopyBar();
 }
 
-function setFinding(safeSymKey, findingIdx, val){
+function setFinding(safeSymKey, findingIdx, val, pillEl){
   const fkey=safeSymKey+'|||'+findingIdx;
-  if(val) findingsState.set(fkey, val);
-  else findingsState.delete(fkey);
-  const sel=document.getElementById('fsel_'+safeSymKey+'_'+findingIdx);
-  if(sel) sel.classList.toggle('selected', !!val);
+  if(!findingsState.has(fkey)) findingsState.set(fkey, new Set());
+  const s=findingsState.get(fkey);
+  if(s.has(val)){
+    s.delete(val);
+    if(pillEl) pillEl.classList.remove('active');
+  } else {
+    s.add(val);
+    if(pillEl) pillEl.classList.add('active');
+  }
+  if(s.size===0) findingsState.delete(fkey);
   renderClinicalPreview();
   updateCopyBar();
 }
 
-function getFindingValue(safeSymKey, findingIdx){
-  return findingsState.get(safeSymKey+'|||'+findingIdx)||null;
+function getFindingValues(safeSymKey, findingIdx){
+  const fkey=safeSymKey+'|||'+findingIdx;
+  const s=findingsState.get(fkey);
+  return s&&s.size>0?[...s]:null;
 }
 
 function setLocation(symKey, val){
@@ -2359,8 +2373,8 @@ function buildClinicalText(item, symKey){
     const safeK=symKey.replace(/[^a-zA-Z0-9]/g,'_');
     const parts=[];
     item.findings.forEach((f,i)=>{
-      const val=getFindingValue(safeK,i);
-      if(val) parts.push(f.label+': '+val);
+      const vals=getFindingValues(safeK,i);
+      if(vals&&vals.length>0) parts.push(f.label+': '+vals.join(', '));
     });
     if(parts.length>0) text=text.replace(/\.$/,'')+'. '+parts.join('; ')+'.';
   }
@@ -2438,7 +2452,7 @@ function clearClinical(e){
   document.querySelectorAll('.lat-toggle').forEach(el=>el.classList.remove('show'));
   document.querySelectorAll('.lat-toggle select').forEach(el=>{el.value='';el.style.borderColor='';});
   document.querySelectorAll('.findings-row').forEach(el=>el.classList.remove('show'));
-  document.querySelectorAll('.finding-select').forEach(el=>{el.value='';el.classList.remove('selected');});
+  document.querySelectorAll('.finding-pill').forEach(el=>el.classList.remove('active'));
   document.getElementById('clinicalFooterRow').style.display='none';
   const cf=document.getElementById('customFindings');
   if(cf) cf.value='';
@@ -2506,11 +2520,9 @@ function initClinical(){
           ${item.findings.map((f,i)=>`
           <div class="finding-item">
             <span class="finding-label">${f.label}</span>
-            <select class="finding-select" id="fsel_${safeSymKey}_${i}" data-skey="${safeSymKey}" data-fidx="${i}"
-              onchange="setFinding(this.dataset.skey,this.dataset.fidx,this.value)">
-              <option value="">—</option>
-              ${f.opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-            </select>
+            <div class="finding-pills">
+              ${f.opts.map(o=>`<span class="finding-pill" id="fpill_${safeSymKey}_${i}_${o.replace(/[^a-zA-Z0-9]/g,'_')}" onclick="setFinding('${safeSymKey}',${i},'${o.replace(/'/g,"\\'")}',this)">${o}</span>`).join('')}
+            </div>
           </div>`).join('')}
         </div>`:'';
       row.innerHTML=`<div class="sym-cb" id="symcb_${safeSymKey}"></div>
