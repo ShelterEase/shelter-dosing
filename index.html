@@ -94,7 +94,60 @@
   html,body{overflow-x:hidden;}
   @media print{.site-header{position:static;background:#fff;color:#000;border-bottom:2px solid #000;box-shadow:none;}.header-controls,.section-tabs,.copy-bar,footer{display:none;}.drug-card{break-inside:avoid;box-shadow:none;border:1px solid #ccc;}.drug-grid{grid-template-columns:repeat(2,1fr);}.na-card{display:none;}body{background:#fff;}}
 
-  /* ── Clinical Module ─────────────────────────── */
+  /* ── URI Treatment Sheet Modal ──────────────── */
+  .uri-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;overflow-y:auto;padding:20px;}
+  .uri-modal-overlay.show{display:flex;align-items:flex-start;justify-content:center;}
+  .uri-modal{background:#fff;border-radius:10px;max-width:960px;width:100%;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+  .uri-modal-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f8f7f4;border-bottom:1px solid #e0ddd8;border-radius:10px 10px 0 0;gap:10px;flex-wrap:wrap;}
+  .uri-modal-title{font-size:14px;font-weight:600;color:#1a1916;}
+  .uri-modal-actions{display:flex;gap:8px;}
+  .uri-print-btn{padding:7px 16px;border-radius:6px;border:none;background:#0d7e6b;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .uri-print-btn:hover{background:#0a6558;}
+  .uri-close-btn{padding:7px 14px;border-radius:6px;border:1px solid #d0cdc8;background:#fff;color:#444;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
+  .uri-sheet{padding:20px 24px;font-family:'Arial',sans-serif;font-size:11px;color:#000;}
+  .uri-sheet h1{font-size:16px;font-weight:700;text-align:center;margin:0 0 12px;}
+  .uri-header-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1.5px solid #000;margin-bottom:8px;}
+  .uri-header-cell{padding:6px 8px;border-right:1px solid #000;font-size:11px;}
+  .uri-header-cell:last-child{border-right:none;}
+  .uri-header-cell label{font-weight:700;margin-right:4px;}
+  .uri-header-cell input{border:none;border-bottom:1px solid #555;outline:none;font-size:11px;font-family:Arial;width:calc(100% - 50px);background:transparent;}
+  .uri-section{border:1.5px solid #000;margin-bottom:8px;}
+  .uri-section-header{background:#d0d0d0;font-weight:700;padding:4px 8px;font-size:11px;border-bottom:1px solid #000;}
+  .uri-field-row{display:flex;align-items:center;padding:4px 8px;border-bottom:1px solid #ccc;gap:8px;font-size:11px;}
+  .uri-field-row:last-child{border-bottom:none;}
+  .uri-field-row label{font-weight:600;white-space:nowrap;}
+  .uri-field-row input[type=text]{flex:1;border:none;border-bottom:1px solid #888;outline:none;font-size:11px;font-family:Arial;background:transparent;}
+  .uri-field-row .uri-prev-times{display:flex;align-items:center;gap:4px;}
+  .uri-field-row .uri-prev-times input{width:30px;text-align:center;}
+  /* Tracking grid */
+  .uri-grid-wrap{overflow-x:auto;}
+  .uri-grid{width:100%;border-collapse:collapse;font-size:9.5px;}
+  .uri-grid th,.uri-grid td{border:1px solid #999;padding:2px 3px;text-align:center;vertical-align:middle;min-width:28px;}
+  .uri-grid th{background:#d0d0d0;font-weight:700;}
+  .uri-grid .row-label{text-align:left;font-weight:600;white-space:nowrap;padding:2px 6px;min-width:140px;background:#ebebeb;}
+  .uri-grid .subrow-label{text-align:left;font-weight:400;padding:2px 6px;min-width:140px;font-style:italic;}
+  .uri-grid .date-row td{background:#f5f5f5;font-weight:600;}
+  .uri-grid .med-row{background:#fff;}
+  .uri-grid .shade{background:#f0f0f0;}
+  /* Med rows auto-filled */
+  .uri-med-label{font-size:9px;text-align:left;padding:2px 4px;}
+  /* Notes section */
+  .uri-notes-grid{display:grid;grid-template-columns:1fr;gap:0;}
+  .uri-notes-row{border-bottom:1px solid #ccc;min-height:22px;padding:3px 6px;font-size:11px;}
+  .uri-notes-row input{width:100%;border:none;outline:none;font-size:11px;font-family:Arial;background:transparent;}
+  .uri-outcome-row{display:flex;flex-wrap:wrap;gap:16px;padding:6px 8px;align-items:center;font-size:11px;}
+  .uri-outcome-row label{display:flex;align-items:center;gap:4px;cursor:pointer;}
+  .uri-cat-icon{text-align:right;font-size:32px;line-height:1;}
+  /* Print styles */
+  @media print{
+    .uri-modal-overlay{position:static;background:none;padding:0;display:block!important;}
+    .uri-modal{box-shadow:none;border-radius:0;max-width:100%;}
+    .uri-modal-toolbar{display:none!important;}
+    .uri-sheet{padding:8px 12px;}
+    body>*:not(.uri-modal-overlay){display:none!important;}
+    .uri-modal{page-break-inside:avoid;}
+    @page{size:landscape;margin:10mm;}
+  }
   .clinical-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;}
   .clinical-header{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;user-select:none;gap:10px;}
   .clinical-header:hover{background:var(--surface2);}
@@ -253,7 +306,10 @@
       <div class="clinical-preview" id="clinicalPreview">
         <div class="clinical-preview-header">
           <div class="clinical-preview-label">📋 Note preview — appears above medications in clipboard</div>
-          <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <button class="uri-sheet-btn" id="uriSheetBtn" onclick="openUriModal()" style="display:none;padding:3px 10px;border-radius:5px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">🐱 URI Treatment Sheet</button>
+            <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
+          </div>
         </div>
         <div class="clinical-preview-lines" id="clinicalPreviewLines"></div>
       </div>
@@ -748,9 +804,10 @@ const DRUGS=[
 {id:'vitk1',name:'Vitamin K1',alias:'Phytonadione 10mg/mL',route:'SQ / PO',sections:['Other'],species:['dog','cat'],type:'single',
  use:'Rodenticide toxicity, coagulopathy.',
  note:'2.5–5 mg/kg q12h \u00d7 4 weeks. SQ first dose (NOT IV), then oral. Give oral with fatty food.'},
-{id:'zorbium',name:'Zorbium',alias:'Buprenorphine ER 20mg/mL — Cats',route:'Transdermal',sections:['Pain / NSAID'],species:['cat'],type:'single',
- use:'Extended-release pain — transdermal to inner pinna, lasts ~4 days. Cats only.',
- note:'2.6–6.6 lbs: 0.4 mL | >6.6–16.5 lbs: 1.0 mL. Apply to back of neck at base of skull. Wear gloves. DEA Schedule III — log required.'},
+{id:'zorbium',name:'Zorbium',alias:'Buprenorphine ER 20mg/mL — Cats',route:'Transdermal / SQ',sections:['Pain / NSAID'],species:['cat'],type:'multi',
+ use:'Extended-release pain — transdermal or injectable SR. Cats only.',
+ options:[{key:'transdermal',label:'Transdermal 20mg/mL'},{key:'injectable',label:'Injectable SR 3mg/mL SQ'}],
+ note:'Transdermal: 2.6–6.6 lbs: 0.4 mL | >6.6–16.5 lbs: 1.0 mL — apply to back of neck at base of skull, wear gloves. Injectable SR: 0.1–0.2mg/kg SQ — use when weight outside transdermal range or transdermal not appropriate. DEA Schedule III — log required.'},
 {id:'zn7spray',name:'ZN7 Spray',alias:'Zinc Compound Wound Spray',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
  use:'Hot spots, minor wounds, skin irritation — zinc-based antiseptic and astringent spray.',
  note:'Shake well. Apply to clean, dry affected area q12–24h. Keep away from eyes. Do not bandage tightly after application. Prevent licking — use e-collar if needed.'}
@@ -1789,11 +1846,24 @@ function calcDose(drug, kg){
     const loV=f(lo/3,3),hiV=f(hi/3,3);
     return{html:blk('SQ — 3mg/mL — single dose',loV+'–'+hiV+' mL','0.1–0.2mg/kg → '+lo+'–'+hi+'mg','24–72 hr duration — DEA Schedule III'),plain:`Buprenorphine SR: ${loV}–${hiV}mL (3mg/mL, ${lo}–${hi}mg) SQ once`};
   }
-  // ZORBIUM
+  // ZORBIUM — multi: transdermal + injectable SR
   if(id==='zorbium'){
     const r=zorbiumDose(lb);
-    if(!r)return{html:blk('Weight out of range','—','','2.6–16.5 lbs only','warn-block'),plain:''};
-    return{html:blk('Transdermal — per weight',r.ml+' mL','Apply to back of neck at base of skull','20mg/mL — lasts ~4 days — DEA Schedule III'),plain:`Zorbium: ${r.ml}mL transdermal to back of neck (base of skull), lasts ~4 days`};
+    // Transdermal option
+    let tdH, tdP;
+    if(!r){
+      tdH=blk('Weight out of range','—','2.6–16.5 lbs only','Use injectable SR for cats outside this weight range.','warn-block');
+      tdP='Zorbium transdermal: weight outside range (2.6–16.5 lbs) — use injectable SR';
+    } else {
+      tdH=blk('Transdermal — per weight',r.ml+' mL','Apply to back of neck at base of skull','20mg/mL — lasts ~4 days — DEA Schedule III — wear gloves');
+      tdP=`Zorbium: ${r.ml}mL transdermal to back of neck (base of skull), lasts ~4 days`;
+    }
+    // Injectable SR option — 3mg/mL, 0.1–0.2mg/kg SQ
+    const loMg=f(0.1*kg,3), hiMg=f(0.2*kg,3);
+    const loMl=f(loMg/3,2), hiMl=f(hiMg/3,2);
+    const injH=blk('Injectable SR — 3mg/mL SQ',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','0.1–0.2mg/kg SQ once — 24–72 hr duration — DEA Schedule III');
+    const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
+    return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
   }
   // METHOCARBAMOL
   if(id==='methocarbamol'){
@@ -2437,6 +2507,7 @@ function renderClinicalPreview(){
   const customHtml=custom?`<div class="clinical-preview-line" style="border-left:3px solid var(--teal);background:var(--teal-light);">${custom}</div>`:'';
   const footerHtml=footer?`<div class="clinical-preview-line" style="border-left:3px solid var(--amber);background:rgba(245,158,11,.08);font-style:italic;">${footer}</div>`:'';
   document.getElementById('clinicalPreviewLines').innerHTML=structuredHtml+customHtml+footerHtml;
+  updateUriBtn();
 }
 
 
@@ -2554,6 +2625,183 @@ function updateDdxTags(){
 // Override setRole to also update DDx tags
 const _origSetRole=setRole;
 
+// ── URI TREATMENT SHEET ──────────────────────
+function isUriSelected(){
+  // Check if feline URI symptom is in selectedSymptoms
+  let found=false;
+  selectedSymptoms.forEach(k=>{
+    const item=getItemFromKey(k);
+    if(item&&item.label==='Upper respiratory infection (URI)') found=true;
+  });
+  return found;
+}
+
+function updateUriBtn(){
+  const btn=document.getElementById('uriSheetBtn');
+  if(btn) btn.style.display=(species==='cat'&&isUriSelected())?'':'none';
+}
+
+function openUriModal(){
+  buildUriSheet();
+  document.getElementById('uriModal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeUriModal(){
+  document.getElementById('uriModal').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function buildUriSheet(){
+  const lb=getLb()||'';
+  const kg=getKg()||'';
+  const weightStr=lb?(lb+' lbs / '+f(kg,2)+' kg'):'';
+  const today=new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+  const days=14;
+
+  // Collect selected meds with their plain text doses
+  const medRows=[];
+  DRUGS.forEach(drug=>{
+    if(!selectedMeds.has(drug.id))return;
+    if(drug.type==='multi'){
+      const result=calcDose(drug,getKg());
+      selectedMeds.get(drug.id).forEach(optKey=>{
+        const o=result.opts&&result.opts[optKey];
+        if(o&&o.plain) medRows.push(o.plain);
+      });
+    } else {
+      const result=calcDose(drug,getKg());
+      if(result.plain){
+        const needsName=drug.type==='topical'||!result.plain.toLowerCase().startsWith(drug.name.toLowerCase().split(' ')[0].toLowerCase());
+        medRows.push(needsName?drug.name+': '+result.plain:result.plain);
+      }
+    }
+  });
+
+  // Day header columns
+  const dayHeaders=Array.from({length:days},(_,i)=>`<th colspan="2">Day ${i+1}</th>`).join('');
+  const ampmHeaders=Array.from({length:days},()=>`<th>AM</th><th>PM</th>`).join('');
+  const emptyCells=()=>Array.from({length:days},()=>`<td class="shade"></td><td></td>`).join('');
+  const singleCells=()=>Array.from({length:days},()=>`<td colspan="2"></td>`).join('');
+
+  // Med rows — pre-fill label, empty initials
+  const medGridRows=medRows.length>0
+    ?medRows.map(m=>`<tr class="med-row"><td class="uri-med-label row-label" style="font-size:9px;font-weight:600;">${m}</td>${singleCells()}</tr>`).join('')
+    // Blank rows if no meds selected
+    :Array.from({length:5},()=>`<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`).join('');
+
+  // Extra blank med rows
+  const blankMedRows=Array.from({length:Math.max(0,5-medRows.length)},()=>
+    `<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`).join('');
+
+  document.getElementById('uriSheet').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <div style="flex:1;">
+        <h1>Pinellas County Animal Services — Feline URI Treatment Sheet</h1>
+      </div>
+      <div class="uri-cat-icon">🐱</div>
+    </div>
+
+    <!-- Header row -->
+    <div class="uri-header-row">
+      <div class="uri-header-cell"><label>Animal #:</label><input type="text" id="uriAnimalId" placeholder="ID / Name"></div>
+      <div class="uri-header-cell"><label>Date:</label><input type="text" id="uriDate" value="${today}"></div>
+      <div class="uri-header-cell"><label>Weight:</label><input type="text" id="uriWeight" value="${weightStr}"></div>
+    </div>
+
+    <!-- History -->
+    <div class="uri-section">
+      <div class="uri-section-header">History / Treatment Plan</div>
+      <div class="uri-field-row">
+        <span>This cat has been treated for URI</span>
+        <input type="text" style="width:40px;text-align:center;" placeholder="0">
+        <span>time(s) before.</span>
+        <span style="margin-left:auto;font-style:italic;font-size:10px;color:#555;">Treatment may change depending on severity of disease</span>
+      </div>
+      <div class="uri-field-row"><label>Treatment Plan:</label><input type="text" placeholder="e.g. Antibiotics per protocol, supportive care"></div>
+    </div>
+
+    <!-- Daily Observations Grid -->
+    <div class="uri-section">
+      <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+        <span>Daily Observations</span>
+        <span>URI Signs / Observations — Please initial each day</span>
+      </div>
+      <div class="uri-grid-wrap">
+        <table class="uri-grid">
+          <thead>
+            <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Observation</th>${dayHeaders}</tr>
+            <tr>${ampmHeaders}</tr>
+          </thead>
+          <tbody>
+            <tr class="date-row"><td class="row-label">📅 Date</td>${singleCells()}</tr>
+            <tr><td class="row-label">URI Score (0–5)</td>${singleCells()}</tr>
+            <tr><td class="row-label">Eye Score (0–4)</td>${singleCells()}</tr>
+            <tr><td class="row-label">Hydration +/−</td>${singleCells()}</tr>
+            <tr><td class="row-label">Attitude</td>${singleCells()}</tr>
+            <tr><td class="row-label">Appetite +/−</td>${singleCells()}</tr>
+            <tr><td class="row-label">Feces +/− (see sheet)</td>${singleCells()}</tr>
+            <tr><td class="row-label">Urine +/−</td>${singleCells()}</tr>
+            <tr><td class="row-label">Other</td>${singleCells()}</tr>
+            <tr><td class="row-label">Can food Y/N</td>${singleCells()}</tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Medications Grid -->
+    <div class="uri-section">
+      <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+        <span>Medication / Dosage / Frequency</span>
+        <span>TREATMENTS — Please initial each day to indicate treatment was performed</span>
+      </div>
+      <div class="uri-grid-wrap">
+        <table class="uri-grid">
+          <thead>
+            <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Medication</th>${dayHeaders}</tr>
+            <tr>${ampmHeaders}</tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-label" style="font-style:italic;">SQ Fluids (indicate amount given)</td>${singleCells()}</tr>
+            ${medGridRows}
+            ${blankMedRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="uri-section">
+      <div class="uri-section-header">Additional Notes / Comments</div>
+      <div class="uri-notes-row"><input type="text" placeholder=""></div>
+      <div class="uri-notes-row"><input type="text" placeholder=""></div>
+      <div class="uri-notes-row"><input type="text" placeholder=""></div>
+    </div>
+
+    <!-- Fecal + Outcome -->
+    <div class="uri-section">
+      <div class="uri-field-row" style="flex-wrap:wrap;gap:16px;">
+        <span><strong>If a fecal was done please record results here:</strong></span>
+        <input type="text" style="flex:1;min-width:120px;" placeholder="results">
+        <span><strong>Date fecal performed:</strong></span>
+        <input type="text" style="width:90px;" placeholder="mm/dd/yyyy">
+        <span><strong>Tx:</strong></span>
+        <input type="text" style="width:100px;" placeholder="">
+      </div>
+      <div class="uri-outcome-row">
+        <strong>Outcome (please circle one):</strong>
+        <label><input type="checkbox"> Recovered; placed in PCAS adoptions</label>
+        <label><input type="checkbox"> Recovered; sent to pet store</label>
+        <label><input type="checkbox"> Euthanized</label>
+        <label><input type="checkbox"> Died</label>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
+      For shelter staff use only — All treatments must be verified by a licensed veterinarian
+    </div>`;
+}
+
 function init(){
   buildTabs();
   initClinical();
@@ -2574,5 +2822,20 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+<!-- ── URI Treatment Sheet Modal ── -->
+<div class="uri-modal-overlay" id="uriModal">
+  <div class="uri-modal">
+    <div class="uri-modal-toolbar">
+      <span class="uri-modal-title">🐱 Feline URI Treatment Sheet</span>
+      <div class="uri-modal-actions">
+        <button class="uri-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="uri-close-btn" onclick="closeUriModal()">✕ Close</button>
+      </div>
+    </div>
+    <div class="uri-sheet" id="uriSheet">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+</div>
 </body>
 </html>

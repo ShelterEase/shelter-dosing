@@ -1,7 +1,7 @@
 // Shelter Drug Dosing — Service Worker
 // Caches all assets on first load so the app works fully offline after that.
 
-const CACHE_NAME = 'shelter-dosing-v4';
+const CACHE_NAME = 'shelter-dosing-v5';
 
 // Files to cache on install
 const PRECACHE_URLS = [
