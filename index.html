@@ -2692,51 +2692,74 @@ function buildTxSheet(sp){
   const fmt=(d)=>(d.getMonth()+1)+'/'+(d.getDate());
   const fmtFull=(d)=>((d.getMonth()+1)+'').padStart(2,'0')+'/'+((d.getDate())+'').padStart(2,'0')+'/'+d.getFullYear();
   const todayStr=fmtFull(today);
-  const days=10;
+  const days=14;
 
-  // Compute end of quarantine date (start + 9 days = 10-day quarantine)
-  const endQ=new Date(today); endQ.setDate(today.getDate()+9);
+  // Compute end of quarantine (start + 13 = 14-day treatment)
+  const endQ=new Date(today); endQ.setDate(today.getDate()+9); // 10-day quarantine
   const endQStr=fmtFull(endQ);
 
-  // Day date labels — will auto-update when start date changes
+  // Day date labels
   const dayDateLabels=Array.from({length:days},(_,i)=>{
     const d=new Date(today); d.setDate(today.getDate()+i);
     return fmt(d);
   });
 
-  // Collect selected meds
-  const medRows=[];
+  // Collect selected meds — two formats:
+  // 1. Treatment plan: "Drug: Xmg" (dose amount only, no frequency/duration)
+  // 2. Med grid: full plain text but editable
+  const medRows=[];     // for grid — full text
+  const medPlanLines=[]; // for treatment plan — dose only
+
+  function extractMgOnly(plainText){
+    // Extract just drug name + mg amount, strip frequency/route details
+    // e.g. "Doxycycline: 45mg PO q12-24h (1 × 50mg capsule)" → "Doxycycline: 45mg"
+    const mgMatch=plainText.match(/^([^:]+):\s*([\d.,]+\s*(?:mg|mL|mcg|unit))/i);
+    if(mgMatch) return mgMatch[1].trim()+': '+mgMatch[2].trim();
+    // Fallback — just drug name
+    const colonIdx=plainText.indexOf(':');
+    return colonIdx>-1?plainText.substring(0,colonIdx+8).trim():plainText;
+  }
+
   DRUGS.forEach(drug=>{
     if(!selectedMeds.has(drug.id))return;
     if(drug.type==='multi'){
       const result=calcDose(drug,getKg());
       selectedMeds.get(drug.id).forEach(optKey=>{
         const o=result.opts&&result.opts[optKey];
-        if(o&&o.plain) medRows.push(o.plain);
+        if(o&&o.plain){
+          medRows.push(o.plain);
+          medPlanLines.push(extractMgOnly(o.plain));
+        }
       });
     } else {
       const result=calcDose(drug,getKg());
       if(result.plain){
         const needsName=drug.type==='topical'||!result.plain.toLowerCase().startsWith(drug.name.toLowerCase().split(' ')[0].toLowerCase());
-        medRows.push(needsName?drug.name+': '+result.plain:result.plain);
+        const full=needsName?drug.name+': '+result.plain:result.plain;
+        medRows.push(full);
+        medPlanLines.push(extractMgOnly(full));
       }
     }
   });
+
+  const singleCells=()=>Array.from({length:days},()=>`<td colspan="2"></td>`).join('');
+
+  // Med grid rows — full text with frequency, editable, plus blank rows for manual additions
+  const totalMedRows=Math.max(medRows.length+3, 7);
+  const medGridRows=Array.from({length:totalMedRows},(_,i)=>{
+    const label=i<medRows.length?medRows[i]:'';
+    return `<tr class="med-row"><td class="row-label" contenteditable="true" style="font-size:9px;font-weight:${label?'600':'400'};min-width:160px;outline:none;" spellcheck="false">${label}</td>${singleCells()}</tr>`;
+  }).join('');
+
+  // Treatment plan text — editable textarea pre-filled with dose-only med list
+  const txPlanDefault=medPlanLines.length>0?medPlanLines.join('\n'):'';
+  const blankCount=0; // no longer needed separately
 
   // Build day headers with date sub-row
   const dayHeaders=Array.from({length:days},(_,i)=>
     `<th colspan="2" style="white-space:nowrap;">Day ${i+1}<br><span class="day-date" data-day="${i}" style="font-size:9px;font-weight:400;">${dayDateLabels[i]}</span></th>`
   ).join('');
   const ampmHeaders=Array.from({length:days},()=>`<th>AM</th><th>PM</th>`).join('');
-  const singleCells=()=>Array.from({length:days},()=>`<td colspan="2"></td>`).join('');
-
-  const blankCount=Math.max(0,5-medRows.length);
-  const medGridRows=medRows.map(m=>
-    `<tr class="med-row"><td class="row-label" style="font-size:9px;font-weight:600;">${m}</td>${singleCells()}</tr>`
-  ).join('');
-  const blankMedRows=Array.from({length:blankCount},()=>
-    `<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`
-  ).join('');
 
   const title=isCat
     ? 'Pinellas County Animal Services — Feline URI Treatment Sheet'
@@ -2775,7 +2798,10 @@ function buildTxSheet(sp){
         <span>${prevLine}</span>
         <span style="margin-left:auto;font-style:italic;font-size:10px;color:#555;">Treatment may change depending on severity of disease</span>
       </div>
-      <div class="uri-field-row"><label>Treatment Plan:</label><input type="text" placeholder="e.g. Antibiotics per protocol, supportive care"></div>
+      <div class="uri-field-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <label style="font-weight:700;">Treatment Plan: <span style="font-weight:400;font-size:10px;font-style:italic;">(medications and doses — editable)</span></label>
+        <textarea style="width:100%;border:1px solid #bbb;border-radius:3px;padding:4px 6px;font-size:10px;font-family:Arial;resize:vertical;min-height:38px;box-sizing:border-box;" spellcheck="false">${txPlanDefault}</textarea>
+      </div>
     </div>
 
     <!-- Daily Observations -->
@@ -2855,7 +2881,7 @@ function buildTxSheet(sp){
     </div>
 
     <div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
-      For shelter staff use only — All treatments must be verified by a licensed veterinarian &nbsp;|&nbsp; 10-Day Quarantine Sheet
+      For shelter staff use only — All treatments must be verified by a licensed veterinarian &nbsp;|&nbsp; 10-Day Quarantine / 14-Day Treatment Sheet
     </div>`;
 }
 
