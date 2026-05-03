@@ -1342,6 +1342,7 @@ function setSpecies(s){
   document.querySelectorAll('.sp-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(s)));
   selectedMeds.clear();
   render();
+  updateUriBtn();
 }
 function setUnit(u){
   unit=u;
@@ -2627,7 +2628,6 @@ const _origSetRole=setRole;
 
 // ── URI TREATMENT SHEET ──────────────────────
 function isUriSelected(){
-  // Check if feline URI symptom is in selectedSymptoms
   let found=false;
   selectedSymptoms.forEach(k=>{
     const item=getItemFromKey(k);
@@ -2636,13 +2636,33 @@ function isUriSelected(){
   return found;
 }
 
-function updateUriBtn(){
-  const btn=document.getElementById('uriSheetBtn');
-  if(btn) btn.style.display=(species==='cat'&&isUriSelected())?'':'none';
+function isDogRespSelected(){
+  let found=false;
+  selectedSymptoms.forEach(k=>{
+    const item=getItemFromKey(k);
+    if(item&&(item.label==='Kennel cough (CIRDC)'||item.label==='Canine URI / kennel cough exposure')) found=true;
+  });
+  return found;
 }
 
-function openUriModal(){
-  buildUriSheet();
+function updateUriBtn(){
+  const btn=document.getElementById('uriSheetBtn');
+  if(!btn) return;
+  if(species==='cat'&&isUriSelected()){
+    btn.style.display='';
+    btn.textContent='🐱 URI Treatment Sheet';
+    btn.onclick=()=>openTxModal('cat');
+  } else if(species==='dog'&&isDogRespSelected()){
+    btn.style.display='';
+    btn.textContent='🐶 CIRDC Treatment Sheet';
+    btn.onclick=()=>openTxModal('dog');
+  } else {
+    btn.style.display='none';
+  }
+}
+
+function openTxModal(sp){
+  buildTxSheet(sp);
   document.getElementById('uriModal').classList.add('show');
   document.body.style.overflow='hidden';
 }
@@ -2652,14 +2672,39 @@ function closeUriModal(){
   document.body.style.overflow='';
 }
 
-function buildUriSheet(){
+// Parse a date string mm/dd/yyyy into a Date object
+function parseDate(str){
+  if(!str) return null;
+  const parts=str.split('/');
+  if(parts.length===3){
+    const m=parseInt(parts[0])-1, d=parseInt(parts[1]), y=parseInt(parts[2]);
+    if(!isNaN(m)&&!isNaN(d)&&!isNaN(y)) return new Date(y,m,d);
+  }
+  return null;
+}
+
+function buildTxSheet(sp){
+  const isCat=sp==='cat';
   const lb=getLb()||'';
   const kg=getKg()||'';
   const weightStr=lb?(lb+' lbs / '+f(kg,2)+' kg'):'';
-  const today=new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
-  const days=14;
+  const today=new Date();
+  const fmt=(d)=>(d.getMonth()+1)+'/'+(d.getDate());
+  const fmtFull=(d)=>((d.getMonth()+1)+'').padStart(2,'0')+'/'+((d.getDate())+'').padStart(2,'0')+'/'+d.getFullYear();
+  const todayStr=fmtFull(today);
+  const days=10;
 
-  // Collect selected meds with their plain text doses
+  // Compute end of quarantine date (start + 9 days = 10-day quarantine)
+  const endQ=new Date(today); endQ.setDate(today.getDate()+9);
+  const endQStr=fmtFull(endQ);
+
+  // Day date labels — will auto-update when start date changes
+  const dayDateLabels=Array.from({length:days},(_,i)=>{
+    const d=new Date(today); d.setDate(today.getDate()+i);
+    return fmt(d);
+  });
+
+  // Collect selected meds
   const medRows=[];
   DRUGS.forEach(drug=>{
     if(!selectedMeds.has(drug.id))return;
@@ -2678,85 +2723,97 @@ function buildUriSheet(){
     }
   });
 
-  // Day header columns
-  const dayHeaders=Array.from({length:days},(_,i)=>`<th colspan="2">Day ${i+1}</th>`).join('');
+  // Build day headers with date sub-row
+  const dayHeaders=Array.from({length:days},(_,i)=>
+    `<th colspan="2" style="white-space:nowrap;">Day ${i+1}<br><span class="day-date" data-day="${i}" style="font-size:9px;font-weight:400;">${dayDateLabels[i]}</span></th>`
+  ).join('');
   const ampmHeaders=Array.from({length:days},()=>`<th>AM</th><th>PM</th>`).join('');
-  const emptyCells=()=>Array.from({length:days},()=>`<td class="shade"></td><td></td>`).join('');
   const singleCells=()=>Array.from({length:days},()=>`<td colspan="2"></td>`).join('');
 
-  // Med rows — pre-fill label, empty initials
-  const medGridRows=medRows.length>0
-    ?medRows.map(m=>`<tr class="med-row"><td class="uri-med-label row-label" style="font-size:9px;font-weight:600;">${m}</td>${singleCells()}</tr>`).join('')
-    // Blank rows if no meds selected
-    :Array.from({length:5},()=>`<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`).join('');
+  const blankCount=Math.max(0,5-medRows.length);
+  const medGridRows=medRows.map(m=>
+    `<tr class="med-row"><td class="row-label" style="font-size:9px;font-weight:600;">${m}</td>${singleCells()}</tr>`
+  ).join('');
+  const blankMedRows=Array.from({length:blankCount},()=>
+    `<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`
+  ).join('');
 
-  // Extra blank med rows
-  const blankMedRows=Array.from({length:Math.max(0,5-medRows.length)},()=>
-    `<tr class="med-row"><td class="row-label"></td>${singleCells()}</tr>`).join('');
+  const title=isCat
+    ? 'Pinellas County Animal Services — Feline URI Treatment Sheet'
+    : 'Pinellas County Animal Services — Canine CIRDC Treatment Sheet';
+  const icon=isCat?'🐱':'🐶';
+  const prevLine=isCat
+    ? `This cat has been treated for URI <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`
+    : `This dog has been treated for kennel cough <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`;
+
+  document.getElementById('uriModalTitle').textContent=icon+' '+(isCat?'Feline URI':'Canine CIRDC')+' Treatment Sheet';
 
   document.getElementById('uriSheet').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-      <div style="flex:1;">
-        <h1>Pinellas County Animal Services — Feline URI Treatment Sheet</h1>
-      </div>
-      <div class="uri-cat-icon">🐱</div>
+      <div style="flex:1;"><h1>${title}</h1></div>
+      <div class="uri-cat-icon">${icon}</div>
     </div>
 
-    <!-- Header row -->
-    <div class="uri-header-row">
-      <div class="uri-header-cell"><label>Animal #:</label><input type="text" id="uriAnimalId" placeholder="ID / Name"></div>
-      <div class="uri-header-cell"><label>Date:</label><input type="text" id="uriDate" value="${today}"></div>
-      <div class="uri-header-cell"><label>Weight:</label><input type="text" id="uriWeight" value="${weightStr}"></div>
+    <!-- Header: 4 cells now -->
+    <div class="uri-header-row" style="grid-template-columns:1.4fr 1fr 1fr 1fr;">
+      <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
+      <div class="uri-header-cell">
+        <label>Start Date:</label>
+        <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
+      </div>
+      <div class="uri-header-cell">
+        <label>End of Q Date:</label>
+        <input type="text" id="txEndDate" value="${endQStr}" style="width:calc(100% - 90px);" readonly>
+      </div>
+      <div class="uri-header-cell"><label>Weight:</label><input type="text" value="${weightStr}" style="width:calc(100% - 52px);"></div>
     </div>
 
     <!-- History -->
     <div class="uri-section">
       <div class="uri-section-header">History / Treatment Plan</div>
       <div class="uri-field-row">
-        <span>This cat has been treated for URI</span>
-        <input type="text" style="width:40px;text-align:center;" placeholder="0">
-        <span>time(s) before.</span>
+        <span>${prevLine}</span>
         <span style="margin-left:auto;font-style:italic;font-size:10px;color:#555;">Treatment may change depending on severity of disease</span>
       </div>
       <div class="uri-field-row"><label>Treatment Plan:</label><input type="text" placeholder="e.g. Antibiotics per protocol, supportive care"></div>
     </div>
 
-    <!-- Daily Observations Grid -->
+    <!-- Daily Observations -->
     <div class="uri-section">
       <div class="uri-section-header" style="display:flex;justify-content:space-between;">
         <span>Daily Observations</span>
-        <span>URI Signs / Observations — Please initial each day</span>
+        <span>${isCat?'URI':'Respiratory'} Signs / Observations — Please initial each day</span>
       </div>
       <div class="uri-grid-wrap">
-        <table class="uri-grid">
+        <table class="uri-grid" id="obsGrid">
           <thead>
             <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Observation</th>${dayHeaders}</tr>
             <tr>${ampmHeaders}</tr>
           </thead>
           <tbody>
-            <tr class="date-row"><td class="row-label">📅 Date</td>${singleCells()}</tr>
-            <tr><td class="row-label">URI Score (0–5)</td>${singleCells()}</tr>
+            <tr><td class="row-label">${isCat?'URI Score (0–5)':'Cough severity (0–4)'}</td>${singleCells()}</tr>
             <tr><td class="row-label">Eye Score (0–4)</td>${singleCells()}</tr>
+            <tr><td class="row-label">${isCat?'Nasal discharge':'Nasal discharge'}</td>${singleCells()}</tr>
             <tr><td class="row-label">Hydration +/−</td>${singleCells()}</tr>
             <tr><td class="row-label">Attitude</td>${singleCells()}</tr>
             <tr><td class="row-label">Appetite +/−</td>${singleCells()}</tr>
-            <tr><td class="row-label">Feces +/− (see sheet)</td>${singleCells()}</tr>
+            <tr><td class="row-label">Feces +/−</td>${singleCells()}</tr>
             <tr><td class="row-label">Urine +/−</td>${singleCells()}</tr>
             <tr><td class="row-label">Other</td>${singleCells()}</tr>
-            <tr><td class="row-label">Can food Y/N</td>${singleCells()}</tr>
+            <tr><td class="row-label">${isCat?'Can food Y/N':'Water intake +/−'}</td>${singleCells()}</tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Medications Grid -->
+    <!-- Medications -->
     <div class="uri-section">
       <div class="uri-section-header" style="display:flex;justify-content:space-between;">
         <span>Medication / Dosage / Frequency</span>
         <span>TREATMENTS — Please initial each day to indicate treatment was performed</span>
       </div>
       <div class="uri-grid-wrap">
-        <table class="uri-grid">
+        <table class="uri-grid" id="medGrid">
           <thead>
             <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Medication</th>${dayHeaders}</tr>
             <tr>${ampmHeaders}</tr>
@@ -2780,17 +2837,17 @@ function buildUriSheet(){
 
     <!-- Fecal + Outcome -->
     <div class="uri-section">
-      <div class="uri-field-row" style="flex-wrap:wrap;gap:16px;">
+      <div class="uri-field-row" style="flex-wrap:wrap;gap:12px;">
         <span><strong>If a fecal was done please record results here:</strong></span>
-        <input type="text" style="flex:1;min-width:120px;" placeholder="results">
+        <input type="text" style="flex:1;min-width:100px;" placeholder="results">
         <span><strong>Date fecal performed:</strong></span>
-        <input type="text" style="width:90px;" placeholder="mm/dd/yyyy">
+        <input type="text" style="width:80px;" placeholder="mm/dd/yyyy">
         <span><strong>Tx:</strong></span>
-        <input type="text" style="width:100px;" placeholder="">
+        <input type="text" style="width:90px;" placeholder="">
       </div>
       <div class="uri-outcome-row">
-        <strong>Outcome (please circle one):</strong>
-        <label><input type="checkbox"> Recovered; placed in PCAS adoptions</label>
+        <strong>Outcome:</strong>
+        <label><input type="checkbox"> Recovered; placed in adoptions</label>
         <label><input type="checkbox"> Recovered; sent to pet store</label>
         <label><input type="checkbox"> Euthanized</label>
         <label><input type="checkbox"> Died</label>
@@ -2798,8 +2855,28 @@ function buildUriSheet(){
     </div>
 
     <div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
-      For shelter staff use only — All treatments must be verified by a licensed veterinarian
+      For shelter staff use only — All treatments must be verified by a licensed veterinarian &nbsp;|&nbsp; 10-Day Quarantine Sheet
     </div>`;
+}
+
+// Recompute day date labels when start date input changes
+function updateDayDates(){
+  const startInput=document.getElementById('txStartDate');
+  const endInput=document.getElementById('txEndDate');
+  if(!startInput) return;
+  const parsed=parseDate(startInput.value);
+  if(!parsed) return;
+
+  // Update end of quarantine (start + 9)
+  const endQ=new Date(parsed); endQ.setDate(parsed.getDate()+9);
+  if(endInput) endInput.value=((endQ.getMonth()+1)+'').padStart(2,'0')+'/'+((endQ.getDate())+'').padStart(2,'0')+'/'+endQ.getFullYear();
+
+  // Update day date labels in both grids
+  document.querySelectorAll('.day-date').forEach(el=>{
+    const dayIdx=parseInt(el.getAttribute('data-day'));
+    const d=new Date(parsed); d.setDate(parsed.getDate()+dayIdx);
+    el.textContent=(d.getMonth()+1)+'/'+(d.getDate());
+  });
 }
 
 function init(){
@@ -2826,7 +2903,7 @@ if('serviceWorker' in navigator){
 <div class="uri-modal-overlay" id="uriModal">
   <div class="uri-modal">
     <div class="uri-modal-toolbar">
-      <span class="uri-modal-title">🐱 Feline URI Treatment Sheet</span>
+      <span class="uri-modal-title" id="uriModalTitle">🐱 Feline URI Treatment Sheet</span>
       <div class="uri-modal-actions">
         <button class="uri-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
         <button class="uri-close-btn" onclick="closeUriModal()">✕ Close</button>
