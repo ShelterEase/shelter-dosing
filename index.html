@@ -307,7 +307,7 @@
         <div class="clinical-preview-header">
           <div class="clinical-preview-label">📋 Note preview — appears above medications in clipboard</div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <button class="uri-sheet-btn" id="uriSheetBtn" onclick="openUriModal()" style="display:none;padding:3px 10px;border-radius:5px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">🐱 URI Treatment Sheet</button>
+            <button class="uri-sheet-btn" id="uriSheetBtn" style="display:none;padding:3px 10px;border-radius:5px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">🐱 URI Treatment Sheet</button>
             <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
           </div>
         </div>
@@ -2366,6 +2366,7 @@ function toggleSymptom(symKey){
   updateClinicalBadge();
   renderClinicalPreview();
   updateCopyBar();
+  updateUriBtn();
 }
 
 function setFinding(safeSymKey, findingIdx, val, pillEl){
@@ -2531,6 +2532,7 @@ function clearClinical(e){
   updateClinicalBadge();
   renderClinicalPreview();
   updateCopyBar();
+  updateUriBtn();
 }
 
 function initClinical(){
