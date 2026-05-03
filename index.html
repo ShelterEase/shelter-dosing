@@ -1577,6 +1577,26 @@ function calcDose(drug, kg){
     }};
   }
 
+    // ZORBIUM
+    if(id==='zorbium'){
+
+    const r=zorbiumDose(lb);
+    // Transdermal option
+    let tdH, tdP;
+    if(!r){
+      tdH=blk('Weight out of range','—','2.6–16.5 lbs only','Use injectable SR for cats outside this weight range.','warn-block');
+      tdP='Zorbium transdermal: weight outside range (2.6–16.5 lbs) — use injectable SR';
+    } else {
+      tdH=blk('Transdermal — per weight',r.ml+' mL','Apply to back of neck at base of skull','20mg/mL — lasts ~4 days — DEA Schedule III — wear gloves');
+      tdP=`Zorbium: ${r.ml}mL transdermal to back of neck (base of skull), lasts ~4 days`;
+    }
+    // Injectable SR option — 3mg/mL, 0.1–0.2mg/kg SQ
+    const loMg=f(0.1*kg,3), hiMg=f(0.2*kg,3);
+    const loMl=f(loMg/3,2), hiMl=f(hiMg/3,2);
+    const injH=blk('Injectable SR — 3mg/mL SQ',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','0.1–0.2mg/kg SQ once — 24–72 hr duration — DEA Schedule III');
+    const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
+    return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
+  }
     return{opts:{}};
   }
 
@@ -1848,25 +1868,7 @@ function calcDose(drug, kg){
     const loV=f(lo/3,3),hiV=f(hi/3,3);
     return{html:blk('SQ — 3mg/mL — single dose',loV+'–'+hiV+' mL','0.1–0.2mg/kg → '+lo+'–'+hi+'mg','24–72 hr duration — DEA Schedule III'),plain:`Buprenorphine SR: ${loV}–${hiV}mL (3mg/mL, ${lo}–${hi}mg) SQ once`};
   }
-  // ZORBIUM — multi: transdermal + injectable SR
-  if(id==='zorbium'){
-    const r=zorbiumDose(lb);
-    // Transdermal option
-    let tdH, tdP;
-    if(!r){
-      tdH=blk('Weight out of range','—','2.6–16.5 lbs only','Use injectable SR for cats outside this weight range.','warn-block');
-      tdP='Zorbium transdermal: weight outside range (2.6–16.5 lbs) — use injectable SR';
-    } else {
-      tdH=blk('Transdermal — per weight',r.ml+' mL','Apply to back of neck at base of skull','20mg/mL — lasts ~4 days — DEA Schedule III — wear gloves');
-      tdP=`Zorbium: ${r.ml}mL transdermal to back of neck (base of skull), lasts ~4 days`;
-    }
-    // Injectable SR option — 3mg/mL, 0.1–0.2mg/kg SQ
-    const loMg=f(0.1*kg,3), hiMg=f(0.2*kg,3);
-    const loMl=f(loMg/3,2), hiMl=f(hiMg/3,2);
-    const injH=blk('Injectable SR — 3mg/mL SQ',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','0.1–0.2mg/kg SQ once — 24–72 hr duration — DEA Schedule III');
-    const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
-    return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
-  }
+
   // METHOCARBAMOL
   if(id==='methocarbamol'){
     const maxMg=45*kg;
@@ -2705,7 +2707,7 @@ function buildTxSheet(sp){
   const days=14;
 
   // Compute end of quarantine (start + 13 = 14-day treatment)
-  const endQ=new Date(today); endQ.setDate(today.getDate()+9); // 10-day quarantine
+  const endQ=new Date(today); endQ.setDate(today.getDate()+10); // end of Q is 10 days after start
   const endQStr=fmtFull(endQ);
 
   // Day date labels
@@ -2884,7 +2886,7 @@ function buildTxSheet(sp){
       <div class="uri-outcome-row">
         <strong>Outcome:</strong>
         <label><input type="checkbox"> Recovered; placed in adoptions</label>
-        <label><input type="checkbox"> Recovered; sent to pet store</label>
+        <label><input type="checkbox"> Recovered; sent to rescue/partner</label>
         <label><input type="checkbox"> Euthanized</label>
         <label><input type="checkbox"> Died</label>
       </div>
@@ -2904,7 +2906,7 @@ function updateDayDates(){
   if(!parsed) return;
 
   // Update end of quarantine (start + 9)
-  const endQ=new Date(parsed); endQ.setDate(parsed.getDate()+9);
+  const endQ=new Date(parsed); endQ.setDate(parsed.getDate()+10);
   if(endInput) endInput.value=((endQ.getMonth()+1)+'').padStart(2,'0')+'/'+((endQ.getDate())+'').padStart(2,'0')+'/'+endQ.getFullYear();
 
   // Update day date labels in both grids
