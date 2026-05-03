@@ -302,14 +302,15 @@
           <button class="footer-opt-btn" id="fopt_eval"    onclick="setFooterOpt('eval')">Vet evaluation recommended</button>
         </div>
       </div>
+      <!-- URI/CIRDC Treatment Sheet button — shown when relevant symptom selected -->
+      <div id="uriSheetRow" style="display:none;margin-top:10px;">
+        <button id="uriSheetBtn" style="padding:7px 16px;border-radius:6px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;width:100%;">🐱 URI Treatment Sheet</button>
+      </div>
       <!-- Preview -->
       <div class="clinical-preview" id="clinicalPreview">
         <div class="clinical-preview-header">
           <div class="clinical-preview-label">📋 Note preview — appears above medications in clipboard</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <button class="uri-sheet-btn" id="uriSheetBtn" style="display:none;padding:3px 10px;border-radius:5px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">🐱 URI Treatment Sheet</button>
-            <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
-          </div>
+          <button class="clinical-clear" onclick="clearClinical(event)">✕ Clear all findings</button>
         </div>
         <div class="clinical-preview-lines" id="clinicalPreviewLines"></div>
       </div>
@@ -2649,17 +2650,19 @@ function isDogRespSelected(){
 
 function updateUriBtn(){
   const btn=document.getElementById('uriSheetBtn');
-  if(!btn) return;
+  const row=document.getElementById('uriSheetRow');
+  if(!btn||!row) return;
   if(species==='cat'&&isUriSelected()){
-    btn.style.display='';
-    btn.textContent='🐱 URI Treatment Sheet';
+    row.style.display='block';
+    btn.textContent='🐱 Generate Feline URI Treatment Sheet';
     btn.onclick=()=>openTxModal('cat');
   } else if(species==='dog'&&isDogRespSelected()){
-    btn.style.display='';
-    btn.textContent='🐶 CIRDC Treatment Sheet';
+    row.style.display='block';
+    btn.textContent='🐶 Generate Canine CIRDC Treatment Sheet';
     btn.onclick=()=>openTxModal('dog');
   } else {
-    btn.style.display='none';
+    row.style.display='none';
+    btn.onclick=null;
   }
 }
 
