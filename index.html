@@ -108,6 +108,8 @@
   .uri-sheet h1{font-size:16px;font-weight:700;text-align:center;margin:0 0 12px;}
   .uri-header-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1.5px solid #000;margin-bottom:8px;}
   .uri-header-cell{padding:6px 8px;border-right:1px solid #000;font-size:11px;}
+  .uri-header-cell label{font-weight:700;font-size:10px;display:block;margin-bottom:2px;}
+  .uri-header-cell input{border:none;border-bottom:2px solid #333;outline:none;font-size:13px;font-family:Arial;width:100%;background:transparent;font-weight:600;}
   .uri-header-cell:last-child{border-right:none;}
   .uri-header-cell label{font-weight:700;margin-right:4px;}
   .uri-header-cell input{border:none;border-bottom:1px solid #555;outline:none;font-size:11px;font-family:Arial;width:calc(100% - 50px);background:transparent;}
@@ -123,12 +125,19 @@
   .uri-grid-wrap{overflow-x:auto;}
   .uri-grid{width:100%;border-collapse:collapse;font-size:9.5px;}
   .uri-grid th,.uri-grid td{border:1px solid #999;padding:2px 3px;text-align:center;vertical-align:middle;min-width:28px;}
-  .uri-grid th{background:#d0d0d0;font-weight:700;}
-  .uri-grid .row-label{text-align:left;font-weight:600;white-space:nowrap;padding:2px 6px;min-width:140px;background:#ebebeb;}
+  .uri-grid th{background:#d0d0d0;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .uri-grid .row-label{text-align:left;font-weight:600;white-space:nowrap;padding:2px 6px;min-width:70px;max-width:100px;overflow:hidden;background:#ebebeb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .subrow-label{text-align:left;font-weight:400;padding:2px 6px;min-width:140px;font-style:italic;}
-  .uri-grid .date-row td{background:#f5f5f5;font-weight:600;}
+  .uri-grid .ampm-th{font-size:8px;width:20px;min-width:20px;}
+  .uri-grid .pm-th{font-size:8px;width:20px;min-width:20px;background:#c8c8c8;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .uri-grid .am-cell{width:20px;min-width:20px;}
+  .uri-grid .pm-cell{width:20px;min-width:20px;background:#ebebeb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .med-row{background:#fff;}
   .uri-grid .shade{background:#f0f0f0;}
+  /* Page 2 break */
+  .page2-break{height:16px;margin:12px 0;border-top:2px dashed #bbb;display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa;}
+  .page2-break::before{content:'— Page 2: Days 8–14 —';}
+  @media print{.page2-break{page-break-before:always;height:0;margin:0;border:none;}.page2-break::before{content:'';} }
   /* Med rows auto-filled */
   .uri-med-label{font-size:9px;text-align:left;padding:2px 4px;}
   /* Notes section */
@@ -140,13 +149,54 @@
   .uri-cat-icon{text-align:right;font-size:32px;line-height:1;}
   /* Print styles */
   @media print{
-    .uri-modal-overlay{position:static;background:none;padding:0;display:block!important;}
-    .uri-modal{box-shadow:none;border-radius:0;max-width:100%;}
-    .uri-modal-toolbar{display:none!important;}
-    .uri-sheet{padding:8px 12px;}
+    @page{size:landscape;margin:6mm 6mm 6mm 6mm;}
     body>*:not(.uri-modal-overlay){display:none!important;}
-    .uri-modal{page-break-inside:avoid;}
-    @page{size:landscape;margin:10mm;}
+    body{margin:0;padding:0;}
+    .uri-modal-overlay{position:absolute;top:0;left:0;width:100%;background:none;padding:0;display:block!important;overflow:visible;}
+    .uri-modal{box-shadow:none;border-radius:0;width:100%;max-width:100%;margin:0;padding:0;}
+    .uri-modal-toolbar{display:none!important;}
+    /* Force background colors to print */
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
+    /* Sheet layout */
+    .uri-sheet{padding:0;margin:0;font-size:9.5px;width:100%;}
+    .uri-sheet h1{font-size:12px;margin:0 0 3px;text-align:center;}
+    .uri-cat-icon{display:none;}
+    /* Header */
+    .uri-header-row{margin-bottom:3px;}
+    .uri-header-cell{padding:3px 4px;font-size:9.5px;}
+    .uri-header-cell label{font-size:8.5px;}
+    .uri-header-cell input{font-size:11px;}
+    /* Sections */
+    .uri-section{margin-bottom:3px;}
+    .uri-section-header{padding:2px 4px;font-size:9px;}
+    .uri-field-row{padding:1px 4px;font-size:9px;}
+    .uri-grid-wrap{overflow:visible;}
+    /* Grid — fixed layout with colgroup ensures obs/med columns align */
+    .uri-grid{font-size:9px;table-layout:fixed;width:100%;}
+    .uri-grid th,.uri-grid td{padding:1px 2px;font-size:8.5px;white-space:nowrap;overflow:hidden;}
+    .uri-grid th{background:#d0d0d0!important;font-size:8px;white-space:nowrap;}
+    .uri-grid .row-label{
+      font-size:9px;padding:1px 4px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      background:#ebebeb!important;
+    }
+    /* PM column shading — use classes not inline style selectors */
+    .uri-grid .pm-th{background:#c8c8c8!important;width:18px;min-width:18px;}
+    .uri-grid .am-cell,.uri-grid .ampm-th{width:18px;min-width:18px;}
+    .uri-grid .pm-cell{background:#ebebeb!important;width:18px;min-width:18px;}
+    /* Notes */
+    .uri-notes-row{min-height:14px;}
+    /* Page break — hard break, nothing after bleeds onto page 1 */
+    .page2-break{
+      page-break-after:always;
+      page-break-before:always;
+      display:block;
+      height:0!important;
+      margin:0!important;
+      border:none!important;
+      visibility:hidden;
+    }
+    .page2-break::before{content:''!important;}
   }
   .clinical-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;}
   .clinical-header{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;user-select:none;gap:10px;}
@@ -586,6 +636,9 @@ const DRUGS=[
 {id:'bupsr',name:'Buprenorphine SR',alias:'Extended Release 3mg/mL',route:'SQ',sections:['Pain / NSAID'],species:['dog'],type:'single',
  use:'Extended-release pain — single SQ injection, 24–72 hr duration. Dogs only.',
  note:'0.1–0.2 mg/kg SQ once. 3mg/mL SR formulation. DEA Schedule III — log required. Do not redose < 24 hrs.'},
+{id:'butorphanol',name:'Butorphanol',alias:'Torbugesic 10mg/mL',route:'IM / SQ / IV',sections:['Pain / NSAID','Sedation / Behavior'],species:['dog','cat'],type:'single',
+ use:'Mild-moderate pain, pre-anesthetic, cough suppression — opioid agonist-antagonist.',
+ note:'0.025–0.05 mg/lb (0.05–0.1 mg/kg) IM/SQ q4–6h. 10mg/mL. DEA Schedule IV — log required.'},
 {id:'capstar',name:'Capstar',alias:'Nitenpyram — 11.4mg & 57mg tabs',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Immediate flea kill — kills adult fleas within 30 min. Single dose.',
  note:'Dogs & cats > 2 lbs. < 25 lbs: 11.4mg tab. > 25 lbs: 57mg tab. Can redose q24h if needed. Safe for kittens > 4 weeks.'},
@@ -1868,6 +1921,12 @@ function calcDose(drug, kg){
     const loV=f(lo/3,3),hiV=f(hi/3,3);
     return{html:blk('SQ — 3mg/mL — single dose',loV+'–'+hiV+' mL','0.1–0.2mg/kg → '+lo+'–'+hi+'mg','24–72 hr duration — DEA Schedule III'),plain:`Buprenorphine SR: ${loV}–${hiV}mL (3mg/mL, ${lo}–${hi}mg) SQ once`};
   }
+  // BUTORPHANOL — 0.025–0.05 mg/lb IM/SQ, 10mg/mL
+  if(id==='butorphanol'){
+    const loMg=f(0.025*lb,2), hiMg=f(0.05*lb,2);
+    const loMl=f(loMg/10,3), hiMl=f(hiMg/10,3);
+    return{html:blk('0.025–0.05mg/lb IM/SQ',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','10mg/mL — q4–6h — DEA Schedule IV — log required'),plain:`Butorphanol: ${loMl}–${hiMl}mL IM/SQ (10mg/mL, ${loMg}–${hiMg}mg) q4–6h`};
+  }
 
   // METHOCARBAMOL
   if(id==='methocarbamol'){
@@ -1952,25 +2011,25 @@ function calcDose(drug, kg){
   }
   // PENTOXIFYLLINE — liquid for cats + small dogs, tablet for larger dogs
   if(id==='pentoxifylline'){
-    // Per weight chart — suspension for <30lb, tablets for larger dogs
+    const lbR=Math.round(lb); // round to avoid floating point boundary errors
     let pentoMl=null,pentoMg=null,pentoCombo=null,pentoForm;
-    if(lb<5){
+    if(lbR<5){
       return{html:blk('Below minimum weight','—','','Under 5 lbs — consult veterinarian.','warn-block'),plain:'Pentoxifylline: below minimum weight'};
-    } else if(lb<=10){
-      pentoMl=f(lb*0.06,2); pentoMg=Math.round(lb*7); pentoForm='susp';
-    } else if(lb<=15){
-      pentoMl=f(lb*0.053,2); pentoMg=Math.round(lb*6.7); pentoForm='susp';
-    } else if(lb<=20){
-      pentoMl=f(lb*0.055,2); pentoMg=Math.round(lb*6.75); pentoForm='susp';
-    } else if(lb<=30){
-      pentoMl=f(lb*0.055,2); pentoMg=Math.round(lb*6.75); pentoCombo='½ tab (200mg) option'; pentoForm='susp';
-    } else if(lb<=40){
+    } else if(lbR<=10){
+      pentoMl=f(lbR*0.06,2); pentoMg=Math.round(lbR*7); pentoForm='susp';
+    } else if(lbR<=15){
+      pentoMl=f(lbR*0.053,2); pentoMg=Math.round(lbR*6.7); pentoForm='susp';
+    } else if(lbR<=20){
+      pentoMl=f(lbR*0.055,2); pentoMg=Math.round(lbR*6.75); pentoForm='susp';
+    } else if(lbR<=30){
+      pentoMl=f(lbR*0.055,2); pentoMg=Math.round(lbR*6.75); pentoCombo='½ tab (200mg) option'; pentoForm='susp';
+    } else if(lbR<=40){
       pentoMg=200; pentoCombo='0.5 × 400mg tablet'; pentoForm='tab';
-    } else if(lb<=60){
+    } else if(lbR<=60){
       pentoMg=400; pentoCombo='1 × 400mg tablet'; pentoForm='tab';
-    } else if(lb<=80){
+    } else if(lbR<=80){
       pentoMg=400; pentoCombo='1 × 400mg tablet (up to 1.5 tabs if needed)'; pentoForm='tab';
-    } else if(lb<=100){
+    } else if(lbR<=100){
       pentoMg=600; pentoCombo='1.5 × 400mg tablets'; pentoForm='tab';
     } else {
       pentoMg=800; pentoCombo='2 × 400mg tablets'; pentoForm='tab';
@@ -2697,207 +2756,374 @@ function parseDate(str){
 
 function buildTxSheet(sp){
   const isCat=sp==='cat';
-  const lb=getLb()||'';
-  const kg=getKg()||'';
-  const weightStr=lb?(lb+' lbs / '+f(kg,2)+' kg'):'';
+  const lb=getLb()||0;
+  const kgVal=getKg()||0;
+  const weightStr=lb?(lb+' lbs / '+f(kgVal,2)+' kg'):'';
   const today=new Date();
   const fmt=(d)=>(d.getMonth()+1)+'/'+(d.getDate());
   const fmtFull=(d)=>((d.getMonth()+1)+'').padStart(2,'0')+'/'+((d.getDate())+'').padStart(2,'0')+'/'+d.getFullYear();
+  const sanitize=s=>s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
   const todayStr=fmtFull(today);
   const days=14;
+  const halfDays=7;
 
-  // Compute end of quarantine (start + 13 = 14-day treatment)
-  const endQ=new Date(today); endQ.setDate(today.getDate()+10); // end of Q is 10 days after start
+  const endQ=new Date(today); endQ.setDate(today.getDate()+10);
   const endQStr=fmtFull(endQ);
 
-  // Day date labels
   const dayDateLabels=Array.from({length:days},(_,i)=>{
     const d=new Date(today); d.setDate(today.getDate()+i);
     return fmt(d);
   });
 
-  // Collect selected meds — two formats:
-  // 1. Treatment plan: "Drug: Xmg" (dose amount only, no frequency/duration)
-  // 2. Med grid: full plain text but editable
-  const medRows=[];     // for grid — full text
-  const medPlanLines=[]; // for treatment plan — dose only
-
-  function extractMgOnly(plainText){
-    // Extract just drug name + mg amount, strip frequency/route details
-    // e.g. "Doxycycline: 45mg PO q12-24h (1 × 50mg capsule)" → "Doxycycline: 45mg"
-    const mgMatch=plainText.match(/^([^:]+):\s*([\d.,]+\s*(?:mg|mL|mcg|unit))/i);
-    if(mgMatch) return mgMatch[1].trim()+': '+mgMatch[2].trim();
-    // Fallback — just drug name
-    const colonIdx=plainText.indexOf(':');
-    return colonIdx>-1?plainText.substring(0,colonIdx+8).trim():plainText;
+  // Build headers and cells for a given range of days
+  function buildDayHeaders(start, count){
+    return Array.from({length:count},(_,i)=>{
+      const dayNum=start+i+1;
+      const dayIdx=start+i;
+      return `<th colspan="2" style="white-space:nowrap;">Day ${dayNum}<br><span class="day-date" data-day="${dayIdx}" style="font-size:9px;font-weight:400;">${dayDateLabels[dayIdx]}</span></th>`;
+    }).join('');
+  }
+  function buildAmPm(count){
+    return Array.from({length:count},()=>'<th class="ampm-th">AM</th><th class="pm-th" style="background:#c8c8c8;">PM</th>').join('');
+  }
+  function buildCells(count){
+    return Array.from({length:count},()=>'<td class="am-cell"></td><td class="pm-cell" style="background:#ebebeb;"></td>').join('');
   }
 
-  DRUGS.forEach(drug=>{
-    if(!selectedMeds.has(drug.id))return;
-    if(drug.type==='multi'){
-      const result=calcDose(drug,getKg());
-      selectedMeds.get(drug.id).forEach(optKey=>{
-        const o=result.opts&&result.opts[optKey];
-        if(o&&o.plain){
-          medRows.push(o.plain);
-          medPlanLines.push(extractMgOnly(o.plain));
-        }
-      });
-    } else {
-      const result=calcDose(drug,getKg());
-      if(result.plain){
-        const needsName=drug.type==='topical'||!result.plain.toLowerCase().startsWith(drug.name.toLowerCase().split(' ')[0].toLowerCase());
-        const full=needsName?drug.name+': '+result.plain:result.plain;
-        medRows.push(full);
-        medPlanLines.push(extractMgOnly(full));
-      }
+  // Generate a single grid table for a day range
+  function gridTable(thLabel, thMinWidth, dayStart, dayCount, bodyFn){
+    const headers=buildDayHeaders(dayStart, dayCount);
+    const ampm=buildAmPm(dayCount);
+    const cells=()=>buildCells(dayCount);
+    // colgroup ensures obs and med tables have identical column widths
+    const cols=`<col style="width:${thMinWidth};min-width:${thMinWidth};">`+
+      Array.from({length:dayCount*2},()=>'<col style="width:18px;">').join('');
+    return `<table class="uri-grid" style="width:100%;table-layout:fixed;"><colgroup>${cols}</colgroup><thead>
+      <tr><th rowspan="2" style="text-align:left;padding-left:4px;">${thLabel}</th>${headers}</tr>
+      <tr>${ampm}</tr></thead>
+      <tbody>${bodyFn(cells)}</tbody></table>`;
+  }
+
+  // Helper: get dose-only string for a drug id
+  function getDoseStr(drugId, optKey){
+    const drug=DRUGS.find(d=>d.id===drugId);
+    if(!drug||!kgVal||kgVal<=0) return '';
+    const result=calcDose(drug,kgVal);
+    if(!result) return '';
+    if(optKey&&result.opts){
+      const o=result.opts[optKey];
+      return o&&o.plain?o.plain:'';
     }
-  });
+    return result.plain||'';
+  }
 
-  const singleCells=()=>Array.from({length:days},()=>`<td colspan="2"></td>`).join('');
-
-  // Med grid rows — full text with frequency, editable, plus blank rows for manual additions
-  const totalMedRows=Math.max(medRows.length+3, 7);
-  const sanitize=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const medGridRows=Array.from({length:totalMedRows},(_,i)=>{
-    const label=i<medRows.length?sanitize(medRows[i]):'';
-    return `<tr class="med-row"><td class="row-label" contenteditable="true" style="font-size:9px;font-weight:${label?'600':'400'};min-width:160px;outline:none;" spellcheck="false">${label}</td>${singleCells()}</tr>`;
-  }).join('');
-
-  // Treatment plan text — editable textarea pre-filled with dose-only med list
-  const txPlanDefault=(medPlanLines.length>0?medPlanLines.join('\n'):'').replace(/`/g,"'").replace(/\$/g,'');
-  const blankCount=0; // no longer needed separately
-
-  // Build day headers with date sub-row
-  const dayHeaders=Array.from({length:days},(_,i)=>
-    `<th colspan="2" style="white-space:nowrap;">Day ${i+1}<br><span class="day-date" data-day="${i}" style="font-size:9px;font-weight:400;">${dayDateLabels[i]}</span></th>`
-  ).join('');
-  const ampmHeaders=Array.from({length:days},()=>`<th>AM</th><th>PM</th>`).join('');
+  function extractDoseOnly(plain){
+    if(!plain) return '';
+    // Range format: "9.1–18.1mg"
+    const rangeMatch=plain.match(/:\s*([\d.,]+[–\-][\d.,]+\s*(?:mg|mL|mcg|IU|unit))/i);
+    if(rangeMatch) return rangeMatch[1].trim();
+    // Day 1 format (azithromycin)
+    const day1Match=plain.match(/Day 1[:\s]+([\d.,]+\s*(?:mg|mL))/i);
+    if(day1Match) return day1Match[1].trim()+' (Day 1)';
+    // Standard after colon: "Drug: 45mg" or "Drug: 0.1mL"
+    const stdMatch=plain.match(/:\s*[\w\s]*?([\d.,]+\s*(?:mg|mL|mcg|IU|unit))/i);
+    if(stdMatch) return stdMatch[1].trim();
+    return '';
+  }
 
   const title=isCat
     ? 'Pinellas County Animal Services — Feline URI Treatment Sheet'
     : 'Pinellas County Animal Services — Canine CIRDC Treatment Sheet';
   const icon=isCat?'🐱':'🐶';
-  const prevLine=isCat
-    ? `This cat has been treated for URI <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`
-    : `This dog has been treated for kennel cough <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`;
 
   document.getElementById('uriModalTitle').textContent=icon+' '+(isCat?'Feline URI':'Canine CIRDC')+' Treatment Sheet';
 
-  document.getElementById('uriSheet').innerHTML=`
+  // ── SHARED SECTIONS ──────────────────────────────
+  const headerSection=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
       <div style="flex:1;"><h1>${title}</h1></div>
       <div class="uri-cat-icon">${icon}</div>
-    </div>
+    </div>`;
 
-    <!-- Header: 4 cells now -->
-    <div class="uri-header-row" style="grid-template-columns:1.4fr 1fr 1fr 1fr;">
-      <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
-      <div class="uri-header-cell">
-        <label>Start Date:</label>
-        <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
-      </div>
-      <div class="uri-header-cell">
-        <label>End of Q Date:</label>
-        <input type="text" id="txEndDate" value="${endQStr}" style="width:calc(100% - 90px);" readonly>
-      </div>
-      <div class="uri-header-cell"><label>Weight:</label><input type="text" value="${weightStr}" style="width:calc(100% - 52px);"></div>
-    </div>
-
-    <!-- History -->
-    <div class="uri-section">
-      <div class="uri-section-header">History / Treatment Plan</div>
-      <div class="uri-field-row">
-        <span>${prevLine}</span>
-        <span style="margin-left:auto;font-style:italic;font-size:10px;color:#555;">Treatment may change depending on severity of disease</span>
-      </div>
-      <div class="uri-field-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-        <label style="font-weight:700;">Treatment Plan: <span style="font-weight:400;font-size:10px;font-style:italic;">(medications and doses — editable)</span></label>
-        <textarea style="width:100%;border:1px solid #bbb;border-radius:3px;padding:4px 6px;font-size:10px;font-family:Arial;resize:vertical;min-height:38px;box-sizing:border-box;" spellcheck="false">${txPlanDefault}</textarea>
-      </div>
-    </div>
-
-    <!-- Daily Observations -->
+  const obsSection=(rowsFn, dayStart, dayCount)=>`
     <div class="uri-section">
       <div class="uri-section-header" style="display:flex;justify-content:space-between;">
         <span>Daily Observations</span>
         <span>${isCat?'URI':'Respiratory'} Signs / Observations — Please initial each day</span>
       </div>
       <div class="uri-grid-wrap">
-        <table class="uri-grid" id="obsGrid">
-          <thead>
-            <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Observation</th>${dayHeaders}</tr>
-            <tr>${ampmHeaders}</tr>
-          </thead>
-          <tbody>
-            <tr><td class="row-label">${isCat?'URI Score (0–5)':'Cough severity (0–4)'}</td>${singleCells()}</tr>
-            <tr><td class="row-label">Eye Score (0–4)</td>${singleCells()}</tr>
-            <tr><td class="row-label">${isCat?'Nasal discharge':'Nasal discharge'}</td>${singleCells()}</tr>
-            <tr><td class="row-label">Hydration +/−</td>${singleCells()}</tr>
-            <tr><td class="row-label">Attitude</td>${singleCells()}</tr>
-            <tr><td class="row-label">Appetite +/−</td>${singleCells()}</tr>
-            <tr><td class="row-label">Feces +/−</td>${singleCells()}</tr>
-            <tr><td class="row-label">Urine +/−</td>${singleCells()}</tr>
-            <tr><td class="row-label">Other</td>${singleCells()}</tr>
-            <tr><td class="row-label">${isCat?'Can food Y/N':'Water intake +/−'}</td>${singleCells()}</tr>
-          </tbody>
-        </table>
+        ${gridTable('Observation','70px',dayStart,dayCount,rowsFn)}
       </div>
-    </div>
+    </div>`;
 
-    <!-- Medications -->
-    <div class="uri-section">
-      <div class="uri-section-header" style="display:flex;justify-content:space-between;">
-        <span>Medication / Dosage / Frequency</span>
-        <span>TREATMENTS — Please initial each day to indicate treatment was performed</span>
-      </div>
-      <div class="uri-grid-wrap">
-        <table class="uri-grid" id="medGrid">
-          <thead>
-            <tr><th rowspan="2" style="min-width:140px;text-align:left;padding-left:4px;">Medication</th>${dayHeaders}</tr>
-            <tr>${ampmHeaders}</tr>
-          </thead>
-          <tbody>
-            <tr><td class="row-label" style="font-style:italic;">SQ Fluids (indicate amount given)</td>${singleCells()}</tr>
-            ${medGridRows}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Notes -->
+  const notesSection=`
     <div class="uri-section">
       <div class="uri-section-header">Additional Notes / Comments</div>
-      <div class="uri-notes-row"><input type="text" placeholder=""></div>
-      <div class="uri-notes-row"><input type="text" placeholder=""></div>
-      <div class="uri-notes-row"><input type="text" placeholder=""></div>
-    </div>
-
-    <!-- Fecal + Outcome -->
-    <div class="uri-section">
-      <div class="uri-field-row" style="flex-wrap:wrap;gap:12px;">
-        <span><strong>If a fecal was done please record results here:</strong></span>
-        <input type="text" style="flex:1;min-width:100px;" placeholder="results">
-        <span><strong>Date fecal performed:</strong></span>
-        <input type="text" style="width:80px;" placeholder="mm/dd/yyyy">
-        <span><strong>Tx:</strong></span>
-        <input type="text" style="width:90px;" placeholder="">
-      </div>
-      <div class="uri-outcome-row">
-        <strong>Outcome:</strong>
-        <label><input type="checkbox"> Recovered; placed in adoptions</label>
-        <label><input type="checkbox"> Recovered; sent to rescue/partner</label>
-        <label><input type="checkbox"> Euthanized</label>
-        <label><input type="checkbox"> Died</label>
-      </div>
-    </div>
-
-    <div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
-      For shelter staff use only — All treatments must be verified by a licensed veterinarian &nbsp;|&nbsp; 10-Day Quarantine / 14-Day Treatment Sheet
+      <div class="uri-notes-row"><input type="text"></div>
+      <div class="uri-notes-row"><input type="text"></div>
+      <div class="uri-notes-row"><input type="text"></div>
     </div>`;
+
+  const footer=`<div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
+    For shelter staff use only — All treatments must be verified by a licensed veterinarian &nbsp;|&nbsp; 10-Day Quarantine / 14-Day Treatment Sheet
+  </div>`;
+
+  // ── DOG SHEET ─────────────────────────────────────
+  if(!isCat){
+    // Fixed dog CIRDC med list — always shown, auto-calculated
+    const dogMeds=[
+      {id:'doxy',          label:'Doxycycline',              optKey:null},
+      {id:'azithro',       label:'Azithromycin',             optKey:null},
+      {id:'enro',          label:'Enrofloxacin Standard',    optKey:'std'},
+      {id:'enro',          label:'Enrofloxacin (Pneumo)',    optKey:'pneumo'},
+      {id:'clinda',        label:'Clindamycin',              optKey:null},
+      {id:'pentoxifylline',label:'Pentoxifylline',           optKey:null},
+      {id:'previcox',      label:'Previcox',                 optKey:null},
+      {id:'cerenia',       label:'Cerenia',                  optKey:'po'},
+      {id:'ondansetron',   label:'Ondansetron',              optKey:null},
+      {id:'__bnptobra',    label:'BNP / Tobramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both', optKey:null},
+      {id:'prednisone',    label:'Prednisone',               optKey:null},
+      {id:'mirtazapine',   label:'Mirtazapine',              optKey:null},
+      {id:null,            label:'Fluids'},
+      {id:null,            label:'B12',                      fixed:'0.25–1.0 mL SQ'},
+      {id:'butorphanol',   label:'Butorphanol',              optKey:null},
+      {id:null,            label:'Other'},
+    ];
+
+    // BNP/Tobra checked if either BNP or Tobra is selected in dosing
+    const bnpTobraChecked=['bnp','bnpdex','bnphc','tobra'].some(id=>selectedMeds.has(id));
+
+    const dogMedRows=dogMeds.map(m=>{
+      const plain=m.id&&m.id!=='__bnptobra'?getDoseStr(m.id,m.optKey):'';
+      const dose=extractDoseOnly(plain);
+      const isChecked=m.id==='__bnptobra'
+        ?bnpTobraChecked
+        :m.id&&selectedMeds.has(m.id);
+      const cbHtml=`<input type="checkbox"${isChecked?' checked':''} style="margin-right:4px;">`;
+      const labelHtml=`<span style="font-weight:600;">${m.label}</span>${dose?`<span style="font-weight:400;margin-left:6px;color:#333;">${sanitize(dose)}</span>`:''}`;
+      return `<tr class="med-row">
+        <td class="row-label" style="font-size:9px;">${cbHtml}${labelHtml}</td>
+      </tr>`;
+    }).join('');
+
+    const dogHeaderHtml=`
+      <!-- Dog Header: 5 cells -->
+      <div class="uri-header-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+        <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
+        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" placeholder=""></div>
+        <div class="uri-header-cell">
+          <label>Start Date:</label>
+          <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
+        </div>
+        <div class="uri-header-cell">
+          <label>End of Q:</label>
+          <input type="text" id="txEndDate" value="${endQStr}" style="width:calc(100% - 60px);" readonly>
+        </div>
+        <div class="uri-header-cell"><label>Weight:</label><input type="text" value="${weightStr}" style="width:calc(100% - 52px);"></div>
+      </div>`;
+
+    // Dog obs rows builder
+    const dogObsRows=cells=>`
+      <tr><td class="row-label">Cough severity (0–4)</td>${cells()}</tr>
+      <tr><td class="row-label">Eye discharge</td>${cells()}</tr>
+      <tr><td class="row-label">Nasal discharge</td>${cells()}</tr>
+      <tr><td class="row-label">Hydration +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Attitude</td>${cells()}</tr>
+      <tr><td class="row-label">Appetite +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Feces +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Urine +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Other</td>${cells()}</tr>
+      <tr><td class="row-label" style="font-weight:700;background:#e8e8e8;">Tech Initials</td>${cells()}</tr>`;
+
+    // Dog med rows builder
+    const dogMedRowsFn=cells=>dogMeds.map(m=>{
+      const plain=m.id&&m.id!=='__bnptobra'?getDoseStr(m.id,m.optKey):'';
+      const dose=extractDoseOnly(plain);
+      const isChecked=m.id==='__bnptobra'?bnpTobraChecked:m.id&&selectedMeds.has(m.id);
+      const cbHtml='<input type="checkbox"'+(isChecked?' checked':'')+' style="margin-right:4px;">';
+      const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+sanitize(dose)+'</span>':'');
+      return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+cells()+'</tr>';
+    }).join('');
+
+    // Shared sections helper for obs+med by day range
+    const dogPageSections=(dayStart,dayCount)=>`
+      <div style="page-break-inside:avoid;">
+        <div class="uri-section">
+          <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+            <span>Daily Observations — Days ${dayStart+1}–${dayStart+dayCount}</span>
+            <span>Respiratory Signs / Observations — Please initial each day</span>
+          </div>
+          <div class="uri-grid-wrap">${gridTable('Observation','70px',dayStart,dayCount,dogObsRows)}</div>
+        </div>
+        <div class="uri-section">
+          <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+            <span>Medication / Dose — Days ${dayStart+1}–${dayStart+dayCount}</span>
+            <span>TREATMENTS — Please initial each day to indicate treatment was performed</span>
+          </div>
+          <div class="uri-grid-wrap">${gridTable('☑ Medication / Dose','70px',dayStart,dayCount,dogMedRowsFn)}</div>
+        </div>
+      </div>`;
+
+    document.getElementById('uriSheet').innerHTML=headerSection+dogHeaderHtml+
+      dogPageSections(0,7)+
+      notesSection+
+      `<div class="page2-break"></div>`+
+      headerSection+dogHeaderHtml+
+      dogPageSections(7,7)+
+      notesSection+footer;
+
+  // ── CAT SHEET ─────────────────────────────────────
+  } else {
+    // Collect selected meds for cat sheet
+    const medRows=[], medPlanLines=[];
+    function extractMgOnly(plainText){
+      const mgMatch=plainText.match(/^([^:]+):\s*([\d.,]+\s*(?:mg|mL|mcg|unit))/i);
+      if(mgMatch) return mgMatch[1].trim()+': '+mgMatch[2].trim();
+      const colonIdx=plainText.indexOf(':');
+      return colonIdx>-1?plainText.substring(0,colonIdx+8).trim():plainText;
+    }
+    DRUGS.forEach(drug=>{
+      if(!selectedMeds.has(drug.id))return;
+      if(drug.type==='multi'){
+        const result=calcDose(drug,kgVal);
+        selectedMeds.get(drug.id).forEach(optKey=>{
+          const o=result.opts&&result.opts[optKey];
+          if(o&&o.plain){medRows.push(o.plain);medPlanLines.push(extractMgOnly(o.plain));}
+        });
+      } else {
+        const result=calcDose(drug,kgVal);
+        if(result.plain){
+          const needsName=drug.type==='topical'||!result.plain.toLowerCase().startsWith(drug.name.toLowerCase().split(' ')[0].toLowerCase());
+          const full=needsName?drug.name+': '+result.plain:result.plain;
+          medRows.push(full);medPlanLines.push(extractMgOnly(full));
+        }
+      }
+    });
+    const txPlanDefault=(medPlanLines.length>0?medPlanLines.join('\n'):'').replace(/`/g,"'").replace(/\$/g,'');
+    const totalMedRows=Math.max(medRows.length+3,7);
+    const catMedGridRows=Array.from({length:totalMedRows},(_,i)=>{
+      const label=i<medRows.length?sanitize(medRows[i]):'';
+      return `<tr class="med-row"><td class="row-label" contenteditable="true" style="font-size:9px;font-weight:${label?'600':'400'};min-width:140px;outline:none;" spellcheck="false">${label}</td></tr>`;
+    }).join('');
+    const prevLine=`This cat has been treated for URI <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`;
+
+    const catHeaderHtml=`
+      <div class="uri-header-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+        <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
+        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" placeholder=""></div>
+        <div class="uri-header-cell">
+          <label>Start Date:</label>
+          <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
+        </div>
+        <div class="uri-header-cell">
+          <label>End of Q Date:</label>
+          <input type="text" id="txEndDate" value="${endQStr}" style="width:calc(100% - 90px);" readonly>
+        </div>
+        <div class="uri-header-cell"><label>Weight:</label><input type="text" value="${weightStr}" style="width:calc(100% - 52px);"></div>
+      </div>`;
+
+    const catHistoryHtml=`
+      <div class="uri-section">
+        <div class="uri-section-header">History / Treatment Plan</div>
+        <div class="uri-field-row">
+          <span>${prevLine}</span>
+          <span style="margin-left:auto;font-style:italic;font-size:10px;color:#555;">Treatment may change depending on severity of disease</span>
+        </div>
+        <div class="uri-field-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <label style="font-weight:700;">Treatment Plan: <span style="font-weight:400;font-size:10px;font-style:italic;">(medications and doses — editable)</span></label>
+          <textarea style="width:100%;border:1px solid #bbb;border-radius:3px;padding:4px 6px;font-size:10px;font-family:Arial;resize:vertical;min-height:38px;box-sizing:border-box;" spellcheck="false">${txPlanDefault}</textarea>
+        </div>
+      </div>`;
+
+    // Cat obs rows builder
+    const catObsRows=cells=>`
+      <tr><td class="row-label">URI Score (0–5)</td>${cells()}</tr>
+      <tr><td class="row-label">Eye Score (0–4)</td>${cells()}</tr>
+      <tr><td class="row-label">Nasal discharge</td>${cells()}</tr>
+      <tr><td class="row-label">Hydration +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Attitude</td>${cells()}</tr>
+      <tr><td class="row-label">Appetite +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Feces +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Urine +/−</td>${cells()}</tr>
+      <tr><td class="row-label">Other</td>${cells()}</tr>
+      <tr><td class="row-label">Can food Y/N</td>${cells()}</tr>`;
+
+    // Cat med rows builder
+    // Cat fixed med list — same pattern as dog sheet
+    const catMeds=[
+      {id:null,            label:'SQ Fluids (amount)'},
+      {id:'doxy',          label:'Doxycycline',                          optKey:null},
+      {id:'azithro',       label:'Azithromycin',                         optKey:null},
+      {id:'erythro',       label:'Erythromycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both', optKey:null},
+      {id:'terra',         label:'Terramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both',  optKey:null},
+      {id:'tobra',         label:'Tobramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both',  optKey:null},
+      {id:null,            label:'Nose Drops — Gen/Dex',                 fixed:''},
+      {id:'mirtazapine',   label:'Mirtazapine',              optKey:null},
+      {id:null,            label:'B12',                                   fixed:'0.1–0.25 mL SQ'},
+      {id:null,            label:'Nebulize — S &nbsp;&nbsp; A &nbsp;&nbsp; G', fixed:''},
+      {id:'zorbium',       label:'Zorbium',                              optKey:'transdermal'},
+      {id:null,            label:'Other'},
+    ];
+
+    // BNP/Tobra checkbox for cats
+    const catTobraChecked=['tobra','bnp','bnpdex','bnphc'].some(id=>selectedMeds.has(id));
+
+    const catMedRowsFn=cells=>{
+      return catMeds.map(m=>{
+        let dose='';
+        if(m.fixed!==undefined){
+          dose=m.fixed;
+        } else if(m.id){
+          const plain=getDoseStr(m.id,m.optKey||null);
+          dose=extractDoseOnly(plain);
+        }
+        const isChecked=m.id&&selectedMeds.has(m.id);
+        const cbHtml='<input type="checkbox"'+(isChecked?' checked':'')+' style="margin-right:4px;">';
+        const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+sanitize(dose)+'</span>':'');
+        return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+cells()+'</tr>';
+      }).join('');
+    };
+
+    const catPageSections=(dayStart,dayCount)=>`
+      <div style="page-break-inside:avoid;">
+        <div class="uri-section">
+          <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+            <span>Daily Observations — Days ${dayStart+1}–${dayStart+dayCount}</span>
+            <span>URI Signs / Observations — Please initial each day</span>
+          </div>
+          <div class="uri-grid-wrap">${gridTable('Observation','70px',dayStart,dayCount,catObsRows)}</div>
+        </div>
+        <div class="uri-section">
+          <div class="uri-section-header" style="display:flex;justify-content:space-between;">
+            <span>Medication / Dose — Days ${dayStart+1}–${dayStart+dayCount}</span>
+            <span>TREATMENTS — Please initial each day to indicate treatment was performed</span>
+          </div>
+          <div class="uri-grid-wrap">${gridTable('☑ Medication / Dose','70px',dayStart,dayCount,catMedRowsFn)}</div>
+        </div>
+      </div>`;
+
+    const outcomeSection=`
+      <div class="uri-section">
+        <div class="uri-outcome-row">
+          <strong>Outcome:</strong>
+          <label><input type="checkbox"> Recovered; placed in adoptions</label>
+          <label><input type="checkbox"> Recovered; sent to rescue/partner</label>
+          <label><input type="checkbox"> Euthanized</label>
+          <label><input type="checkbox"> Died</label>
+        </div>
+      </div>`;
+
+    document.getElementById('uriSheet').innerHTML=
+      headerSection+catHeaderHtml+
+      catPageSections(0,7)+
+      notesSection+
+      `<div class="page2-break"></div>`+
+      headerSection+catHeaderHtml+
+      catPageSections(7,7)+
+      notesSection+footer;
+  }
 }
 
-// Recompute day date labels when start date input changes
 function updateDayDates(){
   const startInput=document.getElementById('txStartDate');
   const endInput=document.getElementById('txEndDate');
