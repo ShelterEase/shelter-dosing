@@ -2667,9 +2667,14 @@ function updateUriBtn(){
 }
 
 function openTxModal(sp){
-  buildTxSheet(sp);
-  document.getElementById('uriModal').classList.add('show');
-  document.body.style.overflow='hidden';
+  try {
+    buildTxSheet(sp);
+    document.getElementById('uriModal').classList.add('show');
+    document.body.style.overflow='hidden';
+  } catch(e) {
+    alert('Error opening sheet: '+e.message);
+    console.error(e);
+  }
 }
 
 function closeUriModal(){
@@ -2751,13 +2756,14 @@ function buildTxSheet(sp){
 
   // Med grid rows — full text with frequency, editable, plus blank rows for manual additions
   const totalMedRows=Math.max(medRows.length+3, 7);
+  const sanitize=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const medGridRows=Array.from({length:totalMedRows},(_,i)=>{
-    const label=i<medRows.length?medRows[i]:'';
+    const label=i<medRows.length?sanitize(medRows[i]):'';
     return `<tr class="med-row"><td class="row-label" contenteditable="true" style="font-size:9px;font-weight:${label?'600':'400'};min-width:160px;outline:none;" spellcheck="false">${label}</td>${singleCells()}</tr>`;
   }).join('');
 
   // Treatment plan text — editable textarea pre-filled with dose-only med list
-  const txPlanDefault=medPlanLines.length>0?medPlanLines.join('\n'):'';
+  const txPlanDefault=(medPlanLines.length>0?medPlanLines.join('\n'):'').replace(/`/g,"'").replace(/\$/g,'');
   const blankCount=0; // no longer needed separately
 
   // Build day headers with date sub-row
