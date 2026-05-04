@@ -132,12 +132,14 @@
   .uri-grid .pm-th{font-size:8px;width:20px;min-width:20px;background:#c8c8c8;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .am-cell{width:20px;min-width:20px;}
   .uri-grid .pm-cell{width:20px;min-width:20px;background:#ebebeb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .uri-grid .am-cell-d1{width:20px;min-width:20px;border:2.5px solid #333!important;font-weight:700;}
+  .uri-grid .pm-cell-d1{width:20px;min-width:20px;background:#ebebeb;border:2.5px solid #333!important;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .med-row{background:#fff;}
   .uri-grid .shade{background:#f0f0f0;}
   /* Page 2 break */
   .page2-break{height:16px;margin:12px 0;border-top:2px dashed #bbb;display:flex;align-items:center;justify-content:center;font-size:10px;color:#aaa;}
   .page2-break::before{content:'— Page 2: Days 8–14 —';}
-  @media print{.page2-break{page-break-before:always;height:0;margin:0;border:none;}.page2-break::before{content:'';} }
+  @media print{.page2-break{page-break-after:always;height:0!important;margin:0!important;border:none!important;visibility:hidden;}.page2-break::before{content:''!important;} }
   /* Med rows auto-filled */
   .uri-med-label{font-size:9px;text-align:left;padding:2px 4px;}
   /* Notes section */
@@ -184,12 +186,13 @@
     .uri-grid .pm-th{background:#c8c8c8!important;width:18px;min-width:18px;}
     .uri-grid .am-cell,.uri-grid .ampm-th{width:18px;min-width:18px;}
     .uri-grid .pm-cell{background:#ebebeb!important;width:18px;min-width:18px;}
+    .uri-grid .am-cell-d1{width:18px;min-width:18px;border:2.5px solid #000!important;}
+    .uri-grid .pm-cell-d1{background:#ebebeb!important;width:18px;min-width:18px;border:2.5px solid #000!important;}
     /* Notes */
     .uri-notes-row{min-height:14px;}
-    /* Page break — hard break, nothing after bleeds onto page 1 */
+    /* Page break — only page-break-after needed, before causes blank page */
     .page2-break{
       page-break-after:always;
-      page-break-before:always;
       display:block;
       height:0!important;
       margin:0!important;
@@ -1699,16 +1702,14 @@ function calcDose(drug, kg){
   if(id==='azithro'){
     const day1Mg=f(10*kg,1), maintMg=f(5*kg,1);
     if(species==='cat'||kg<=5){
-      // 200mg/5mL = 40mg/mL
       const day1Ml=f(day1Mg/40,1), maintMl=f(maintMg/40,1);
-      return{html:blk('Oral susp — 200mg/5mL',day1Ml+' mL day 1 / '+maintMl+' mL days 2–7','40mg/mL','Day 1: 10mg/kg; Days 2–7: 5mg/kg q24h (5–7 day total)'),plain:`Azithromycin: ${day1Ml}mL day 1 (10mg/kg), then ${maintMl}mL q24h days 2–7 (200mg/5mL susp)`};
+      return{html:blk('Oral susp — 200mg/5mL',day1Ml+' mL day 1 / '+maintMl+' mL days 2–7','40mg/mL','Day 1: 10mg/kg; Days 2–7: 5mg/kg q24h (5–7 day total)'),plain:`Azithromycin: ${maintMl}mL (Day 1: ${day1Ml}mL)`};
     }
-    // Dogs >5kg: tablets for loading, liquid for maintenance if small
     const day1Parts=bestPills(day1Mg,[{mg:250,unit:'tablet'}],true);
     const maintParts=bestPills(maintMg,[{mg:250,unit:'tablet'}],true);
     let d1mg=0;if(day1Parts)day1Parts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)d1mg+=parseFloat(m[1])*parseFloat(m[2]);});
     let mmg=0;if(maintParts)maintParts.forEach(p=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);if(m)mmg+=parseFloat(m[1])*parseFloat(m[2]);});
-    return{html:blk('Day 1: 10mg/kg / Days 2–7: 5mg/kg',d1mg+' mg / '+mmg+' mg','Day 1: '+(day1Parts?day1Parts.join(' + '):'')+' | Maint: '+(maintParts?maintParts.join(' + '):''),'5–7 day total course q24h'),plain:`Azithromycin: Day 1 ${d1mg}mg (${day1Parts?day1Parts.join(' + '):''}), then ${mmg}mg q24h days 2–7`};
+    return{html:blk('Day 1: 10mg/kg / Days 2–7: 5mg/kg',d1mg+' mg / '+mmg+' mg','Day 1: '+(day1Parts?day1Parts.join(' + '):'')+' | Maint: '+(maintParts?maintParts.join(' + '):''),'5–7 day total course q24h'),plain:`Azithromycin: ${mmg}mg (Day 1: ${d1mg}mg)`};
   }
   // METRONIDAZOLE
   if(id==='metro'){
@@ -2789,19 +2790,28 @@ function buildTxSheet(sp){
   function buildCells(count){
     return Array.from({length:count},()=>'<td class="am-cell"></td><td class="pm-cell" style="background:#ebebeb;"></td>').join('');
   }
+  function buildCellsHighlightDay1(count){
+    // Day 1 (index 0) gets bold border, rest normal
+    return Array.from({length:count},(_,i)=>
+      i===0
+        ? '<td class="am-cell-d1"></td><td class="pm-cell-d1" style="background:#ebebeb;"></td>'
+        : '<td class="am-cell"></td><td class="pm-cell" style="background:#ebebeb;"></td>'
+    ).join('');
+  }
 
   // Generate a single grid table for a day range
   function gridTable(thLabel, thMinWidth, dayStart, dayCount, bodyFn){
     const headers=buildDayHeaders(dayStart, dayCount);
     const ampm=buildAmPm(dayCount);
     const cells=()=>buildCells(dayCount);
+    const cellsD1=()=>dayStart===0?buildCellsHighlightDay1(dayCount):buildCells(dayCount);
     // colgroup ensures obs and med tables have identical column widths
     const cols=`<col style="width:${thMinWidth};min-width:${thMinWidth};">`+
       Array.from({length:dayCount*2},()=>'<col style="width:18px;">').join('');
     return `<table class="uri-grid" style="width:100%;table-layout:fixed;"><colgroup>${cols}</colgroup><thead>
       <tr><th rowspan="2" style="text-align:left;padding-left:4px;">${thLabel}</th>${headers}</tr>
       <tr>${ampm}</tr></thead>
-      <tbody>${bodyFn(cells)}</tbody></table>`;
+      <tbody>${bodyFn(cells,cellsD1)}</tbody></table>`;
   }
 
   // Helper: get dose-only string for a drug id
@@ -2822,10 +2832,7 @@ function buildTxSheet(sp){
     // Range format: "9.1–18.1mg"
     const rangeMatch=plain.match(/:\s*([\d.,]+[–\-][\d.,]+\s*(?:mg|mL|mcg|IU|unit))/i);
     if(rangeMatch) return rangeMatch[1].trim();
-    // Day 1 format (azithromycin)
-    const day1Match=plain.match(/Day 1[:\s]+([\d.,]+\s*(?:mg|mL))/i);
-    if(day1Match) return day1Match[1].trim()+' (Day 1)';
-    // Standard after colon: "Drug: 45mg" or "Drug: 0.1mL"
+    // Standard: first number+unit after colon (skips words like "Mirataz")
     const stdMatch=plain.match(/:\s*[\w\s]*?([\d.,]+\s*(?:mg|mL|mcg|IU|unit))/i);
     if(stdMatch) return stdMatch[1].trim();
     return '';
@@ -2873,8 +2880,7 @@ function buildTxSheet(sp){
     // Fixed dog CIRDC med list — always shown, auto-calculated
     const dogMeds=[
       {id:'doxy',          label:'Doxycycline',              optKey:null},
-      {id:'azithro',       label:'Azithromycin',             optKey:null},
-      {id:'enro',          label:'Enrofloxacin Standard',    optKey:'std'},
+      {id:'azithro',       label:'Azithromycin',             optKey:null, showFull:true},
       {id:'enro',          label:'Enrofloxacin (Pneumo)',    optKey:'pneumo'},
       {id:'clinda',        label:'Clindamycin',              optKey:null},
       {id:'pentoxifylline',label:'Pentoxifylline',           optKey:null},
@@ -2906,11 +2912,10 @@ function buildTxSheet(sp){
       </tr>`;
     }).join('');
 
-    const dogHeaderHtml=`
-      <!-- Dog Header: 5 cells -->
+    const dogHeaderHtml=(pageNum)=>`
       <div class="uri-header-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-        <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
-        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" placeholder=""></div>
+        <div class="uri-header-cell"><label>Animal #:</label><input type="text" id="dogAnimal${pageNum}" placeholder="ID / Name" oninput="syncField('dogAnimal')"></div>
+        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" id="dogKennel${pageNum}" placeholder="" oninput="syncField('dogKennel')"></div>
         <div class="uri-header-cell">
           <label>Start Date:</label>
           <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
@@ -2923,7 +2928,7 @@ function buildTxSheet(sp){
       </div>`;
 
     // Dog obs rows builder
-    const dogObsRows=cells=>`
+    const dogObsRows=(cells,cellsD1)=>`
       <tr><td class="row-label">Cough severity (0–4)</td>${cells()}</tr>
       <tr><td class="row-label">Eye discharge</td>${cells()}</tr>
       <tr><td class="row-label">Nasal discharge</td>${cells()}</tr>
@@ -2936,16 +2941,15 @@ function buildTxSheet(sp){
       <tr><td class="row-label" style="font-weight:700;background:#e8e8e8;">Tech Initials</td>${cells()}</tr>`;
 
     // Dog med rows builder
-    const dogMedRowsFn=cells=>dogMeds.map(m=>{
+    const dogMedRowsFn=(cells,cellsD1)=>dogMeds.map(m=>{
       const plain=m.id&&m.id!=='__bnptobra'?getDoseStr(m.id,m.optKey):'';
-      const dose=extractDoseOnly(plain);
+      const dose=m.showFull?sanitize(plain.replace(/^[^:]+:\s*/,'')):extractDoseOnly(plain);
       const isChecked=m.id==='__bnptobra'?bnpTobraChecked:m.id&&selectedMeds.has(m.id);
       const cbHtml='<input type="checkbox"'+(isChecked?' checked':'')+' style="margin-right:4px;">';
-      const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+sanitize(dose)+'</span>':'');
-      return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+cells()+'</tr>';
+      const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+dose+'</span>':'');
+      return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+(isChecked?cellsD1():cells())+'</tr>';
     }).join('');
 
-    // Shared sections helper for obs+med by day range
     const dogPageSections=(dayStart,dayCount)=>`
       <div style="page-break-inside:avoid;">
         <div class="uri-section">
@@ -2964,11 +2968,11 @@ function buildTxSheet(sp){
         </div>
       </div>`;
 
-    document.getElementById('uriSheet').innerHTML=headerSection+dogHeaderHtml+
+    document.getElementById('uriSheet').innerHTML=headerSection+dogHeaderHtml(1)+
       dogPageSections(0,7)+
       notesSection+
       `<div class="page2-break"></div>`+
-      headerSection+dogHeaderHtml+
+      headerSection+dogHeaderHtml(2)+
       dogPageSections(7,7)+
       notesSection+footer;
 
@@ -3007,10 +3011,10 @@ function buildTxSheet(sp){
     }).join('');
     const prevLine=`This cat has been treated for URI <input type="text" style="width:30px;text-align:center;" placeholder="0"> time(s) before.`;
 
-    const catHeaderHtml=`
+    const catHeaderHtml=(pageNum)=>`
       <div class="uri-header-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-        <div class="uri-header-cell"><label>Animal #:</label><input type="text" placeholder="ID / Name"></div>
-        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" placeholder=""></div>
+        <div class="uri-header-cell"><label>Animal #:</label><input type="text" id="catAnimal${pageNum}" placeholder="ID / Name" oninput="syncField('catAnimal')"></div>
+        <div class="uri-header-cell"><label>Kennel #:</label><input type="text" id="catKennel${pageNum}" placeholder="" oninput="syncField('catKennel')"></div>
         <div class="uri-header-cell">
           <label>Start Date:</label>
           <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
@@ -3036,7 +3040,7 @@ function buildTxSheet(sp){
       </div>`;
 
     // Cat obs rows builder
-    const catObsRows=cells=>`
+    const catObsRows=(cells,cellsD1)=>`
       <tr><td class="row-label">URI Score (0–5)</td>${cells()}</tr>
       <tr><td class="row-label">Eye Score (0–4)</td>${cells()}</tr>
       <tr><td class="row-label">Nasal discharge</td>${cells()}</tr>
@@ -3053,7 +3057,7 @@ function buildTxSheet(sp){
     const catMeds=[
       {id:null,            label:'SQ Fluids (amount)'},
       {id:'doxy',          label:'Doxycycline',                          optKey:null},
-      {id:'azithro',       label:'Azithromycin',                         optKey:null},
+      {id:'azithro',       label:'Azithromycin',                         optKey:null, showFull:true},
       {id:'erythro',       label:'Erythromycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both', optKey:null},
       {id:'terra',         label:'Terramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both',  optKey:null},
       {id:'tobra',         label:'Tobramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both',  optKey:null},
@@ -3068,19 +3072,19 @@ function buildTxSheet(sp){
     // BNP/Tobra checkbox for cats
     const catTobraChecked=['tobra','bnp','bnpdex','bnphc'].some(id=>selectedMeds.has(id));
 
-    const catMedRowsFn=cells=>{
+    const catMedRowsFn=(cells,cellsD1)=>{
       return catMeds.map(m=>{
         let dose='';
         if(m.fixed!==undefined){
           dose=m.fixed;
         } else if(m.id){
           const plain=getDoseStr(m.id,m.optKey||null);
-          dose=extractDoseOnly(plain);
+          dose=m.showFull?sanitize(plain.replace(/^[^:]+:\s*/,'')):extractDoseOnly(plain);
         }
         const isChecked=m.id&&selectedMeds.has(m.id);
         const cbHtml='<input type="checkbox"'+(isChecked?' checked':'')+' style="margin-right:4px;">';
-        const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+sanitize(dose)+'</span>':'');
-        return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+cells()+'</tr>';
+        const labelHtml='<span style="font-weight:600;">'+m.label+'</span>'+(dose?'<span style="font-weight:400;margin-left:6px;color:#333;">'+dose+'</span>':'');
+        return '<tr class="med-row"><td class="row-label" style="font-size:9px;">'+cbHtml+labelHtml+'</td>'+(isChecked?cellsD1():cells())+'</tr>';
       }).join('');
     };
 
@@ -3114,14 +3118,22 @@ function buildTxSheet(sp){
       </div>`;
 
     document.getElementById('uriSheet').innerHTML=
-      headerSection+catHeaderHtml+
+      headerSection+catHeaderHtml(1)+
       catPageSections(0,7)+
       notesSection+
       `<div class="page2-break"></div>`+
-      headerSection+catHeaderHtml+
+      headerSection+catHeaderHtml(2)+
       catPageSections(7,7)+
       notesSection+footer;
   }
+}
+
+function syncField(baseId){
+  const p1=document.getElementById(baseId+'1');
+  const p2=document.getElementById(baseId+'2');
+  if(!p1||!p2) return;
+  if(document.activeElement===p1) p2.value=p1.value;
+  else if(document.activeElement===p2) p1.value=p2.value;
 }
 
 function updateDayDates(){
