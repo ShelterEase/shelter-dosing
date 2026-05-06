@@ -128,8 +128,8 @@
   .uri-grid th{background:#d0d0d0;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .row-label{text-align:left;font-weight:600;white-space:nowrap;padding:2px 6px;min-width:70px;max-width:100px;overflow:hidden;background:#ebebeb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .subrow-label{text-align:left;font-weight:400;padding:2px 6px;min-width:140px;font-style:italic;}
-  .uri-grid .ampm-th{font-size:8px;width:20px;min-width:20px;}
-  .uri-grid .pm-th{font-size:8px;width:20px;min-width:20px;background:#c8c8c8;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .uri-grid .ampm-th{font-size:9px;width:20px;min-width:20px;}
+  .uri-grid .pm-th{font-size:9px;width:20px;min-width:20px;background:#c8c8c8;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .am-cell{width:20px;min-width:20px;}
   .uri-grid .pm-cell{width:20px;min-width:20px;background:#ebebeb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .uri-grid .am-cell-d1{width:20px;min-width:20px;border:2.5px solid #333!important;font-weight:700;}
@@ -161,13 +161,13 @@
     *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
     /* Sheet layout */
     .uri-sheet{padding:0;margin:0;font-size:9.5px;width:100%;}
-    .uri-sheet h1{font-size:12px;margin:0 0 3px;text-align:center;}
+    .uri-sheet h1{font-size:14px;margin:0 0 3px;text-align:center;}
     .uri-cat-icon{display:none;}
     /* Header */
     .uri-header-row{margin-bottom:3px;}
-    .uri-header-cell{padding:3px 4px;font-size:9.5px;}
-    .uri-header-cell label{font-size:8.5px;}
-    .uri-header-cell input{font-size:11px;}
+    .uri-header-cell{padding:3px 4px;font-size:10px;}
+    .uri-header-cell label{font-size:9.5px;font-weight:700;}
+    .uri-header-cell input{font-size:13px;font-weight:700;}
     /* Sections */
     .uri-section{margin-bottom:3px;}
     .uri-section-header{padding:2px 4px;font-size:9px;}
@@ -189,7 +189,7 @@
     .uri-grid .am-cell-d1{width:18px;min-width:18px;border:2.5px solid #000!important;}
     .uri-grid .pm-cell-d1{background:#ebebeb!important;width:18px;min-width:18px;border:2.5px solid #000!important;}
     /* Notes */
-    .uri-notes-row{min-height:14px;}
+    .uri-notes-row{min-height:10px;padding:1px 4px;}
     /* Page break — only page-break-after needed, before causes blank page */
     .page2-break{
       page-break-after:always;
@@ -858,6 +858,10 @@ const DRUGS=[
 {id:'tresaderm',name:'Tresaderm',alias:'Thiabendazole / Dexamethasone / Neomycin',route:'Topical — Otic',sections:['Ear'],species:['dog','cat'],type:'topical',
  use:'Otitis externa — bacterial + yeast + inflammation.',
  note:'5–15 drops/ear q12h \u00d7 7–14 days. Refrigerate. Not with ruptured tympanum.'},
+{id:'b12',name:'Vitamin B12',alias:'Cyanocobalamin 1000mcg/mL',route:'SQ',sections:['GI / Antiemetic','Supportive Care','Other'],species:['dog','cat'],type:'single',
+ use:'Appetite stimulation support, anorexia, GI disease, cobalamin deficiency.',
+ note:'Dogs: 0.5–1.0 mL SQ once weekly or as directed. Cats: 0.25–0.5 mL SQ once weekly. 1000mcg/mL injectable.'},
+
 {id:'vitk1',name:'Vitamin K1',alias:'Phytonadione 10mg/mL',route:'SQ / PO',sections:['Other'],species:['dog','cat'],type:'single',
  use:'Rodenticide toxicity, coagulopathy.',
  note:'2.5–5 mg/kg q12h \u00d7 4 weeks. SQ first dose (NOT IV), then oral. Give oral with fatty food.'},
@@ -1290,6 +1294,7 @@ const CLINICAL = {
       { group: 'Infectious' },
       { label: 'Upper respiratory infection (URI)',
         locations: ['No oral ulcers noted','Oral ulcers present'],
+        locationLabel: '— oral ulcer status —',
         techText: 'Respiratory: feline upper respiratory infection noted. Sneezing, nasal discharge, and/or ocular discharge present. {location}. Severity scored; appetite and hydration assessed.',
         vetText:  'Respiratory: feline URI complex present. Sneezing, nasal discharge, and conjunctivitis assessed. {location}. Severity graded (mild/moderate/severe); oral ulcers suggest calicivirus, corneal ulcers and recurrence suggest herpesvirus.',
         ddx: 'feline herpesvirus-1 (FHV-1) — corneal ulcers, recurrent; feline calicivirus (FCV) — oral ulcers, limping syndrome; Chlamydia felis, Bordetella bronchiseptica, Mycoplasma' },
@@ -1309,6 +1314,7 @@ const CLINICAL = {
       { group: 'Infectious' },
       { label: 'Kennel cough (CIRDC)',
         locations: ['No cough noted','Dry / honking cough','Moist / productive cough','Intermittent cough','Paroxysmal cough'],
+        locationLabel: '— coughing status —',
         techText: 'Respiratory: canine infectious respiratory disease complex (CIRDC) suspected. {location}; nasal discharge and ocular involvement assessed. Appetite and hydration assessed. Patient isolated per shelter protocol.',
         vetText:  'Respiratory: CIRDC presentation. {location}; tracheal sensitivity, nasal discharge, and conjunctivitis assessed. Auscultation performed to rule out lower airway involvement. Radiographs considered if systemic signs present.',
         ddx: 'Bordetella bronchiseptica, canine parainfluenza virus, canine adenovirus-2, Mycoplasma, canine influenza (H3N2/H3N8)' },
@@ -1927,6 +1933,13 @@ function calcDose(drug, kg){
     const loMg=f(0.025*lb,2), hiMg=f(0.05*lb,2);
     const loMl=f(loMg/10,3), hiMl=f(hiMg/10,3);
     return{html:blk('0.025–0.05mg/lb IM/SQ',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','10mg/mL — q4–6h — DEA Schedule IV — log required'),plain:`Butorphanol: ${loMl}–${hiMl}mL IM/SQ (10mg/mL, ${loMg}–${hiMg}mg) q4–6h`};
+  }
+  // VITAMIN B12 — flat dose by species
+  if(id==='b12'){
+    if(species==='cat'){
+      return{html:blk('0.25–0.5 mL SQ','0.25–0.5 mL','1000mcg/mL — weekly or as directed',''),plain:'Vitamin B12: 0.25–0.5 mL SQ weekly (1000mcg/mL)'};
+    }
+    return{html:blk('0.5–1.0 mL SQ','0.5–1.0 mL','1000mcg/mL — weekly or as directed',''),plain:'Vitamin B12: 0.5–1.0 mL SQ weekly (1000mcg/mL)'};
   }
 
   // METHOCARBAMOL
@@ -2647,7 +2660,7 @@ function initClinical(){
         <div class="lat-toggle" id="lat_${safeSymKey}" onclick="event.stopPropagation()">
           <select class="clinical-select" id="locsel_${safeSymKey}" data-symkey="${safeSymKey}" style="font-size:11px;padding:3px 24px 3px 7px;flex:none;width:auto;min-width:140px;"
             onchange="setLocation(this.dataset.symkey,this.value)">
-            <option value="">— select location —</option>
+            <option value="">${item.locationLabel||'— select location —'}</option>
             ${locOptions.map(o=>`<option value="${o}">${o}</option>`).join('')}
           </select>
         </div>`:'';
@@ -2781,11 +2794,11 @@ function buildTxSheet(sp){
     return Array.from({length:count},(_,i)=>{
       const dayNum=start+i+1;
       const dayIdx=start+i;
-      return `<th colspan="2" style="white-space:nowrap;">Day ${dayNum}<br><span class="day-date" data-day="${dayIdx}" style="font-size:9px;font-weight:400;">${dayDateLabels[dayIdx]}</span></th>`;
+      return `<th colspan="2" style="white-space:nowrap;font-size:10px;">Day ${dayNum}<br><span class="day-date" data-day="${dayIdx}" style="font-size:9.5px;font-weight:600;">${dayDateLabels[dayIdx]}</span></th>`;
     }).join('');
   }
   function buildAmPm(count){
-    return Array.from({length:count},()=>'<th class="ampm-th">AM</th><th class="pm-th" style="background:#c8c8c8;">PM</th>').join('');
+    return Array.from({length:count},()=>'<th class="ampm-th" style="font-size:9px;">AM</th><th class="pm-th" style="background:#c8c8c8;font-size:9px;">PM</th>').join('');
   }
   function buildCells(count){
     return Array.from({length:count},()=>'<td class="am-cell"></td><td class="pm-cell" style="background:#ebebeb;"></td>').join('');
@@ -2868,7 +2881,6 @@ function buildTxSheet(sp){
       <div class="uri-section-header">Additional Notes / Comments</div>
       <div class="uri-notes-row"><input type="text"></div>
       <div class="uri-notes-row"><input type="text"></div>
-      <div class="uri-notes-row"><input type="text"></div>
     </div>`;
 
   const footer=`<div style="text-align:center;font-size:9px;color:#888;margin-top:8px;">
@@ -2891,7 +2903,7 @@ function buildTxSheet(sp){
       {id:'prednisone',    label:'Prednisone',               optKey:null},
       {id:'mirtazapine',   label:'Mirtazapine',              optKey:null},
       {id:null,            label:'Fluids'},
-      {id:null,            label:'B12',                      fixed:'0.25–1.0 mL SQ'},
+      {id:'b12',           label:'B12',                      optKey:null},
       {id:'butorphanol',   label:'Butorphanol',              optKey:null},
       {id:null,            label:'Other'},
     ];
@@ -3063,7 +3075,7 @@ function buildTxSheet(sp){
       {id:'tobra',         label:'Tobramycin — R &nbsp;/&nbsp; L &nbsp;/&nbsp; Both',  optKey:null},
       {id:null,            label:'Nose Drops — Gen/Dex',                 fixed:''},
       {id:'mirtazapine',   label:'Mirtazapine',              optKey:null},
-      {id:null,            label:'B12',                                   fixed:'0.1–0.25 mL SQ'},
+      {id:'b12',           label:'B12',                      optKey:null},
       {id:null,            label:'Nebulize — S &nbsp;&nbsp; A &nbsp;&nbsp; G', fixed:''},
       {id:'zorbium',       label:'Zorbium',                              optKey:'transdermal'},
       {id:null,            label:'Other'},
