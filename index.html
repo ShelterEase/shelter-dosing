@@ -670,9 +670,10 @@ const DRUGS=[
 {id:'clavamox',name:'Clavamox',alias:'Amoxicillin / Clavulanate',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
  use:'Skin, wounds, URI, UTI, pneumonia — beta-lactam + clavulanate. Twice daily.',
  note:'6.25 mg/lb q12h. Tabs: 62.5 / 125 / 250 / 375mg. Give with food.'},
-{id:'clinda',name:'Clindamycin',alias:'Antirobe / Cleocin',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
+{id:'clinda',name:'Clindamycin',alias:'Antirobe / Cleocin',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'multi',
  use:'Anaerobes, dental, skin, soft tissue, respiratory.',
- note:'Dogs: 5–11 mg/kg q12h — tabs 25/75/150mg. Cats: 25mg/mL liquid, 1 mL/5 lbs q24h.'},
+ options:[{key:'std',label:'Standard (~5–11mg/kg)'},{key:'pneumo',label:'Pneumonia (10mg/kg)'}],
+ note:'Dogs Standard: 5–11mg/kg q12h — 25mg tablet, 75mg & 150mg capsules. Dogs Pneumonia: 10mg/kg q12h. Cats: 25mg/mL liquid, 1 mL/5 lbs q24h.'},
 {id:'clonidine',name:'Clonidine',alias:'Catapres — compounded',route:'PO',sections:['Sedation / Behavior'],species:['dog'],type:'single',
  use:'Situational anxiety, noise phobia — alpha-2 agonist. Dogs BID.',
  note:'0.01–0.05 mg/kg q12h. Compounded. Give 1–2 hrs before stressor.'},
@@ -1685,14 +1686,25 @@ function calcDose(drug, kg){
     const r=clavDose(lb);
     return{html:blk('6.25mg/lb — q12h',r.mg+' mg',r.combo,''),plain:`Clavamox: ${r.mg}mg PO q12h (${r.combo})`};
   }
-  // CLINDAMYCIN
+  // CLINDAMYCIN — multi: standard + pneumonia dose
   if(id==='clinda'){
     if(species==='cat'){
-      const ml=f(lb*0.2,1); // 1mL/5lbs of 25mg/mL
-      return{html:blk('Liquid — 1mL/5 lbs',ml+' mL','25mg/mL • q24h',''),plain:`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`};
+      const ml=f(lb*0.2,1);
+      const h=blk('Liquid — 1mL/5 lbs',ml+' mL','25mg/mL • q24h','');
+      const p=`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`;
+      return{opts:{std:{html:h,plain:p},pneumo:{html:h,plain:p}}};
     }
-    const r=clindaDogDose(lb);
-    return{html:blk('~5–11mg/kg q12h',r.mg+' mg',r.combo,''),plain:`Clindamycin: ${r.mg}mg PO q12h (${r.combo})`};
+    // Standard: ~5–11mg/kg
+    const rStd=clindaDogDose(lb);
+    const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,'');
+    const stdP=`Clindamycin: ${rStd.mg}mg PO q12h (${rStd.combo})`;
+    // Pneumonia: 10mg/kg
+    const pnMg=f(10*kg,1);
+    const pnParts=bestPills(pnMg,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
+    const pnCombo=pnParts?pnParts.join(' + '):'';
+    const pnH=blk('Pneumonia — 10mg/kg q12h',pnMg+' mg',pnCombo,'');
+    const pnP=`Clindamycin (Pneumo): ${pnMg}mg PO q12h (${pnCombo})`;
+    return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
   }
   // DOXYCYCLINE
   if(id==='doxy'){
@@ -2894,7 +2906,8 @@ function buildTxSheet(sp){
       {id:'doxy',          label:'Doxycycline',              optKey:null},
       {id:'azithro',       label:'Azithromycin',             optKey:null, showFull:true},
       {id:'enro',          label:'Enrofloxacin (Pneumo)',    optKey:'pneumo'},
-      {id:'clinda',        label:'Clindamycin',              optKey:null},
+      {id:'clinda',        label:'Clindamycin Standard',     optKey:'std'},
+      {id:'clinda',        label:'Clindamycin (Pneumo)',      optKey:'pneumo'},
       {id:'pentoxifylline',label:'Pentoxifylline',           optKey:null},
       {id:'previcox',      label:'Previcox',                 optKey:null},
       {id:'cerenia',       label:'Cerenia',                  optKey:'po'},
