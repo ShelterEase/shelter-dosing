@@ -33,9 +33,9 @@
   .unit-btn.active{color:#5ee8cf;background:rgba(94,232,207,.12);}
   .main{max-width:1150px;margin:0 auto;padding:18px 16px 150px;}
   .section-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);}
-  .sec-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
-  .sec-btn:hover{border-color:var(--border2);color:var(--text);}
-  .sec-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
+  .sec-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border2);background:#f0efea;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .13s;}
+  .sec-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-light);}
+  .sec-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 2px 6px rgba(13,126,107,.3);}
   .drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:11px;}
   .drug-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:box-shadow .15s,border-color .15s;}
   .drug-card:hover{box-shadow:var(--shadow-md);}
@@ -50,10 +50,10 @@
   .drug-checkbox{width:18px;height:18px;border-radius:5px;border:2px solid var(--border2);background:var(--surface);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none;}
   .drug-checkbox.checked{background:var(--teal);border-color:var(--teal);}
   .drug-checkbox.checked::after{content:'';display:block;width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
-  .opt-cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none;}
+  .opt-cb{width:16px;height:16px;border-radius:4px;border:2px solid #888;background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none;}
   .opt-cb.checked{background:var(--teal);border-color:var(--teal);}
   .opt-cb.checked::after{content:'';display:block;width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
-  .opt-label{font-size:12px;font-weight:500;color:var(--text2);}
+  .opt-label{font-size:12px;font-weight:600;color:#1a5c50;}
   .divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
   .dose-block{background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);padding:9px 11px;margin-bottom:5px;}
   .dose-block.warn-block{background:var(--amber-light);border-color:#fcd34d;}
@@ -357,7 +357,7 @@
       </div>
       <!-- URI/CIRDC Treatment Sheet button — shown when relevant symptom selected -->
       <div id="uriSheetRow" style="display:none;margin-top:10px;">
-        <button id="uriSheetBtn" style="padding:7px 16px;border-radius:6px;border:1px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;width:100%;">🐱 URI Treatment Sheet</button>
+        <button id="uriSheetBtn" style="padding:7px 16px;border-radius:6px;border:1px solid #4f46e5;background:#eef2ff;color:#3730a3;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;">🐱 URI Treatment Sheet</button>
       </div>
       <!-- Preview -->
       <div class="clinical-preview" id="clinicalPreview">
@@ -618,6 +618,10 @@ const DRUGS=[
 {id:'atropineeye',name:'Atropine 1% Ophthalmic',alias:'Atropine Eye Drops',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
  use:'Uveitis, corneal ulcers — cycloplegia, reduces ciliary spasm and pain.',
  note:'1 drop q12–24h as directed. Cats: use sparingly — systemic absorption risk.'},
+{id:'amoxicillin',name:'Amoxicillin',alias:'Amoxicillin 50mg/mL oral suspension',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'Broad-spectrum antibiotic — respiratory, skin, UTI, soft tissue. Gram-positive and some Gram-negative coverage.',
+ note:'Dogs: 10–22 mg/kg q12h. Cats: 50mg/mL suspension, 5–10mg/kg q12h. Shake well. Refrigerate after reconstitution. 14-day course typical.'},
+
 {id:'azithro',name:'Azithromycin',alias:'Zithromax',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
  use:'URI, Chlamydophila, Mycoplasma — macrolide. Auto-selects tablet or liquid.',
  note:'5–10 mg/kg q24h \u00d7 3–5 days. Tablets 250mg (larger dogs). Oral susp 200mg/5mL for cats/small dogs.'},
@@ -810,6 +814,10 @@ const DRUGS=[
 {id:'ponazuril',name:'Ponazuril',alias:'Marquis 50mg/mL',route:'PO',sections:['GI / Antiemetic','Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Coccidia — antiprotozoal. 1–3 day course.',
  note:'50 mg/kg q24h \u00d7 1–3 days. 50mg/mL oral paste.'},
+{id:'propectalin',name:'Pro-Pectalin',alias:'Kaolin/Pectin/Enterococcus',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Acute diarrhea, GI upset — probiotic + kaolin/pectin adsorbent. Safe for all ages.',
+ note:'Dogs: 1 tablet (chewable) per 20 lbs q12h. Cats: 2–4 inches paste q12h (paste formulation). Continue 2–5 days or until resolved.'},
+
 {id:'droncit',name:'Praziquantel',alias:'Droncit 34mg tabs',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Tapeworms — single dose.',
  note:'5–7.5 mg/kg single dose. Tabs 34mg. Injectable 56.8mg/mL also available.'},
@@ -1031,26 +1039,62 @@ const CLINICAL = {
       { group: 'Musculoskeletal', major: true },
       { group: 'Lameness' },
       { label: 'Lameness',
-        sub: 'unspecified limb',
-        locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb','Both forelimbs','Both hindlimbs','All limbs'],
+        sub: 'specify limb and region',
+        locations: [
+          'Right forelimb — paw/digit','Right forelimb — carpus','Right forelimb — radius/ulna','Right forelimb — elbow','Right forelimb — humerus','Right forelimb — shoulder',
+          'Left forelimb — paw/digit','Left forelimb — carpus','Left forelimb — radius/ulna','Left forelimb — elbow','Left forelimb — humerus','Left forelimb — shoulder',
+          'Right hindlimb — paw/digit','Right hindlimb — tarsus','Right hindlimb — tibia/fibula','Right hindlimb — stifle','Right hindlimb — femur','Right hindlimb — hip',
+          'Left hindlimb — paw/digit','Left hindlimb — tarsus','Left hindlimb — tibia/fibula','Left hindlimb — stifle','Left hindlimb — femur','Left hindlimb — hip',
+          'Both forelimbs','Both hindlimbs','All limbs — generalized'
+        ],
+        locationLabel:'— select limb and region —',
+        findings:[
+          {key:'grade',label:'Grade (1–5)',opts:['Grade 1 — occasional, subtle','Grade 2 — consistent, weight-bearing','Grade 3 — moderate, some WB','Grade 4 — severe, minimal WB','Grade 5 — non-weight-bearing']},
+          {key:'pain',label:'Pain on palpation',opts:['None detected','Mild','Moderate','Severe']},
+          {key:'crepitus',label:'Crepitus',opts:['None','Mild crepitus','Moderate crepitus','Severe crepitus']},
+          {key:'rom',label:'Range of motion',opts:['Normal','Mildly reduced','Moderately reduced','Severely reduced','Pain at end range']},
+          {key:'swelling',label:'Joint swelling',opts:['None','Mild effusion','Moderate effusion','Marked effusion']},
+        ],
         techText: 'Musculoskeletal: {location} lameness noted on gait evaluation.',
         vetText:  'Musculoskeletal: {location} lameness observed. Degree graded (1–5 scale); neurologic vs orthopedic origin assessed. Orthopedic exam performed.',
         ddx: 'OA/DJD, soft tissue injury, fracture, panosteitis (young large breed), septic joint, neoplasia' },
       { label: 'Non-weight-bearing lameness',
-        locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb'],
+        locations: [
+          'Right forelimb — paw/digit','Right forelimb — carpus','Right forelimb — elbow','Right forelimb — shoulder',
+          'Left forelimb — paw/digit','Left forelimb — carpus','Left forelimb — elbow','Left forelimb — shoulder',
+          'Right hindlimb — paw/digit','Right hindlimb — tarsus','Right hindlimb — stifle','Right hindlimb — hip',
+          'Left hindlimb — paw/digit','Left hindlimb — tarsus','Left hindlimb — stifle','Left hindlimb — hip'
+        ],
+        locationLabel:'— select limb and region —',
+        findings:[
+          {key:'pain',label:'Pain on palpation',opts:['Mild','Moderate','Severe — vocalizes']},
+          {key:'crepitus',label:'Crepitus',opts:['None','Present — mild','Present — marked']},
+          {key:'swelling',label:'Swelling',opts:['None','Mild','Moderate','Marked']},
+          {key:'instability',label:'Joint instability',opts:['None detected','Mild laxity','Marked laxity — drawer/thrust present']},
+        ],
         techText: 'Musculoskeletal: non-weight-bearing lameness noted ({location}). Patient is not placing weight on affected limb at rest or during ambulation. Limb and foot inspected for injury.',
         vetText:  'Musculoskeletal: non-weight-bearing lameness present ({location}). Fracture, luxation, and septic joint prioritized. Radiographs and joint tap considered urgently.',
         ddx: 'acute fracture, joint luxation, septic arthritis, acute cruciate rupture, severe soft tissue injury, bite wound abscess' },
       { group: 'Joints / Stiffness' },
       { label: 'Generalized stiffness',
+        findings:[
+          {key:'onset',label:'Onset pattern',opts:['Worse after rest (DJD)','Worse with activity','Constant','Morning stiffness only']},
+          {key:'severity',label:'Severity',opts:['Mild — subtle gait change','Moderate — obvious reluctance','Severe — difficulty rising']},
+        ],
         techText: 'Musculoskeletal: generalized stiffness noted on exam. Patient demonstrates reduced range of motion and reluctance to move, particularly after rest.',
         vetText:  'Musculoskeletal: polyarthralgia or generalized stiffness noted. All limbs and axial skeleton assessed. Inflammatory vs degenerative origin evaluated.',
         ddx: 'DJD/OA (polyarthritis), immune-mediated polyarthritis, tick-borne arthropathy, myopathy, discospondylitis' },
       { label: 'Joint swelling',
         locations: ['Right stifle','Left stifle','Right carpus','Left carpus','Right tarsus','Left tarsus','Right elbow','Left elbow','Right hip','Left hip','Right shoulder','Left shoulder'],
+        findings:[
+          {key:'crepitus',label:'Crepitus',opts:['None','Mild crepitus','Moderate crepitus','Marked crepitus']},
+          {key:'rom',label:'Range of motion',opts:['Normal','Mildly reduced','Moderately reduced','Pain at end range']},
+          {key:'instability',label:'Instability',opts:['None detected','Mild laxity','Cranial drawer sign positive','Tibial thrust positive','Marked laxity']},
+          {key:'ddx_stifle',label:'Stifle consideration',opts:['OA/DJD','Cruciate tear (partial)','Cruciate tear (complete)','Meniscal injury suspected','Old injury / chronic changes','Patellar luxation','Septic joint']},
+        ],
         techText: 'Musculoskeletal: joint effusion or swelling identified at the {location} on palpation. Patient assessed for pain and instability on manipulation.',
         vetText:  'Musculoskeletal: {location} effusion noted. Joint pain, instability, and range of motion assessed. Radiographs and possible joint tap planned.',
-        ddx: 'cranial cruciate ligament rupture, meniscal injury, immune-mediated arthritis, septic arthritis, OA' },
+        ddx: 'cranial cruciate ligament rupture (CCL), meniscal injury, immune-mediated arthritis, septic arthritis, OA/DJD, patellar luxation' },
       { label: 'Muscle atrophy',
         locations: ['Right forelimb','Left forelimb','Right hindlimb','Left hindlimb','Bilateral forelimbs','Bilateral hindlimbs','Masticatory muscles','Generalized'],
         techText: 'Musculoskeletal: muscle atrophy noted ({location}). Reduction in muscle mass observed; bilateral symmetry compared.',
@@ -1061,6 +1105,25 @@ const CLINICAL = {
         techText: 'Musculoskeletal / Neurologic: pain response elicited on spinal palpation ({location} region). Patient resists or vocalizes during dorsal vertebral pressure.',
         vetText:  'Musculoskeletal / Neurologic: {location} spinal pain localized on palpation. Neurologic exam performed to assess for deficits. Imaging recommended.',
         ddx: 'intervertebral disc disease, discospondylitis, vertebral fracture, meningitis, neoplasia' },
+      { label: 'Ataxia',
+        locations: ['Generalized','Hindlimb predominant','Forelimb predominant','Head/vestibular'],
+        locationLabel:'— select pattern —',
+        findings:[
+          {key:'severity',label:'Severity',opts:['Mild — subtle incoordination','Moderate — stumbling, wide-based stance','Severe — falling, unable to walk normally']},
+          {key:'type',label:'Character',opts:['Proprioceptive — knuckling/crossing','Vestibular — head tilt, circling, nystagmus','Cerebellar — dysmetria, intention tremor','Unknown/mixed']},
+        ],
+        techText: 'Neurologic: ataxia noted ({location}). Incoordination and abnormal gait observed. Proprioceptive testing, postural reactions, and cranial nerve assessment performed. Veterinarian notified.',
+        vetText:  'Neurologic: {location} ataxia present. Origin classified (proprioceptive/spinal, vestibular, cerebellar). Full neurologic exam performed including postural reactions, CN assessment, and spinal reflexes. Imaging and CSF tap considered.',
+        ddx: 'intervertebral disc disease (IVDD), vestibular syndrome (peripheral vs central), cerebellar disease, toxin, trauma, neoplasia, thiamine deficiency (cats)' },
+      { label: 'Arthritic signs',
+        findings:[
+          {key:'onset',label:'Onset/pattern',opts:['Stiff after rest — improves with movement','Worse with activity','Constant discomfort','Seasonal/intermittent']},
+          {key:'severity',label:'Severity',opts:['Mild — subtle stiffness','Moderate — obvious difficulty rising/moving','Severe — reluctant to move, in pain']},
+          {key:'joints',label:'Affected area',opts:['Hindlimbs predominant','Forelimbs predominant','All four limbs','Spine/back','Hips','Bilateral stifles','Elbows']},
+        ],
+        techText: 'Musculoskeletal: arthritic signs noted. Patient exhibits stiffness, reduced mobility, and joint discomfort consistent with degenerative joint disease. Gait scored and affected limbs identified.',
+        vetText:  'Musculoskeletal: degenerative joint disease (DJD/OA) suspected based on clinical presentation. Joint palpation, range of motion, and muscle condition assessed. Radiographs recommended to confirm distribution and severity.',
+        ddx: 'osteoarthritis (DJD), immune-mediated polyarthritis, Lyme arthritis, hip dysplasia, elbow dysplasia, spondylosis deformans' },
       { group: 'Respiratory', major: true },
       { group: 'Cough' },
       { label: 'Cough',
@@ -1106,7 +1169,14 @@ const CLINICAL = {
       { group: 'Cardiovascular', major: true },
       { label: 'Heart murmur',
         findings:[
-          {key:'grade',label:'Grade',opts:['Grade I/VI','Grade II/VI','Grade III/VI','Grade IV/VI','Grade V/VI','Grade VI/VI']},
+          {key:'grade',label:'Grade',opts:[
+            'Grade I/VI — very faint, heard only in quiet room after careful listening',
+            'Grade II/VI — soft but easily heard with stethoscope',
+            'Grade III/VI — moderate intensity, clearly audible',
+            'Grade IV/VI — loud, heard all over chest',
+            'Grade V/VI — loud, can feel vibration (thrill) on chest wall',
+            'Grade VI/VI — very loud, can hear without stethoscope touching chest'
+          ]},
         ],
         techText: 'Cardiovascular: heart murmur auscultated.',
         vetText:  'Cardiovascular: cardiac murmur identified on auscultation. Pulse quality, rhythm, and femoral pulse deficit assessed. Thoracic radiographs and echocardiography considered.',
@@ -1304,9 +1374,26 @@ const CLINICAL = {
         vetText:  'Gastrointestinal: feline panleukopenia (FPV) suspected. Severe hemorrhagic gastroenteritis, profound leukopenia, and depression present. Parvo SNAP test obtained (cross-reacts with FPV); strict isolation initiated. IV fluid resuscitation and supportive care prioritized.',
         ddx: 'feline panleukopenia virus (FPV), salmonellosis, other viral gastroenteritis, foreign body obstruction, intussusception' },
       { label: 'Ringworm (dermatophytosis)',
-        techText: 'Dermatologic: dermatophytosis (ringworm) suspected. Focal or multifocal alopecia with scaling, crusting, or broken hairs noted. Patient isolated; all in-contact animals assessed.',
-        vetText:  'Dermatologic: dermatophytosis suspected. Lesion distribution and morphology assessed; Wood\'s lamp exam performed (positive in ~50% of Microsporum canis). DTM fungal culture submitted. Strict isolation and environmental decontamination initiated.',
+        locations:['Focal — single lesion','Multifocal — 2–4 lesions','Multifocal — 5+ lesions','Generalized'],
+        locationLabel:'— lesion distribution —',
+        techText: 'Dermatologic: dermatophytosis (ringworm) suspected. {location}. Focal or multifocal alopecia with scaling, crusting, or broken hairs noted. Patient isolated; all in-contact animals assessed.',
+        vetText:  'Dermatologic: dermatophytosis suspected. {location}. Lesion distribution and morphology assessed; Wood\'s lamp exam performed (positive in ~50% of Microsporum canis). DTM fungal culture submitted. Strict isolation and environmental decontamination initiated.',
         ddx: 'Microsporum canis (most common), Trichophyton mentagrophytes, Microsporum gypseum; demodicosis, bacterial folliculitis, alopecia areata' },
+      { label: 'Scabies – suspected (Notoedric mange)',
+        sub: 'scraping not performed (e.g. feral/fractious)',
+        findings:[
+          {key:'severity',label:'Severity',opts:['Mild — few lesions','Moderate — multifocal','Severe — generalized','Crusted form']},
+        ],
+        techText: 'Dermatologic: notoedric mange (feline scabies) suspected based on clinical presentation. Intense pruritus, crusting, and alopecia at head, face, and pinnae noted. Scraping not performed due to patient temperament. Patient isolated; all contacts assessed.',
+        vetText:  'Dermatologic: Notoedres cati (feline scabies) suspected — scraping not performed. Head/face/pinnae distribution and intense pruritus assessed. Empirical treatment initiated; zoonotic potential discussed. Isolation required.',
+        ddx: 'Notoedres cati, Sarcoptes scabiei (rare in cats), Cheyletiella, allergic dermatitis, dermatophytosis' },
+      { label: 'Scabies – confirmed (Notoedric mange)',
+        findings:[
+          {key:'severity',label:'Severity',opts:['Mild — few lesions','Moderate — multifocal','Severe — generalized','Crusted form']},
+        ],
+        techText: 'Dermatologic: notoedric mange confirmed on skin scraping. Intense pruritus, crusting, and alopecia at head, face, and pinnae noted. Patient isolated; all in-contact animals treated.',
+        vetText:  'Dermatologic: Notoedres cati confirmed on superficial skin scraping. Distribution, severity, and secondary infection assessed. Isolation and treatment initiated. Staff advised of zoonotic risk.',
+        ddx: 'Notoedres cati confirmed; rule out Sarcoptes scabiei, Cheyletiella, dermatophytosis' },
     ]
   },
   'Canine-Specific': {
@@ -1333,15 +1420,31 @@ const CLINICAL = {
         ddx: 'dog-on-dog bite wound, puncture abscess, penetrating foreign body, bite from wildlife (rabies risk assessed)' },
       // ── Dermatology ──
       { group: 'Dermatology' },
+      { label: 'Happy tail',
+        locations:['Tail tip','Mid-tail','Multiple sites'],
+        techText: 'Dermatologic: happy tail injury noted at {location}. Laceration or abrasion present from repeated tail trauma against kennel surfaces. Wound cleaned and assessed for depth and infection. Bandaging applied; kennel padding recommended.',
+        vetText:  'Dermatologic: happy tail (tail tip trauma) at {location}. Wound depth, tissue viability, and infection assessed. Padded bandage applied. Chronic or severe cases: surgical tail tip amputation considered. Kennel modification recommended to reduce recurrence.',
+        ddx: 'traumatic tail laceration (happy tail), tail tip necrosis, bite wound, self-mutilation' },
       { label: 'Demodicosis',
         sub: 'generalized or localized',
         techText: 'Dermatologic: demodicosis suspected. Focal or multifocal alopecia with comedones, erythema, and scaling noted. Deep skin scraping submitted; veterinarian notified.',
         vetText:  'Dermatologic: demodicosis confirmed or suspected on deep skin scraping. Localized vs generalized pattern assessed; underlying immunosuppression evaluated in adult-onset cases. Secondary pyoderma treated concurrently.',
         ddx: 'Demodex canis (generalized or localized), dermatophytosis, bacterial pyoderma, zinc-responsive dermatosis' },
-      { label: 'Sarcoptic mange',
-        techText: 'Dermatologic: sarcoptic mange suspected. Intense pruritus with erythema, crusting, and alopecia noted at pinnae, elbows, and ventrum. Patient isolated; all in-contact animals assessed.',
-        vetText:  'Dermatologic: sarcoptic mange (Sarcoptes scabiei) suspected. Distribution pattern (pinnae, elbows, hocks) and intense pruritus assessed. Superficial skin scraping performed; pinnal-pedal reflex tested. Highly contagious — isolation required.',
-        ddx: 'Sarcoptes scabiei, allergic dermatitis, Cheyletiella, Notoedres (rare in dogs), pediculosis' },
+      { label: 'Sarcoptic mange / Scabies – suspected',
+        sub: 'scraping not performed',
+        findings:[
+          {key:'severity',label:'Severity',opts:['Mild — few lesions','Moderate — multifocal','Severe — generalized','Crusted/Norwegian form']},
+        ],
+        techText: 'Dermatologic: sarcoptic mange (scabies) suspected based on clinical presentation. Intense pruritus, erythema, crusting, and alopecia at pinnae, elbows, and ventrum noted. Scraping not performed due to patient temperament. Patient isolated; all contacts assessed.',
+        vetText:  'Dermatologic: sarcoptic mange suspected — scraping not performed. Distribution pattern, pinnal-pedal reflex, and pruritus intensity assessed. Empirical treatment initiated. Isolation and zoonotic risk discussed.',
+        ddx: 'Sarcoptes scabiei, allergic dermatitis, Cheyletiella, contact dermatitis, pediculosis' },
+      { label: 'Sarcoptic mange / Scabies – confirmed',
+        findings:[
+          {key:'severity',label:'Severity',opts:['Mild — few lesions','Moderate — multifocal','Severe — generalized','Crusted/Norwegian form']},
+        ],
+        techText: 'Dermatologic: sarcoptic mange confirmed on skin scraping. Intense pruritus, erythema, crusting, and alopecia noted. Patient isolated; all in-contact animals treated.',
+        vetText:  'Dermatologic: Sarcoptes scabiei confirmed on skin scraping. Severity and secondary infection assessed. Isolation, environmental treatment, and systemic treatment initiated. Staff notified of zoonotic risk.',
+        ddx: 'Sarcoptes scabiei confirmed; rule out Cheyletiella, Demodex, Notoedres (cats)' },
       { label: 'Pyoderma – superficial',
         techText: 'Dermatologic: superficial pyoderma identified. Papules, pustules, epidermal collarettes, or crusting noted on trunk or skin folds. Skin cytology assessed per veterinarian instruction.',
         vetText:  'Dermatologic: superficial bacterial pyoderma present. Lesion distribution and morphology characterized; cytology obtained. Underlying atopy, hypothyroidism, or ectoparasites pursued as predisposing cause.',
@@ -1466,25 +1569,45 @@ function calcDose(drug, kg){
   if(drug.type==='multi'){
     // CERENIA
     if(id==='cerenia'){
-      // tablet: 2mg/kg, sizes 16/24/60mg; injectable 10mg/mL 1mg/kg
-      const tabMg=2*kg;
-      const tabParts=bestPillsHalf(tabMg,[{mg:60,unit:'tablet'},{mg:24,unit:'tablet'},{mg:16,unit:'tablet'}]);
-      const tabActual=parseFloat((tabParts?tabParts.reduce((s,p)=>{const m=p.match(/(\d+(?:\.\d+)?)\s*×\s*(\d+(?:\.\d+)?)mg/);return s+(m?parseFloat(m[1])*parseFloat(m[2]):0);},0):tabMg).toFixed(1));
-      const maxTabMg=parseFloat((3*kg).toFixed(1));
-      const injVol=f(kg/10,2);
+      // Injectable: exact per-label (1mg/kg = lb/2.2046/10 mL)
+      const injMg=f(kg,2), injVol=f(kg/10,2);
+      const injH=blk('SQ injection — 1mg/kg',injVol+' mL','10mg/mL — '+injMg+'mg','q24h');
+      const injP=`Cerenia: ${injVol}mL SQ q24h (10mg/mL, ${injMg}mg)`;
       let poH,poP;
       if(species==='cat'){
-        poH=blk('SQ preferred for cats','—','','Tablets not recommended in cats');
-        poP='Cerenia: tablets not recommended — use SQ';
-      }else{
-        const cerWarn=checkRange(tabActual,parseFloat((2*kg).toFixed(1)),maxTabMg,tabParts?tabParts.join(' + '):'','Use Cerenia injectable instead.');
-        if(cerWarn){poH=cerWarn.html;poP=cerWarn.plain;}
-        else{poH=blk('Tablet PO — 2mg/kg',tabActual+' mg',tabParts?tabParts.join(' + '):'','q24h');poP=`Cerenia: ${tabActual}mg PO q24h (${tabParts?tabParts.join(' + '):''})`;}
+        // Cat injectable dose same formula
+        poH=blk('SQ preferred for cats','—','','Tablets not recommended in cats — use SQ');
+        poP='Cerenia: tablets not recommended in cats — use SQ';
+      } else {
+        // Exact per-label tablet chart
+        const lbR=Math.round(lb);
+        let dose,combo;
+        if     (lbR<=5)  {dose='8mg'; combo='½ × 16mg tablet';}
+        else if(lbR<=10) {dose='12mg';combo='½ × 24mg tablet';}
+        else if(lbR<=15) {dose='16mg';combo='1 × 16mg tablet';}
+        else if(lbR<=20) {dose='24mg';combo='1 × 24mg tablet';}
+        else if(lbR<=25) {dose='24mg';combo='1 × 24mg tablet';}
+        else if(lbR<=30) {dose='32mg';combo='2 × 16mg tablets';}
+        else if(lbR<=35) {dose='32mg';combo='2 × 16mg tablets';}
+        else if(lbR<=40) {dose='40mg';combo='1 × 16mg + 1 × 24mg tablets';}
+        else if(lbR<=45) {dose='48mg';combo='2 × 24mg tablets';}
+        else if(lbR<=50) {dose='48mg';combo='2 × 24mg tablets';}
+        else if(lbR<=55) {dose='56mg';combo='1 × 60mg tablet (nearest)';}
+        else if(lbR<=60) {dose='60mg';combo='1 × 60mg tablet';}
+        else if(lbR<=65) {dose='60mg';combo='1 × 60mg tablet';}
+        else if(lbR<=70) {dose='64mg';combo='½ × 24mg + 1 × 60mg tablets';}
+        else if(lbR<=75) {dose='72mg';combo='½ × 24mg + 1 × 60mg tablets';}
+        else if(lbR<=80) {dose='80mg';combo='1 × 24mg + 1 × 60mg tablets';}
+        else if(lbR<=85) {dose='80mg';combo='1 × 24mg + 1 × 60mg tablets';}
+        else if(lbR<=90) {dose='88mg';combo='1½ × 60mg tablets';}
+        else if(lbR<=95) {dose='88mg';combo='1½ × 60mg tablets';}
+        else             {dose='96mg';combo='1 × 16mg + 1 × 24mg + 1 × 60mg tablets';}
+        poH=blk('Tablet PO q24h — per label chart',dose,combo,'2mg/kg rounded per manufacturer');
+        poP=`Cerenia: ${dose} PO q24h (${combo})`;
       }
-      const injH=blk('SQ injection — 1mg/kg',injVol+' mL','10mg/mL','q24h');
-      const injP=`Cerenia: ${injVol}mL SQ q24h (10mg/mL, ${f(kg,1)}mg)`;
       return{opts:{po:{html:poH,plain:poP},inj:{html:injH,plain:injP}}};
     }
+
     // MELOXICAM
     if(id==='meloxicam'){
       const oralMg=species==='dog'?0.1*kg:null;
@@ -1660,6 +1783,27 @@ function calcDose(drug, kg){
     const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
     return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
   }
+    // CLINDAMYCIN
+    if(id==='clinda'){
+      if(species==='cat'){
+        const ml=f(lb*0.2,1);
+        const h=blk('Liquid — 1mL/5 lbs',ml+' mL','25mg/mL • q24h','');
+        const p=`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`;
+        return{opts:{std:{html:h,plain:p},pneumo:{html:h,plain:p}}};
+      }
+      // Standard: ~5–11mg/kg
+      const rStd=clindaDogDose(lb);
+      const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,'');
+      const stdP=`Clindamycin: ${rStd.mg}mg PO q12h (${rStd.combo})`;
+      // Pneumonia: 10mg/kg
+      const pnMg=f(10*kg,1);
+      const pnParts=bestPills(pnMg,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
+      const pnCombo=pnParts?pnParts.join(' + '):'';
+      const pnH=blk('Pneumonia — 10mg/kg q12h',pnMg+' mg',pnCombo,'');
+      const pnP=`Clindamycin (Pneumo): ${pnMg}mg PO q12h (${pnCombo})`;
+      return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
+    }
+
     return{opts:{}};
   }
 
@@ -1686,26 +1830,7 @@ function calcDose(drug, kg){
     const r=clavDose(lb);
     return{html:blk('6.25mg/lb — q12h',r.mg+' mg',r.combo,''),plain:`Clavamox: ${r.mg}mg PO q12h (${r.combo})`};
   }
-  // CLINDAMYCIN — multi: standard + pneumonia dose
-  if(id==='clinda'){
-    if(species==='cat'){
-      const ml=f(lb*0.2,1);
-      const h=blk('Liquid — 1mL/5 lbs',ml+' mL','25mg/mL • q24h','');
-      const p=`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`;
-      return{opts:{std:{html:h,plain:p},pneumo:{html:h,plain:p}}};
-    }
-    // Standard: ~5–11mg/kg
-    const rStd=clindaDogDose(lb);
-    const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,'');
-    const stdP=`Clindamycin: ${rStd.mg}mg PO q12h (${rStd.combo})`;
-    // Pneumonia: 10mg/kg
-    const pnMg=f(10*kg,1);
-    const pnParts=bestPills(pnMg,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
-    const pnCombo=pnParts?pnParts.join(' + '):'';
-    const pnH=blk('Pneumonia — 10mg/kg q12h',pnMg+' mg',pnCombo,'');
-    const pnP=`Clindamycin (Pneumo): ${pnMg}mg PO q12h (${pnCombo})`;
-    return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
-  }
+
   // DOXYCYCLINE
   if(id==='doxy'){
     if(species==='cat'){
@@ -1715,6 +1840,12 @@ function calcDose(drug, kg){
     const r=doxyDogDose(kg);
     if(!r)return{html:`<p class="na-msg">Weight out of range</p>`,plain:''};
     return{html:blk('10mg/kg q12–24h',r.dose+' mg',r.combo,'Whole pills only — no splitting'),plain:`Doxycycline: ${r.dose}mg PO q12–24h (${r.combo})`};
+  }
+  // AMOXICILLIN — liquid 50mg/mL
+  if(id==='amoxicillin'){
+    const loMg=f(10*kg,1), hiMg=f(22*kg,1);
+    const loMl=f(loMg/50,2), hiMl=f(hiMg/50,2);
+    return{html:blk('10–22mg/kg q12h',loMl+'–'+hiMl+' mL',loMg+'–'+hiMg+' mg','50mg/mL oral susp — refrigerate after reconstitution'),plain:`Amoxicillin: ${loMl}–${hiMl}mL (50mg/mL, ${loMg}–${hiMg}mg) PO q12h`};
   }
   // AZITHROMYCIN — tablet for dogs > ~5kg, liquid for cats/small dogs
   if(id==='azithro'){
@@ -1818,8 +1949,6 @@ function calcDose(drug, kg){
   // CARAFATE — 1g/10mL = 0.1g/mL; dogs 0.5-1g BID, cats 0.25-0.5g BID
   if(id==='carafate'){
     // 1g/10mL suspension — 0.1g per mL
-    // Cats + small dogs (<20lb): 0.25-0.5g (2.5-5mL) q12h
-    // Larger dogs (>=20lb): 0.5-1g (5-10mL) q12h
     if(species==='cat'){
       return{html:blk('Cats — q12h — 1g/10mL susp','2.5–5 mL','0.25–0.5 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 2.5–5mL (0.25–0.5g of 1g/10mL susp) PO q12h'};
     }
@@ -1827,6 +1956,15 @@ function calcDose(drug, kg){
       return{html:blk('Small dog — q12h — 1g/10mL susp','2.5–5 mL','0.25–0.5 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 2.5–5mL (0.25–0.5g of 1g/10mL susp) PO q12h'};
     }
     return{html:blk('Dog — q12h — 1g/10mL susp','5–10 mL','0.5–1 g','Give 1–2 hrs separate from other meds'),plain:'Carafate: 5–10mL (0.5–1g of 1g/10mL susp) PO q12h'};
+  }
+  // PRO-PECTALIN
+  if(id==='propectalin'){
+    if(species==='cat'){
+      return{html:blk('Paste — q12h','2–4 inches','Kaolin/Pectin/Enterococcus paste','Continue 2–5 days or until resolved'),plain:'Pro-Pectalin: 2–4 inches paste PO q12h'};
+    }
+    // Dogs: 1 tablet per 20 lbs
+    const tabs=Math.max(1,Math.round(lb/20));
+    return{html:blk('1 tablet per 20 lbs — q12h',tabs+' tablet'+(tabs>1?'s':''),'Kaolin/Pectin/Enterococcus — chewable','Continue 2–5 days or until resolved'),plain:`Pro-Pectalin: ${tabs} tablet${tabs>1?'s':''} PO q12h`};
   }
   // METOCLOPRAMIDE — BID dosing
   if(id==='metoclopramide'){
@@ -2422,6 +2560,48 @@ function toggleCatBlock(catKey){
   if(chev)chev.classList.toggle('open',catOpenState[catKey]);
 }
 
+// Track which meds were auto-selected by clinical findings (so we can remove them when unchecked)
+const autoSelectedMeds = new Set(); // drugIds auto-added
+
+function autoSelectMed(drugId){
+  if(!selectedMeds.has(drugId)){
+    selectedMeds.set(drugId, new Set(['default']));
+    autoSelectedMeds.add(drugId);
+  }
+}
+
+function removeAutoMed(drugId){
+  // Only remove if it was auto-selected and not since manually toggled
+  if(autoSelectedMeds.has(drugId)){
+    selectedMeds.delete(drugId);
+    autoSelectedMeds.delete(drugId);
+  }
+}
+
+function applyProtocolDefaults(){
+  const cirdc=isDogRespSelected();
+  const uri=species==='cat'&&isUriSelected();
+
+  if(cirdc){
+    autoSelectMed('doxy');
+    autoSelectMed('previcox');
+  } else {
+    removeAutoMed('previcox');
+    if(!uri) removeAutoMed('doxy');
+  }
+  if(uri){
+    autoSelectMed('doxy');
+  } else {
+    if(!cirdc) removeAutoMed('doxy');
+  }
+
+  // Use requestAnimationFrame so render runs after current event cycle completes
+  requestAnimationFrame(()=>{
+    render();
+    updateCopyBar();
+  });
+}
+
 function toggleSymptom(symKey){
   const safeSymKey=symKey.replace(/[^a-zA-Z0-9]/g,'_');
   if(selectedSymptoms.has(symKey)){
@@ -2455,6 +2635,7 @@ function toggleSymptom(symKey){
   renderClinicalPreview();
   updateCopyBar();
   updateUriBtn();
+  applyProtocolDefaults();
 }
 
 function setFinding(safeSymKey, findingIdx, val, pillEl){
@@ -2607,6 +2788,7 @@ function clearClinical(e){
   selectedSymptoms.clear();
   lateralityState.clear();
   findingsState.clear();
+  autoSelectedMeds.clear();
   footerOpt='none';
   updateFooterBtns();
   document.querySelectorAll('.sym-cb').forEach(el=>el.classList.remove('checked'));
@@ -2772,6 +2954,10 @@ function closeUriModal(){
 // Parse a date string mm/dd/yyyy into a Date object
 function parseDate(str){
   if(!str) return null;
+  // ISO format from date input: yyyy-mm-dd
+  const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(iso) return new Date(parseInt(iso[1]),parseInt(iso[2])-1,parseInt(iso[3]));
+  // Fallback: mm/dd/yyyy
   const parts=str.split('/');
   if(parts.length===3){
     const m=parseInt(parts[0])-1, d=parseInt(parts[1]), y=parseInt(parts[2]);
@@ -2788,6 +2974,7 @@ function buildTxSheet(sp){
   const today=new Date();
   const fmt=(d)=>(d.getMonth()+1)+'/'+(d.getDate());
   const fmtFull=(d)=>((d.getMonth()+1)+'').padStart(2,'0')+'/'+((d.getDate())+'').padStart(2,'0')+'/'+d.getFullYear();
+  const todayIso=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   const sanitize=s=>s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
   const todayStr=fmtFull(today);
   const days=14;
@@ -2943,7 +3130,7 @@ function buildTxSheet(sp){
         <div class="uri-header-cell"><label>Kennel #:</label><input type="text" id="dogKennel${pageNum}" placeholder="" oninput="syncField('dogKennel')"></div>
         <div class="uri-header-cell">
           <label>Start Date:</label>
-          <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
+          <input type="date" id="txStartDate" value="${todayIso}" onchange="updateDayDates()" style="width:100%;font-size:11px;">
         </div>
         <div class="uri-header-cell">
           <label>End of Q:</label>
@@ -3042,7 +3229,7 @@ function buildTxSheet(sp){
         <div class="uri-header-cell"><label>Kennel #:</label><input type="text" id="catKennel${pageNum}" placeholder="" oninput="syncField('catKennel')"></div>
         <div class="uri-header-cell">
           <label>Start Date:</label>
-          <input type="text" id="txStartDate" value="${todayStr}" oninput="updateDayDates()" style="width:calc(100% - 70px);">
+          <input type="date" id="txStartDate" value="${todayIso}" onchange="updateDayDates()" style="width:100%;font-size:11px;">
         </div>
         <div class="uri-header-cell">
           <label>End of Q Date:</label>
