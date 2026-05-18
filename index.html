@@ -640,9 +640,10 @@ const DRUGS=[
 {id:'buprenorphine',name:'Buprenorphine',alias:'Buprenex 0.3mg/mL',route:'SL / SQ / IV',sections:['Pain / NSAID'],species:['dog','cat'],type:'single',
  use:'Moderate–severe pain — Schedule III opioid.',
  note:'0.01–0.03 mg/kg q6–8h. 0.3mg/mL. DEA Schedule III — log required. Cats: sublingual very effective.'},
-{id:'bupsr',name:'Buprenorphine SR',alias:'Extended Release 3mg/mL',route:'SQ',sections:['Pain / NSAID'],species:['dog'],type:'single',
+{id:'bupsr',name:'Buprenorphine SR',alias:'Extended Release 3mg/mL',route:'SQ',sections:['Pain / NSAID'],species:['dog'],type:'multi',
  use:'Extended-release pain — single SQ injection, 24–72 hr duration. Dogs only.',
- note:'0.1–0.2 mg/kg SQ once. 3mg/mL SR formulation. DEA Schedule III — log required. Do not redose < 24 hrs.'},
+ options:[{key:'std',label:'Standard (0.06 mg/kg)'},{key:'high',label:'High dose (0.1 mg/kg)'}],
+ note:'Standard: 0.06 mg/kg SQ once. High dose: 0.1 mg/kg SQ once. 3mg/mL SR formulation. DEA Schedule III — log required. Do not redose < 24 hrs.'},
 {id:'butorphanol',name:'Butorphanol',alias:'Torbugesic 10mg/mL',route:'IM / SQ / IV',sections:['Pain / NSAID','Sedation / Behavior'],species:['dog','cat'],type:'single',
  use:'Mild-moderate pain, pre-anesthetic, cough suppression — opioid agonist-antagonist.',
  note:'0.025–0.05 mg/lb (0.05–0.1 mg/kg) IM/SQ q4–6h. 10mg/mL. DEA Schedule IV — log required.'},
@@ -894,6 +895,30 @@ const DRUGS=[
 const CLINICAL = {
   'General': {
     items: [
+      // ── ER Transfer ──
+      { group: 'ER / Transfer', major: true },
+      { label: 'Transferred from emergency clinic',
+        locations: ['Blue Pearl','TBVS (Tampa Bay Veterinary Specialists)','VEG (Veterinary Emergency Group)','Emergency Veterinary Service (EVS)','Other emergency clinic'],
+        locationLabel: '— select referring clinic —',
+        findings:[
+          {key:'conditions',label:'Presenting conditions',opts:['Trauma / hit by car','Respiratory distress','Seizures','Toxin ingestion','GI obstruction suspected','Urethral obstruction','Hemorrhage / anemia','Fracture','Wound / bite injury','Pancreatitis','Diabetic crisis','Cardiac emergency','Neurologic episode','Post-surgical monitoring','Multi-trauma','Other — see notes']},
+          {key:'status',label:'Discharge status from ER',opts:['Stable','Guarded','Critical — improving','Requires continued monitoring','Discharged against medical advice']},
+          {key:'workup',label:'Workup performed at ER',opts:['Bloodwork / CBC / chemistry','Radiographs','Ultrasound','Surgery performed','IV fluids given','Blood transfusion','Wound treatment','Fracture stabilization','Medications administered — see notes','Minimal workup']},
+        ],
+        techText: 'Transfer history: patient transferred from {location}. Presenting conditions and treatments performed at referring clinic reviewed. Medical records and discharge paperwork obtained.',
+        vetText:  'Transfer history: patient referred from {location}. Presenting complaint, diagnostics performed, treatments administered, and discharge status reviewed. Medical records obtained. Ongoing treatment plan assessed and continued as appropriate.',
+        ddx: '' },
+      { label: 'Returning from overnight / weekend monitoring',
+        locations: ['Blue Pearl','TBVS (Tampa Bay Veterinary Specialists)','VEG (Veterinary Emergency Group)','Emergency Veterinary Service (EVS)','Other emergency clinic'],
+        locationLabel: '— select monitoring clinic —',
+        findings:[
+          {key:'reason',label:'Reason for monitoring',opts:['Pain management','Post-surgical monitoring','Respiratory monitoring','Neurologic monitoring','IV fluid therapy','Ongoing wound care','Seizure monitoring','Multi-day monitoring']},
+          {key:'status',label:'Return status',opts:['Improved — stable for shelter care','Stable — no significant change','Guarded — continue close monitoring','Requires follow-up within 24 hrs','Pain controlled — transitioning to oral meds']},
+          {key:'meds',label:'Medications sent back with patient',opts:['Oral pain medication','Antibiotics','Anti-nausea medication','Steroids','Antiepileptics','Wound care supplies','No medications sent']},
+        ],
+        techText: 'Transfer history: patient returning from overnight / weekend monitoring at {location}. Discharge notes and updated treatment plan reviewed. Current condition and medications assessed on return.',
+        vetText:  'Transfer history: patient returning from {location} after overnight / weekend monitoring. Discharge summary reviewed; current pain status, medications, and follow-up needs assessed. Treatment plan updated as appropriate.',
+        ddx: '' },
       { group: 'Skin / Dermatologic', major: true },
       // ── Pruritus ──
       { group: 'Pruritus' },
@@ -1819,6 +1844,16 @@ function calcDose(drug, kg){
       return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
     }
 
+    // BUPRENORPHINE SR
+    if(id==='bupsr'){
+      const stdMg=f(0.06*kg,3), stdVol=f(stdMg/3,3);
+      const hiMg=f(0.1*kg,3),   hiVol=f(hiMg/3,3);
+      const stdH=blk('Standard — 0.06mg/kg SQ',stdVol+' mL',stdMg+' mg','3mg/mL SR — single dose — 24–72 hr — DEA Schedule III');
+      const stdP=`Buprenorphine SR: ${stdVol}mL SQ (3mg/mL, ${stdMg}mg) — standard dose`;
+      const hiH=blk('High dose — 0.1mg/kg SQ',hiVol+' mL',hiMg+' mg','3mg/mL SR — single dose — 24–72 hr — DEA Schedule III');
+      const hiP=`Buprenorphine SR: ${hiVol}mL SQ (3mg/mL, ${hiMg}mg) — high dose`;
+      return{opts:{std:{html:stdH,plain:stdP},high:{html:hiH,plain:hiP}}};
+    }
     return{opts:{}};
   }
 
@@ -2087,12 +2122,7 @@ function calcDose(drug, kg){
     const loV=f(lo/0.3,3),hiV=f(hi/0.3,3);
     return{html:blk('SL/SQ — 0.3mg/mL — q12h',loV+'–'+hiV+' mL','0.01–0.03mg/kg → '+lo+'–'+hi+'mg','DEA Schedule III — log required'),plain:`Buprenorphine: ${loV}–${hiV}mL (0.3mg/mL, ${lo}–${hi}mg) SL/SQ q12h`};
   }
-  // BUPRENORPHINE SR — volume prominent, mg detail below
-  if(id==='bupsr'){
-    const lo=f(0.1*kg,2),hi=f(0.2*kg,2);
-    const loV=f(lo/3,3),hiV=f(hi/3,3);
-    return{html:blk('SQ — 3mg/mL — single dose',loV+'–'+hiV+' mL','0.1–0.2mg/kg → '+lo+'–'+hi+'mg','24–72 hr duration — DEA Schedule III'),plain:`Buprenorphine SR: ${loV}–${hiV}mL (3mg/mL, ${lo}–${hi}mg) SQ once`};
-  }
+
   // BUTORPHANOL — 0.025–0.05 mg/lb IM/SQ, 10mg/mL
   if(id==='butorphanol'){
     const loMg=f(0.025*lb,2), hiMg=f(0.05*lb,2);
