@@ -285,6 +285,39 @@
   .clinical-preview-lines{padding:9px 12px;display:flex;flex-direction:column;gap:5px;}
   .clinical-preview-line{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text);line-height:1.55;padding:5px 8px;background:rgba(255,255,255,.55);border-radius:4px;}
   @media(max-width:600px){.clinical-body{padding:12px;}.clinical-header{padding:10px 12px;}.cat-block-header{padding:8px 10px;}}
+
+  /* ── Urinalysis Panel ── */
+  .ua-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;}
+  .ua-panel-header{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;user-select:none;gap:10px;}
+  .ua-panel-header:hover{background:var(--surface2);}
+  .ua-panel-header-left{display:flex;align-items:center;gap:10px;}
+  .ua-panel-icon{width:28px;height:28px;border-radius:7px;background:var(--teal-light);border:1px solid var(--teal-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+  .ua-panel-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em;}
+  .ua-panel-subtitle{font-size:11px;color:var(--text3);margin-top:1px;}
+  .ua-panel-chevron{width:16px;height:16px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex-shrink:0;}
+  .ua-panel-chevron.open{transform:rotate(180deg);}
+  .ua-panel-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal);color:#fff;white-space:nowrap;flex-shrink:0;}
+  .ua-panel-body{border-top:1px solid var(--border);padding:14px 15px;display:none;}
+  .ua-panel-body.open{display:block;}
+  .ua-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;margin-bottom:12px;}
+  @media(max-width:500px){.ua-field-grid{grid-template-columns:1fr;}}
+  .ua-field{display:flex;flex-direction:column;gap:3px;}
+  .ua-field.full{grid-column:1/-1;}
+  .ua-field-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);}
+  .ua-field-input{border:none;border-bottom:1.5px solid var(--border2);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:4px 0;outline:none;width:100%;}
+  .ua-field-input:focus{border-bottom-color:var(--teal);}
+  .ua-field-input::placeholder{color:var(--text3);font-size:12px;}
+  select.ua-field-input{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;padding-right:16px;}
+  .ua-section-divider{grid-column:1/-1;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding-top:4px;border-top:1px solid var(--border);margin-top:4px;}
+  .ua-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .ua-action-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+  .ua-action-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .ua-action-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .ua-action-btn.primary:hover{background:#0a6558;}
+  .ua-copied{font-size:11px;color:var(--teal);opacity:0;transition:opacity .2s;}
+  .ua-copied.show{opacity:1;}
+  .ua-preview-block{margin-top:10px;background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text);line-height:1.7;white-space:pre-wrap;display:none;}
+  .ua-preview-block.show{display:block;}
 </style>
 </head>
 <body>
@@ -367,6 +400,178 @@
         </div>
         <div class="clinical-preview-lines" id="clinicalPreviewLines"></div>
       </div>
+    </div>
+  </div>
+  <!-- ── Urinalysis Panel ── -->
+  <div class="ua-panel" id="uaPanel">
+    <div class="ua-panel-header" onclick="toggleUaPanel()">
+      <div class="ua-panel-header-left">
+        <div class="ua-panel-icon">🧪</div>
+        <div>
+          <div class="ua-panel-title">Urinalysis Results</div>
+          <div class="ua-panel-subtitle" id="uaPanelSubtitle">Fill in results to add to clipboard output</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="ua-panel-badge" id="uaBadge" style="display:none;">0 fields</span>
+        <svg class="ua-panel-chevron" id="uaChevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="ua-panel-body" id="uaBody">
+      <div class="ua-field-grid">
+        <!-- Sample info -->
+        <div class="ua-section-divider" style="border-top:none;margin-top:0;padding-top:0;">Sample info</div>
+        <div class="ua-field">
+          <label class="ua-field-label">Date</label>
+          <input class="ua-field-input" type="date" id="ua_date" oninput="uaChanged()">
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Collection method</label>
+          <select class="ua-field-input" id="ua_method" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Cystocentesis</option>
+            <option>Catheterization</option>
+            <option>Free catch</option>
+          </select>
+        </div>
+        <!-- Gross / Chemistry -->
+        <div class="ua-section-divider">Gross / Chemistry</div>
+        <div class="ua-field">
+          <label class="ua-field-label">Appearance</label>
+          <select class="ua-field-input" id="ua_appearance" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Clear</option>
+            <option>Slightly cloudy</option>
+            <option>Cloudy</option>
+            <option>Turbid</option>
+            <option>Bloody</option>
+            <option>Hemolyzed</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Color</label>
+          <select class="ua-field-input" id="ua_color" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Pale yellow</option>
+            <option>Yellow</option>
+            <option>Dark yellow</option>
+            <option>Amber</option>
+            <option>Orange</option>
+            <option>Red/pink</option>
+            <option>Brown</option>
+            <option>Colorless</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Spec Grav</label>
+          <input class="ua-field-input" id="ua_sg" placeholder="1.0xx" oninput="uaChanged()">
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">pH</label>
+          <input class="ua-field-input" id="ua_ph" placeholder="5–8.5" oninput="uaChanged()">
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Protein</label>
+          <select class="ua-field-input" id="ua_protein" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Negative</option><option>Trace</option>
+            <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Glucose</label>
+          <select class="ua-field-input" id="ua_glucose" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Negative</option><option>Trace</option>
+            <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Ketones</label>
+          <select class="ua-field-input" id="ua_ketones" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Negative</option><option>Trace</option>
+            <option>1+</option><option>2+</option><option>3+</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Bilirubin</label>
+          <select class="ua-field-input" id="ua_bilirubin" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Negative</option><option>1+</option><option>2+</option><option>3+</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Blood</label>
+          <select class="ua-field-input" id="ua_blood" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Negative</option><option>Trace</option>
+            <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Urobilinogen</label>
+          <select class="ua-field-input" id="ua_uro" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>Normal</option><option>Elevated</option><option>Decreased</option>
+          </select>
+        </div>
+        <!-- Sediment -->
+        <div class="ua-section-divider">Sediment (per HPF unless noted)</div>
+        <div class="ua-field">
+          <label class="ua-field-label">WBC</label>
+          <input class="ua-field-input" id="ua_wbc" placeholder="0–5 HPF" oninput="uaChanged()">
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">RBC</label>
+          <input class="ua-field-input" id="ua_rbc" placeholder="0–5 HPF" oninput="uaChanged()">
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Bacteria</label>
+          <select class="ua-field-input" id="ua_bacteria" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>None seen</option><option>Rare</option><option>Few</option>
+            <option>Moderate</option><option>Many</option>
+            <option>Rods</option><option>Cocci</option><option>Mixed</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Epithelial cells</label>
+          <select class="ua-field-input" id="ua_epi" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>None</option><option>Rare squamous</option><option>Few squamous</option>
+            <option>Transitional cells present</option><option>Many transitional</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Casts</label>
+          <select class="ua-field-input" id="ua_casts" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>None seen</option><option>Rare hyaline</option>
+            <option>Granular casts present</option><option>WBC casts</option>
+            <option>RBC casts</option><option>Waxy casts</option>
+          </select>
+        </div>
+        <div class="ua-field">
+          <label class="ua-field-label">Crystals</label>
+          <select class="ua-field-input" id="ua_crystals" onchange="uaChanged()">
+            <option value="">—</option>
+            <option>None seen</option><option>Struvite</option>
+            <option>Calcium oxalate monohydrate</option><option>Calcium oxalate dihydrate</option>
+            <option>Urate</option><option>Bilirubin</option><option>Cystine</option>
+          </select>
+        </div>
+        <div class="ua-field full">
+          <label class="ua-field-label">Notes</label>
+          <input class="ua-field-input" id="ua_notes" placeholder="Any additional findings..." oninput="uaChanged()">
+        </div>
+      </div>
+      <div class="ua-actions">
+        <button class="ua-action-btn primary" onclick="uaBuildPreview()">Preview note</button>
+        <button class="ua-action-btn" onclick="uaClearAll()">Clear</button>
+        <span class="ua-copied" id="uaCopied">✓ Included in clipboard</span>
+      </div>
+      <div class="ua-preview-block" id="uaPreview"></div>
     </div>
   </div>
   <div class="section-tabs" id="tabs"></div>
@@ -1811,7 +2016,8 @@ const CLINICAL = {
           {key:'severity',label:'Severity',opts:['Mild — minimal signs','Moderate — noticeable discomfort','Severe — significant straining or hematuria','Urethral obstruction suspected — emergency']},
           {key:'diagnostics',label:'Diagnostics performed',opts:['Urinalysis — submitted','Urine culture — submitted','Bladder ultrasound — performed','Radiographs — performed','Dipstick UA only','No diagnostics — empirical treatment']},
         ],
-        techText: 'Urinary: lower urinary tract signs present. Pollakiuria, stranguria, or hematuria noted. Urinalysis and/or culture submitted. Veterinarian notified for treatment plan.',
+        techText: 'Urinary: lower urinary tract signs present.',
+        suffix: 'Veterinarian notified for treatment plan.',
         vetText:  'Urinary: lower urinary tract disease present. Clinical signs, urinalysis, and culture results reviewed. Bacterial UTI, urolithiasis, and prostatitis (intact males) considered. Empirical or culture-guided antibiotic therapy initiated as appropriate.',
         ddx: 'bacterial UTI (cystitis), urolithiasis, benign prostatic hyperplasia, prostatitis, bladder mass, anatomical abnormality, urethral obstruction' },
     ]
@@ -2654,7 +2860,7 @@ function updateCopyBar(){
   const custom=getCustomFindings();
   const hasClinical=completeLines.length>0||!!custom;
   const hasMeds=selectedMeds.size>0;
-  if(!hasClinical&&!hasMeds){bar.classList.add('hidden');return;}
+  if(!hasClinical&&!hasMeds&&!getUaText()){bar.classList.add('hidden');return;}
   bar.classList.remove('hidden');
   const kg=getKg();
   const lines=[];
@@ -2665,7 +2871,16 @@ function updateCopyBar(){
     if(custom) lines.push(custom);
     const footer=getFooterLine();
     if(footer){ lines.push(''); lines.push(footer); }
+  }
+
+  // ── Urinalysis block ──
+  const uaTxt=getUaText();
+  if(uaTxt){
+    if(hasClinical) lines.push('');
+    lines.push(uaTxt);
     if(hasMeds) lines.push('');
+  } else if(hasClinical&&hasMeds){
+    lines.push('');
   }
 
   // ── Medication lines ──
@@ -2764,6 +2979,7 @@ function clearAll(){
   document.querySelectorAll('.drug-checkbox.checked,.opt-cb.checked').forEach(el=>el.classList.remove('checked'));
   document.querySelectorAll('.drug-card.selected').forEach(el=>el.classList.remove('selected'));
   clearClinical();
+  uaClearAll();
   document.getElementById('copyBar').classList.add('hidden');
 }
 
@@ -3051,6 +3267,8 @@ function buildClinicalText(item, symKey){
     });
     if(parts.length>0) text=text.replace(/\.$/,'')+'. '+parts.join('; ')+'.';
   }
+  // Append suffix (e.g. "Veterinarian notified...") after findings
+  if(clinicalRole==='tech'&&item.suffix) text=text.replace(/\.$/,'')+' '+item.suffix;
   if(clinicalRole==='vet'&&item.ddx) return text+' DDx: '+item.ddx+'.';
   return text;
 }
@@ -3709,6 +3927,78 @@ if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
+}
+
+// ── URINALYSIS PANEL ─────────────────────────
+const UA_CHEM_IDS=['ua_appearance','ua_color','ua_sg','ua_ph','ua_protein','ua_glucose','ua_ketones','ua_bilirubin','ua_blood','ua_uro'];
+const UA_SED_IDS=['ua_wbc','ua_rbc','ua_bacteria','ua_epi','ua_casts','ua_crystals'];
+const UA_CHEM_LABELS={ua_appearance:'Appearance',ua_color:'Color',ua_sg:'Spec Grav',ua_ph:'pH',ua_protein:'Protein',ua_glucose:'Glucose',ua_ketones:'Ketones',ua_bilirubin:'Bilirubin',ua_blood:'Blood',ua_uro:'Urobilinogen'};
+const UA_SED_LABELS={ua_wbc:'WBC',ua_rbc:'RBC',ua_bacteria:'Bacteria',ua_epi:'Epithelial cells',ua_casts:'Casts',ua_crystals:'Crystals'};
+
+function toggleUaPanel(){
+  const body=document.getElementById('uaBody');
+  const chev=document.getElementById('uaChevron');
+  const open=body.classList.toggle('open');
+  chev.classList.toggle('open',open);
+}
+
+function uaFieldCount(){
+  const allIds=[...UA_CHEM_IDS,...UA_SED_IDS,'ua_date','ua_method','ua_notes'];
+  return allIds.filter(id=>{const el=document.getElementById(id);return el&&el.value.trim();}).length;
+}
+
+function uaChanged(){
+  const count=uaFieldCount();
+  const badge=document.getElementById('uaBadge');
+  const sub=document.getElementById('uaPanelSubtitle');
+  if(count>0){
+    badge.style.display='';
+    badge.textContent=count+' field'+(count===1?'':'s');
+    sub.textContent='Results will be included in clipboard output';
+  } else {
+    badge.style.display='none';
+    sub.textContent='Fill in results to add to clipboard output';
+  }
+  updateCopyBar();
+}
+
+function getUaText(){
+  const count=uaFieldCount();
+  if(count===0) return '';
+  const lines=['── Urinalysis Results ──'];
+  const dateEl=document.getElementById('ua_date');
+  const dateVal=dateEl&&dateEl.value?new Date(dateEl.value+'T00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}):'';
+  const method=(document.getElementById('ua_method')||{}).value||'';
+  const meta=[dateVal,method].filter(Boolean).join('  |  ');
+  if(meta) lines.push(meta);
+  const chemLines=UA_CHEM_IDS.map(id=>{const v=(document.getElementById(id)||{}).value||'';return v?UA_CHEM_LABELS[id]+': '+v:'';}).filter(Boolean);
+  if(chemLines.length){lines.push('');lines.push('Gross/Chemistry:');chemLines.forEach(l=>lines.push('  '+l));}
+  const sedLines=UA_SED_IDS.map(id=>{const v=(document.getElementById(id)||{}).value||'';return v?UA_SED_LABELS[id]+': '+v:'';}).filter(Boolean);
+  if(sedLines.length){lines.push('');lines.push('Sediment:');sedLines.forEach(l=>lines.push('  '+l));}
+  const notes=(document.getElementById('ua_notes')||{}).value||'';
+  if(notes){lines.push('');lines.push('Notes: '+notes);}
+  return lines.join('\n');
+}
+
+function uaBuildPreview(){
+  const txt=getUaText();
+  const el=document.getElementById('uaPreview');
+  if(txt){el.textContent=txt;el.classList.add('show');}
+  else{el.classList.remove('show');}
+  if(txt){
+    const fl=document.getElementById('uaCopied');
+    fl.classList.add('show');
+    setTimeout(()=>fl.classList.remove('show'),2500);
+  }
+  updateCopyBar();
+}
+
+function uaClearAll(){
+  [...UA_CHEM_IDS,...UA_SED_IDS,'ua_date','ua_method','ua_notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('uaPreview').classList.remove('show');
+  uaChanged();
 }
 
 // ── SERVICE WORKER REGISTRATION ──────────────
