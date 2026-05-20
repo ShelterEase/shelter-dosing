@@ -538,8 +538,40 @@
               </select>
             </div>
             <div class="ua-section-divider">Sediment (per HPF unless noted)</div>
-            <div class="ua-field"><label class="ua-field-label">WBC</label><input class="ua-field-input" id="ua_wbc" placeholder="0–5 HPF" oninput="dxChanged()"></div>
-            <div class="ua-field"><label class="ua-field-label">RBC</label><input class="ua-field-input" id="ua_rbc" placeholder="0–5 HPF" oninput="dxChanged()"></div>
+            <div class="ua-field">
+              <label class="ua-field-label">WBC</label>
+              <select class="ua-field-input" id="ua_wbc" onchange="dxChanged()">
+                <option value="">—</option>
+                <option>0–2 HPF (normal)</option>
+                <option>0–5 HPF (normal)</option>
+                <option>5–10 HPF</option>
+                <option>10–20 HPF</option>
+                <option>20–50 HPF</option>
+                <option>&gt;50 HPF</option>
+                <option>TNTC (too numerous to count)</option>
+                <option>1+</option>
+                <option>2+</option>
+                <option>3+</option>
+                <option>4+</option>
+              </select>
+            </div>
+            <div class="ua-field">
+              <label class="ua-field-label">RBC</label>
+              <select class="ua-field-input" id="ua_rbc" onchange="dxChanged()">
+                <option value="">—</option>
+                <option>0–2 HPF (normal)</option>
+                <option>0–5 HPF (normal)</option>
+                <option>5–10 HPF</option>
+                <option>10–20 HPF</option>
+                <option>20–50 HPF</option>
+                <option>&gt;50 HPF</option>
+                <option>TNTC (too numerous to count)</option>
+                <option>1+</option>
+                <option>2+</option>
+                <option>3+</option>
+                <option>4+</option>
+              </select>
+            </div>
             <div class="ua-field">
               <label class="ua-field-label">Bacteria</label>
               <select class="ua-field-input" id="ua_bacteria" onchange="dxChanged()">
