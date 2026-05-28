@@ -995,6 +995,7 @@ function apoquelDose(lb){
 // Cefpodoxime table
 const CEFPOD={15:50,20:50,25:100,30:100,35:100,40:100,45:150,50:150,55:150,60:150,65:150,70:200,75:200,80:200,85:200,90:250,95:250,100:250,110:300,120:300};
 function cefpodDose(lb){const keys=Object.keys(CEFPOD).map(Number).sort((a,b)=>a-b);let mg=CEFPOD[keys[0]];for(const k of keys){if(lb>=k)mg=CEFPOD[k];}
+  // Use 200mg first (whole), then 100mg (whole or half) — fewest splits wins
   const parts=bestPillsHalf(mg,[{mg:200,unit:'tablet'},{mg:100,unit:'tablet'}]);
   return{mg,combo:parts?parts.join(' + '):''};}
 
@@ -1077,35 +1078,71 @@ function zorbiumDose(lb){
 }
 
 
-// bestPillsHalf — same as bestPills but allows 0.5 tablet increments
+// bestPillsHalf — allows 0.5 tablet increments, minimizes splits
 function bestPillsHalf(targetMg, sizes){
-  let best=null, bd=[Infinity,Infinity];
-  function recurse(idx, remaining, combo, count){
+  let best=null, bd=[Infinity,Infinity,Infinity];
+  function recurse(idx, remaining, combo, count, splits){
     if(remaining<=0){
-      const over=-remaining, total=count, key=[over,total];
-      if(key[0]<bd[0]||(key[0]===bd[0]&&key[1]<bd[1])){bd=key;best=[...combo];}
+      const over=-remaining, key=[over,splits,count];
+      if(key[0]<bd[0]||(key[0]===bd[0]&&key[1]<bd[1])||(key[0]===bd[0]&&key[1]===bd[1]&&key[2]<bd[2])){bd=key;best=[...combo];}
       return;
     }
     if(idx>=sizes.length){return;}
     const s=sizes[idx];
-    const maxN=Math.ceil((remaining+s.mg*2)/s.mg)*2; // *2 for half steps
+    const maxN=Math.ceil((remaining+s.mg*2)/s.mg)*2;
     for(let n=0;n<=Math.min(maxN,20);n++){
       const qty=n*0.5;
+      const isSplit=qty%1!==0?1:0;
       combo.push({n:qty,s});
-      recurse(idx+1, remaining-qty*s.mg, combo, count+qty);
+      recurse(idx+1, remaining-qty*s.mg, combo, count+qty, splits+isSplit);
       combo.pop();
     }
   }
-  recurse(0,targetMg,[],0);
+  recurse(0,targetMg,[],0,0);
   if(!best)return null;
-  return best.filter(x=>x.n>0).map(x=>{
-    const nStr=x.n%1===0?String(x.n):x.n.toFixed(1);
-    const unitStr=x.n===1?x.s.unit:x.s.unit+'s';
-    return nStr+' × '+x.s.mg+'mg '+unitStr;
+  // Expand fractional quantities: 1.5 × 100mg → 1 × 100mg + ½ × 100mg
+  const parts=[];
+  best.filter(x=>x.n>0).forEach(x=>{
+    const whole=Math.floor(x.n);
+    const half=x.n%1!==0;
+    if(whole>0) parts.push(whole+' \u00d7 '+x.s.mg+'mg '+(whole===1?x.s.unit:x.s.unit+'s'));
+    if(half)    parts.push('\u00bd \u00d7 '+x.s.mg+'mg '+x.s.unit);
   });
+  return parts.length?parts:null;
 }
 
-// ── DRUG DEFINITIONS ─────────────────────────
+// Albon (Sulfadimethoxine) — 55mg/kg loading, 27.5mg/kg maintenance
+// Tablets: 250mg whole or half only. Use liquid if weight doesn't fit.
+function albonDose(kg){
+  const loadTarget=55*kg;
+  const maintTarget=27.5*kg;
+  // Try tablets first — only whole or half 250mg tablets
+  const tabSizes=[{mg:250,unit:'tablet'}];
+  const loadTab=bestPillsHalf(loadTarget,tabSizes);
+  const maintTab=bestPillsHalf(maintTarget,tabSizes);
+  // Calculate actual tablet mg
+  function tabActual(parts){
+    if(!parts)return 0;
+    let mg=0;
+    parts.forEach(p=>{const m=p.match(/([\d.]+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseFloat(m[1])*parseFloat(m[2]);});
+    return mg;
+  }
+  const loadTabMg=tabActual(loadTab);
+  const maintTabMg=tabActual(maintTab);
+  // Acceptable if within 10% of target and only whole/half tablets
+  const loadTabOk=loadTab&&Math.abs(loadTabMg-loadTarget)/loadTarget<=0.10;
+  const maintTabOk=maintTab&&Math.abs(maintTabMg-maintTarget)/maintTarget<=0.10;
+  return{
+    loadTarget, maintTarget,
+    loadTabMg, maintTabMg,
+    loadTabCombo:loadTab?loadTab.join(' + '):'',
+    maintTabCombo:maintTab?maintTab.join(' + '):'',
+    loadTabOk, maintTabOk,
+    loadLiqMl:f(loadTarget/50,2),
+    maintLiqMl:f(maintTarget/50,2),
+  };
+}
+
 // type options:
 //   'topical' — no calculation
 //   'single'  — one checkbox, calc via calcDose()
@@ -1122,6 +1159,10 @@ const DRUGS=[
 {id:'aluspray',name:'ALuSpray',alias:'Aluminum Spray Bandage',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
  use:'Wound protection, minor abrasions, post-surgical incisions — aluminum-based barrier spray.',
  note:'Clean and dry area first. Apply thin coat from 6–8 inches. Reapply q24h or as needed. Do not use on deep wounds.'},
+{id:'albon',name:'Albon',alias:'Sulfadimethoxine',route:'PO',sections:['Antibiotic','Anti-parasitic'],species:['dog','cat'],type:'multi',
+ use:'Coccidiosis, susceptible bacterial infections — sulfonamide. Loading dose Day 1, then maintenance.',
+ options:[{key:'liq',label:'Liquid 50mg/mL'},{key:'tab',label:'250mg Tablets'}],
+ note:'55mg/kg Day 1 (loading), then 27.5mg/kg q24h. Liquid: 50mg/mL. Tablets: 250mg — whole or half only. Use liquid if weight does not fit whole/half tablet dose.'},
 {id:'animax',name:'Animax Ointment',alias:'Nystatin / Neomycin / Thiostrepton / Triamcinolone',route:'Otic / Topical',sections:['Ear','Dermatology'],species:['dog','cat'],type:'topical',
  use:'Otitis, skin folds, interdigital — broad-spectrum antibiotic + antifungal + steroid.',
  note:'Ear: 1 mL/ear q12h \u00d7 7–14 days. Skin: thin layer q12h.'},
@@ -2627,6 +2668,28 @@ function calcDose(drug, kg){
     const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
     return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
   }
+    // ALBON
+    if(id==='albon'){
+      const d=albonDose(kg);
+      // Liquid option
+      const liqLoadH=blk('Day 1 loading — 55mg/kg',d.loadLiqMl+' mL','50mg/mL liquid PO','');
+      const liqMaintH=blk('Day 2+ maintenance — 27.5mg/kg',d.maintLiqMl+' mL','50mg/mL liquid PO q24h','');
+      const liqH=liqLoadH+liqMaintH;
+      const liqP=`Albon: Day 1 ${d.loadLiqMl}mL (50mg/mL), then ${d.maintLiqMl}mL q24h`;
+      // Tablet option — only if whole/half combos fit within 10%
+      let tabH, tabP;
+      if(d.loadTabOk&&d.maintTabOk){
+        const tabLoadH=blk('Day 1 loading — 55mg/kg',d.loadTabMg+' mg',d.loadTabCombo,'');
+        const tabMaintH=blk('Day 2+ maintenance — 27.5mg/kg',d.maintTabMg+' mg',d.maintTabCombo+' q24h','250mg tablets — whole or half only');
+        tabH=tabLoadH+tabMaintH;
+        tabP=`Albon: Day 1 ${d.loadTabMg}mg (${d.loadTabCombo}), then ${d.maintTabMg}mg q24h (${d.maintTabCombo})`;
+      } else {
+        tabH=blk('250mg Tablets','Use liquid','','Weight does not fit whole or half tablet dose — use 50mg/mL liquid instead','warn-block');
+        tabP=`Albon: weight does not fit tablet dose — use 50mg/mL liquid. Day 1 ${d.loadLiqMl}mL, then ${d.maintLiqMl}mL q24h`;
+      }
+      return{opts:{liq:{html:liqH,plain:liqP},tab:{html:tabH,plain:tabP}}};
+    }
+
     // CLINDAMYCIN
     if(id==='clinda'){
       if(species==='cat'){
@@ -2635,16 +2698,22 @@ function calcDose(drug, kg){
         const p=`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`;
         return{opts:{std:{html:h,plain:p},pneumo:{html:h,plain:p}}};
       }
-      // Standard: ~5–11mg/kg
+      // Standard: ~5–11mg/kg — show actual dispensed dose
       const rStd=clindaDogDose(lb);
-      const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,'');
+      const stdDetail='Dose reflects actual tablet/capsule combination dispensed'+(rStd.mg>Math.ceil(5*kg)?' — rounded up to nearest whole capsule':'');
+      const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,stdDetail);
       const stdP=`Clindamycin: ${rStd.mg}mg PO q12h (${rStd.combo})`;
-      // Pneumonia: 10mg/kg
-      const pnMg=f(10*kg,1);
-      const pnParts=bestPills(pnMg,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
+      // Pneumonia: 10mg/kg — round to nearest dispensable combo
+      const pnTarget=10*kg;
+      const pnParts=bestPills(pnTarget,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
+      let pnActualMg=0;
+      if(pnParts)pnParts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+(?:\.\d+)?)mg/);if(m)pnActualMg+=parseInt(m[1])*parseFloat(m[2]);});
+      else pnActualMg=Math.round(pnTarget);
       const pnCombo=pnParts?pnParts.join(' + '):'';
-      const pnH=blk('Pneumonia — 10mg/kg q12h',pnMg+' mg',pnCombo,'');
-      const pnP=`Clindamycin (Pneumo): ${pnMg}mg PO q12h (${pnCombo})`;
+      const pnRounded=pnActualMg!==Math.round(pnTarget*10)/10;
+      const pnDetail='Dose reflects actual capsule combination dispensed'+(pnActualMg>pnTarget?' — rounded up to nearest whole capsule':'');
+      const pnH=blk('Pneumonia — 10mg/kg q12h',pnActualMg+' mg',pnCombo,pnDetail);
+      const pnP=`Clindamycin (Pneumo): ${pnActualMg}mg PO q12h (${pnCombo})`;
       return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
     }
 
