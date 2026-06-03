@@ -299,7 +299,6 @@
   .dx-panel-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal);color:#fff;white-space:nowrap;flex-shrink:0;}
   .dx-panel-body{border-top:1px solid var(--border);padding:0;display:none;}
   .dx-panel-body.open{display:block;}
-  /* Sub-sections inside panel */
   .dx-section{border-bottom:1px solid var(--border);}
   .dx-section:last-child{border-bottom:none;}
   .dx-section-header{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;cursor:pointer;user-select:none;background:var(--surface2);}
@@ -311,7 +310,6 @@
   .dx-section-body.open{display:block;}
   .dx-active-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:none;flex-shrink:0;}
   .dx-active-dot.show{display:inline-block;}
-  /* Field grid shared */
   .ua-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;margin-bottom:10px;}
   @media(max-width:500px){.ua-field-grid{grid-template-columns:1fr;}}
   .ua-field{display:flex;flex-direction:column;gap:3px;}
@@ -323,19 +321,11 @@
   select.ua-field-input{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;padding-right:16px;}
   .ua-section-divider{grid-column:1/-1;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
   .ua-section-divider.first{border-top:none;padding-top:0;margin-top:0;}
-  /* Abnormal-only chem rows */
-
-  /* Pill selects */
   .dx-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
   .dx-pill{padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:11px;font-weight:500;cursor:pointer;user-select:none;transition:all .12s;}
   .dx-pill:hover{border-color:var(--teal);color:var(--teal);}
   .dx-pill.on{background:var(--teal);color:#fff;border-color:var(--teal);}
   .dx-pill-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-top:10px;margin-bottom:2px;}
-  /* Laterality toggle */
-  .dx-lat{display:flex;gap:6px;margin-top:6px;}
-  .dx-lat-btn{padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:11px;cursor:pointer;}
-  .dx-lat-btn.on{background:var(--teal);color:#fff;border-color:var(--teal);}
-  /* Actions */
   .dx-actions{padding:10px 15px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .dx-action-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
   .dx-action-btn:hover{border-color:var(--teal);color:var(--teal);}
@@ -345,17 +335,10 @@
   .dx-copied.show{opacity:1;}
   .dx-preview-block{margin:0 15px 12px;background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text);line-height:1.7;white-space:pre-wrap;display:none;}
   .dx-preview-block.show{display:block;}
-  /* Radiology */
   .rad-view{margin-bottom:10px;}
   .rad-view-label{font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px;}
   .rad-view textarea{width:100%;box-sizing:border-box;border:1px solid var(--border2);border-radius:6px;background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 8px;outline:none;resize:vertical;min-height:48px;}
   .rad-view textarea:focus{border-color:var(--teal);}
-  .ua-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
-  .ua-action-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
-  .ua-copied{font-size:11px;color:var(--teal);opacity:0;transition:opacity .2s;}
-  .ua-copied.show{opacity:1;}
-  .ua-preview-block{margin-top:10px;background:var(--teal-light);border:1px solid var(--teal-mid);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text);line-height:1.7;white-space:pre-wrap;display:none;}
-  .ua-preview-block.show{display:block;}
 </style>
 </head>
 <body>
@@ -457,7 +440,7 @@
     </div>
     <div class="dx-panel-body" id="dxBody">
 
-      <!-- ── 1. Urinalysis ── -->
+      <!-- 1. Urinalysis -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('ua')">
           <div class="dx-section-title">🧪 Urinalysis<span class="dx-active-dot" id="dot_ua"></span></div>
@@ -466,140 +449,84 @@
         <div class="dx-section-body" id="sec_ua">
           <div class="ua-field-grid">
             <div class="ua-section-divider first">Sample info</div>
-            <div class="ua-field">
-              <label class="ua-field-label">Date</label>
-              <input class="ua-field-input" type="date" id="ua_date" oninput="dxChanged()">
-            </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Collection method</label>
+            <div class="ua-field"><label class="ua-field-label">Date</label><input class="ua-field-input" type="date" id="ua_date" oninput="dxChanged()"></div>
+            <div class="ua-field"><label class="ua-field-label">Collection method</label>
               <select class="ua-field-input" id="ua_method" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>Cystocentesis</option><option>Catheterization</option><option>Free catch</option>
+                <option value="">—</option><option>Cystocentesis</option><option>Catheterization</option><option>Free catch</option>
               </select>
             </div>
             <div class="ua-section-divider">Gross / Chemistry</div>
-            <div class="ua-field">
-              <label class="ua-field-label">Appearance</label>
+            <div class="ua-field"><label class="ua-field-label">Appearance</label>
               <select class="ua-field-input" id="ua_appearance" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>Clear</option><option>Slightly cloudy</option><option>Cloudy</option>
-                <option>Turbid</option><option>Bloody</option><option>Hemolyzed</option>
+                <option value="">—</option><option>Clear</option><option>Slightly cloudy</option><option>Cloudy</option><option>Turbid</option><option>Bloody</option><option>Hemolyzed</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Color</label>
+            <div class="ua-field"><label class="ua-field-label">Color</label>
               <select class="ua-field-input" id="ua_color" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>Pale yellow</option><option>Yellow</option><option>Dark yellow</option>
-                <option>Amber</option><option>Orange</option><option>Red/pink</option>
-                <option>Brown</option><option>Colorless</option>
+                <option value="">—</option><option>Pale yellow</option><option>Yellow</option><option>Dark yellow</option><option>Amber</option><option>Orange</option><option>Red/pink</option><option>Brown</option><option>Colorless</option>
               </select>
             </div>
             <div class="ua-field"><label class="ua-field-label">Spec Grav</label><input class="ua-field-input" id="ua_sg" placeholder="1.0xx" oninput="dxChanged()"></div>
             <div class="ua-field"><label class="ua-field-label">pH</label><input class="ua-field-input" id="ua_ph" placeholder="5–8.5" oninput="dxChanged()"></div>
-            <div class="ua-field">
-              <label class="ua-field-label">Protein</label>
+            <div class="ua-field"><label class="ua-field-label">Protein</label>
               <select class="ua-field-input" id="ua_protein" onchange="dxChanged()">
-                <option value="">—</option><option>Negative</option><option>Trace</option>
-                <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+                <option value="">—</option><option>Negative</option><option>Trace</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Glucose</label>
+            <div class="ua-field"><label class="ua-field-label">Glucose</label>
               <select class="ua-field-input" id="ua_glucose" onchange="dxChanged()">
-                <option value="">—</option><option>Negative</option><option>Trace</option>
-                <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+                <option value="">—</option><option>Negative</option><option>Trace</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Ketones</label>
+            <div class="ua-field"><label class="ua-field-label">Ketones</label>
               <select class="ua-field-input" id="ua_ketones" onchange="dxChanged()">
-                <option value="">—</option><option>Negative</option><option>Trace</option>
-                <option>1+</option><option>2+</option><option>3+</option>
+                <option value="">—</option><option>Negative</option><option>Trace</option><option>1+</option><option>2+</option><option>3+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Bilirubin</label>
+            <div class="ua-field"><label class="ua-field-label">Bilirubin</label>
               <select class="ua-field-input" id="ua_bilirubin" onchange="dxChanged()">
                 <option value="">—</option><option>Negative</option><option>1+</option><option>2+</option><option>3+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Blood</label>
+            <div class="ua-field"><label class="ua-field-label">Blood</label>
               <select class="ua-field-input" id="ua_blood" onchange="dxChanged()">
-                <option value="">—</option><option>Negative</option><option>Trace</option>
-                <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+                <option value="">—</option><option>Negative</option><option>Trace</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Urobilinogen</label>
+            <div class="ua-field"><label class="ua-field-label">Urobilinogen</label>
               <select class="ua-field-input" id="ua_uro" onchange="dxChanged()">
                 <option value="">—</option><option>Normal</option><option>Elevated</option><option>Decreased</option>
               </select>
             </div>
-            <div class="ua-section-divider">Sediment (per HPF unless noted)</div>
-            <div class="ua-field">
-              <label class="ua-field-label">WBC</label>
+            <div class="ua-section-divider">Sediment (per HPF)</div>
+            <div class="ua-field"><label class="ua-field-label">WBC</label>
               <select class="ua-field-input" id="ua_wbc" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>0–2 HPF (normal)</option>
-                <option>0–5 HPF (normal)</option>
-                <option>5–10 HPF</option>
-                <option>10–20 HPF</option>
-                <option>20–50 HPF</option>
-                <option>&gt;50 HPF</option>
-                <option>TNTC (too numerous to count)</option>
-                <option>1+</option>
-                <option>2+</option>
-                <option>3+</option>
-                <option>4+</option>
+                <option value="">—</option><option>0–2 HPF (normal)</option><option>0–5 HPF (normal)</option><option>5–10 HPF</option><option>10–20 HPF</option><option>20–50 HPF</option><option>&gt;50 HPF</option><option>TNTC</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">RBC</label>
+            <div class="ua-field"><label class="ua-field-label">RBC</label>
               <select class="ua-field-input" id="ua_rbc" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>0–2 HPF (normal)</option>
-                <option>0–5 HPF (normal)</option>
-                <option>5–10 HPF</option>
-                <option>10–20 HPF</option>
-                <option>20–50 HPF</option>
-                <option>&gt;50 HPF</option>
-                <option>TNTC (too numerous to count)</option>
-                <option>1+</option>
-                <option>2+</option>
-                <option>3+</option>
-                <option>4+</option>
+                <option value="">—</option><option>0–2 HPF (normal)</option><option>0–5 HPF (normal)</option><option>5–10 HPF</option><option>10–20 HPF</option><option>20–50 HPF</option><option>&gt;50 HPF</option><option>TNTC</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Bacteria</label>
+            <div class="ua-field"><label class="ua-field-label">Bacteria</label>
               <select class="ua-field-input" id="ua_bacteria" onchange="dxChanged()">
-                <option value="">—</option><option>None seen</option><option>Rare</option><option>Few</option>
-                <option>Moderate</option><option>Many</option><option>Rods</option><option>Cocci</option><option>Mixed</option>
+                <option value="">—</option><option>None seen</option><option>Rare</option><option>Few</option><option>Moderate</option><option>Many</option><option>Rods</option><option>Cocci</option><option>Mixed</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Epithelial cells</label>
+            <div class="ua-field"><label class="ua-field-label">Epithelial cells</label>
               <select class="ua-field-input" id="ua_epi" onchange="dxChanged()">
-                <option value="">—</option><option>None</option><option>Rare squamous</option>
-                <option>Few squamous</option><option>Transitional cells present</option><option>Many transitional</option>
+                <option value="">—</option><option>None</option><option>Rare squamous</option><option>Few squamous</option><option>Transitional cells present</option><option>Many transitional</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Casts</label>
+            <div class="ua-field"><label class="ua-field-label">Casts</label>
               <select class="ua-field-input" id="ua_casts" onchange="dxChanged()">
-                <option value="">—</option><option>None seen</option><option>Rare hyaline</option>
-                <option>Granular casts present</option><option>WBC casts</option>
-                <option>RBC casts</option><option>Waxy casts</option>
+                <option value="">—</option><option>None seen</option><option>Rare hyaline</option><option>Granular casts present</option><option>WBC casts</option><option>RBC casts</option><option>Waxy casts</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Crystals</label>
+            <div class="ua-field"><label class="ua-field-label">Crystals</label>
               <select class="ua-field-input" id="ua_crystals" onchange="dxChanged()">
-                <option value="">—</option><option>None seen</option><option>Struvite</option>
-                <option>Calcium oxalate monohydrate</option><option>Calcium oxalate dihydrate</option>
-                <option>Urate</option><option>Bilirubin</option><option>Cystine</option>
+                <option value="">—</option><option>None seen</option><option>Struvite</option><option>Calcium oxalate monohydrate</option><option>Calcium oxalate dihydrate</option><option>Urate</option><option>Bilirubin</option><option>Cystine</option>
               </select>
             </div>
             <div class="ua-field full"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="ua_notes" placeholder="Any additional findings..." oninput="dxChanged()"></div>
@@ -607,104 +534,79 @@
         </div>
       </div>
 
-      <!-- ── 2. Chemistry / CBC ── -->
+      <!-- 2. Chem/CBC -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('chem')">
-          <div class="dx-section-title">🩸 Chemistry / CBC — abnormal values only<span class="dx-active-dot" id="dot_chem"></span></div>
+          <div class="dx-section-title">🩸 Chemistry / CBC<span class="dx-active-dot" id="dot_chem"></span></div>
           <svg class="dx-section-chevron" id="chev_chem" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_chem">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">In-house panel performed — tap any abnormal categories, add notes. Full results scanned and attached in PetPoint.</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">In-house panel performed — tap abnormal categories. Full results scanned and attached in PetPoint.</div>
           <div class="dx-pill-label">Panel performed</div>
           <div class="dx-pills" id="pills_chem_panel"></div>
           <div class="dx-pill-label">Abnormal findings — Chemistry</div>
           <div class="dx-pills" id="pills_chem_abnormal"></div>
           <div class="dx-pill-label">Abnormal findings — CBC</div>
           <div class="dx-pills" id="pills_cbc_abnormal"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Specific values / additional notes</label>
-            <input class="ua-field-input" id="chem_notes" placeholder="e.g. BUN 58, Creat 2.1 — mild azotemia; PCV 22% — moderate anemia..." oninput="dxChanged()">
-          </div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Specific values / notes</label><input class="ua-field-input" id="chem_notes" placeholder="e.g. BUN 58, Creat 2.1 — mild azotemia..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 3. Fecal Float ── -->
+      <!-- 3. Fecal Float -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('fecal')">
           <div class="dx-section-title">🦠 Fecal Float<span class="dx-active-dot" id="dot_fecal"></span></div>
           <svg class="dx-section-chevron" id="chev_fecal" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_fecal">
-          <div class="dx-pill-label">Method</div>
-          <div class="dx-pills" id="pills_fecal_method"></div>
-          <div class="dx-pill-label">Findings</div>
-          <div class="dx-pills" id="pills_fecal_findings"></div>
-          <div class="dx-pill-label">Quantity (if positive)</div>
-          <div class="dx-pills" id="pills_fecal_qty"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="fecal_notes" placeholder="Additional findings..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Method</div><div class="dx-pills" id="pills_fecal_method"></div>
+          <div class="dx-pill-label">Findings</div><div class="dx-pills" id="pills_fecal_findings"></div>
+          <div class="dx-pill-label">Quantity</div><div class="dx-pills" id="pills_fecal_qty"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="fecal_notes" placeholder="Additional findings..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 4. Ear Cytology ── -->
+      <!-- 4. Ear Cytology -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('ear')">
           <div class="dx-section-title">👂 Ear Cytology<span class="dx-active-dot" id="dot_ear"></span></div>
           <svg class="dx-section-chevron" id="chev_ear" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_ear">
-          <div class="dx-pill-label">Ear(s) sampled</div>
-          <div class="dx-pills" id="pills_ear_side"></div>
-          <div class="dx-pill-label">Findings — Right ear</div>
-          <div class="dx-pills" id="pills_ear_right"></div>
-          <div class="dx-pill-label">Findings — Left ear</div>
-          <div class="dx-pills" id="pills_ear_left"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="ear_notes" placeholder="Additional findings..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Ear(s) sampled</div><div class="dx-pills" id="pills_ear_side"></div>
+          <div class="dx-pill-label">Right ear findings</div><div class="dx-pills" id="pills_ear_right"></div>
+          <div class="dx-pill-label">Left ear findings</div><div class="dx-pills" id="pills_ear_left"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="ear_notes" placeholder="Additional findings..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 5. Skin Scraping ── -->
+      <!-- 5. Skin Scraping -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('skin')">
           <div class="dx-section-title">🔭 Skin Scraping<span class="dx-active-dot" id="dot_skin"></span></div>
           <svg class="dx-section-chevron" id="chev_skin" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_skin">
-          <div class="dx-pill-label">Type</div>
-          <div class="dx-pills" id="pills_skin_type"></div>
-          <div class="dx-pill-label">Findings</div>
-          <div class="dx-pills" id="pills_skin_findings"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Site / Notes</label>
-            <input class="ua-field-input" id="skin_notes" placeholder="Location sampled, additional findings..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Type</div><div class="dx-pills" id="pills_skin_type"></div>
+          <div class="dx-pill-label">Findings</div><div class="dx-pills" id="pills_skin_findings"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Site / Notes</label><input class="ua-field-input" id="skin_notes" placeholder="Location sampled, additional findings..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 6. Dermatophyte Culture / DTM ── -->
+      <!-- 6. DTM -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('dtm')">
           <div class="dx-section-title">🍄 Dermatophyte Culture / DTM<span class="dx-active-dot" id="dot_dtm"></span></div>
           <svg class="dx-section-chevron" id="chev_dtm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_dtm">
-          <div class="dx-pill-label">Result</div>
-          <div class="dx-pills" id="pills_dtm_result"></div>
-          <div class="dx-pill-label">Colony color (if growth)</div>
-          <div class="dx-pills" id="pills_dtm_color"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Day read / Notes</label>
-            <input class="ua-field-input" id="dtm_notes" placeholder="e.g. Day 7 read, white colony, red media..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Result</div><div class="dx-pills" id="pills_dtm_result"></div>
+          <div class="dx-pill-label">Colony color</div><div class="dx-pills" id="pills_dtm_color"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Day read / Notes</label><input class="ua-field-input" id="dtm_notes" placeholder="e.g. Day 7 read, white colony, red media..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 7. Fine Needle Aspirate ── -->
+      <!-- 7. FNA -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('fna')">
           <div class="dx-section-title">💉 Fine Needle Aspirate / Cytology<span class="dx-active-dot" id="dot_fna"></span></div>
@@ -713,103 +615,92 @@
         <div class="dx-section-body" id="sec_fna">
           <div class="ua-field-grid">
             <div class="ua-field"><label class="ua-field-label">Site aspirated</label><input class="ua-field-input" id="fna_site" placeholder="e.g. right submandibular LN, skin mass..." oninput="dxChanged()"></div>
-            <div class="ua-field">
-              <label class="ua-field-label">Sample quality</label>
+            <div class="ua-field"><label class="ua-field-label">Sample quality</label>
               <select class="ua-field-input" id="fna_quality" onchange="dxChanged()">
-                <option value="">—</option><option>Adequate</option><option>Hemodilute</option>
-                <option>Poorly cellular</option><option>Non-diagnostic</option>
+                <option value="">—</option><option>Adequate</option><option>Hemodilute</option><option>Poorly cellular</option><option>Non-diagnostic</option>
               </select>
             </div>
           </div>
-          <div class="dx-pill-label">Preliminary findings</div>
-          <div class="dx-pills" id="pills_fna_findings"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes / submitted to lab</label>
-            <input class="ua-field-input" id="fna_notes" placeholder="e.g. sent to Idexx for interpretation..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Preliminary findings</div><div class="dx-pills" id="pills_fna_findings"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes / submitted to lab</label><input class="ua-field-input" id="fna_notes" placeholder="e.g. sent to Idexx for interpretation..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 8. Radiology ── -->
+      <!-- 8. Radiology -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('rad')">
           <div class="dx-section-title">📷 Radiology<span class="dx-active-dot" id="dot_rad"></span></div>
           <svg class="dx-section-chevron" id="chev_rad" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_rad">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">Enter vet findings per view. Leave blank to omit from output.</div>
-          <div class="rad-view"><div class="rad-view-label">Thorax — lateral</div><textarea id="rad_thorax_lat" placeholder="e.g. No acute cardiopulmonary changes. Lung fields clear." oninput="dxChanged()"></textarea></div>
-          <div class="rad-view"><div class="rad-view-label">Thorax — VD / DV</div><textarea id="rad_thorax_vd" placeholder="e.g. Mild bronchial pattern noted." oninput="dxChanged()"></textarea></div>
-          <div class="rad-view"><div class="rad-view-label">Abdomen — lateral</div><textarea id="rad_abd_lat" placeholder="e.g. No evidence of obstruction. Normal organ size." oninput="dxChanged()"></textarea></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">Enter vet findings per view. Leave blank to omit.</div>
+          <div class="rad-view"><div class="rad-view-label">Thorax — lateral</div><textarea id="rad_thorax_lat" placeholder="e.g. No acute cardiopulmonary changes." oninput="dxChanged()"></textarea></div>
+          <div class="rad-view"><div class="rad-view-label">Thorax — VD / DV</div><textarea id="rad_thorax_vd" placeholder="" oninput="dxChanged()"></textarea></div>
+          <div class="rad-view"><div class="rad-view-label">Abdomen — lateral</div><textarea id="rad_abd_lat" placeholder="e.g. No evidence of obstruction." oninput="dxChanged()"></textarea></div>
           <div class="rad-view"><div class="rad-view-label">Abdomen — VD</div><textarea id="rad_abd_vd" placeholder="" oninput="dxChanged()"></textarea></div>
-          <div class="rad-view"><div class="rad-view-label">Musculoskeletal</div><textarea id="rad_msk" placeholder="e.g. No acute bony changes. Mild OA changes right stifle." oninput="dxChanged()"></textarea></div>
+          <div class="rad-view"><div class="rad-view-label">Musculoskeletal</div><textarea id="rad_msk" placeholder="e.g. No acute bony changes." oninput="dxChanged()"></textarea></div>
           <div class="rad-view"><div class="rad-view-label">Additional views / notes</div><textarea id="rad_other" placeholder="" oninput="dxChanged()"></textarea></div>
         </div>
       </div>
 
-      <!-- ── 9. FeLV / FIV ── -->
+      <!-- 9. Heartworm -->
+      <div class="dx-section">
+        <div class="dx-section-header" onclick="toggleDxSection('hw')">
+          <div class="dx-section-title">🫀 Heartworm Antigen Test<span class="dx-active-dot" id="dot_hw"></span></div>
+          <svg class="dx-section-chevron" id="chev_hw" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="dx-section-body" id="sec_hw">
+          <div class="dx-pill-label">Kit used</div><div class="dx-pills" id="pills_hw_kit"></div>
+          <div class="dx-pill-label">Result</div><div class="dx-pills" id="pills_hw_result"></div>
+          <div class="dx-pill-label">Microfilaria check</div><div class="dx-pills" id="pills_hw_mf"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="hw_notes" placeholder="e.g. weak positive — confirm with Knott's test..." oninput="dxChanged()"></div>
+        </div>
+      </div>
+
+      <!-- 10. FeLV/FIV -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('felvfiv')">
           <div class="dx-section-title">🐱 FeLV / FIV Test<span class="dx-active-dot" id="dot_felvfiv"></span></div>
           <svg class="dx-section-chevron" id="chev_felvfiv" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_felvfiv">
-          <div class="dx-pill-label">Test kit used</div>
-          <div class="dx-pills" id="pills_felvfiv_kit"></div>
-          <div class="dx-pill-label">FeLV result</div>
-          <div class="dx-pills" id="pills_felv_result"></div>
-          <div class="dx-pill-label">FIV result</div>
-          <div class="dx-pills" id="pills_fiv_result"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="felvfiv_notes" placeholder="e.g. weak positive — confirm with IFA, prior vaccination noted..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Kit used</div><div class="dx-pills" id="pills_felvfiv_kit"></div>
+          <div class="dx-pill-label">FeLV result</div><div class="dx-pills" id="pills_felv_result"></div>
+          <div class="dx-pill-label">FIV result</div><div class="dx-pills" id="pills_fiv_result"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="felvfiv_notes" placeholder="e.g. weak positive — confirm with IFA..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 10. Parvo Test ── -->
+      <!-- 11. Parvo -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('parvo')">
           <div class="dx-section-title">🐶 Parvovirus Test<span class="dx-active-dot" id="dot_parvo"></span></div>
           <svg class="dx-section-chevron" id="chev_parvo" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_parvo">
-          <div class="dx-pill-label">Test kit used</div>
-          <div class="dx-pills" id="pills_parvo_kit"></div>
-          <div class="dx-pill-label">Result</div>
-          <div class="dx-pills" id="pills_parvo_result"></div>
-          <div class="dx-pill-label">Sample type</div>
-          <div class="dx-pills" id="pills_parvo_sample"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="parvo_notes" placeholder="e.g. faint positive line, recent vaccination within 5–15 days..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Kit used</div><div class="dx-pills" id="pills_parvo_kit"></div>
+          <div class="dx-pill-label">Result</div><div class="dx-pills" id="pills_parvo_result"></div>
+          <div class="dx-pill-label">Sample type</div><div class="dx-pills" id="pills_parvo_sample"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="parvo_notes" placeholder="e.g. faint positive line, recent vaccination..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 11. Fluorescein Stain ── -->
+      <!-- 12. Fluorescein Stain -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('fluor')">
           <div class="dx-section-title">💚 Fluorescein Stain<span class="dx-active-dot" id="dot_fluor"></span></div>
           <svg class="dx-section-chevron" id="chev_fluor" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_fluor">
-          <div class="dx-pill-label">Eye(s) tested</div>
-          <div class="dx-pills" id="pills_fluor_side"></div>
-          <div class="dx-pill-label">Right eye result</div>
-          <div class="dx-pills" id="pills_fluor_right"></div>
-          <div class="dx-pill-label">Left eye result</div>
-          <div class="dx-pills" id="pills_fluor_left"></div>
-          <div class="dx-pill-label">Ulcer characteristics (if present)</div>
-          <div class="dx-pills" id="pills_fluor_char"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="fluor_notes" placeholder="e.g. superficial linear ulcer OD, dendrite pattern noted..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Eye(s) tested</div><div class="dx-pills" id="pills_fluor_side"></div>
+          <div class="dx-pill-label">Right eye (OD)</div><div class="dx-pills" id="pills_fluor_right"></div>
+          <div class="dx-pill-label">Left eye (OS)</div><div class="dx-pills" id="pills_fluor_left"></div>
+          <div class="dx-pill-label">Ulcer characteristics</div><div class="dx-pills" id="pills_fluor_char"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="fluor_notes" placeholder="e.g. superficial linear ulcer OD..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 12. Tonometry ── -->
+      <!-- 13. Tonometry -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('tono')">
           <div class="dx-section-title">👁️ Tonometry (IOP)<span class="dx-active-dot" id="dot_tono"></span></div>
@@ -817,69 +708,41 @@
         </div>
         <div class="dx-section-body" id="sec_tono">
           <div class="ua-field-grid">
-            <div class="ua-field">
-              <label class="ua-field-label">Right eye IOP (mmHg)</label>
-              <input class="ua-field-input" id="tono_right" placeholder="normal 10–25 mmHg" oninput="dxChanged()">
-            </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Left eye IOP (mmHg)</label>
-              <input class="ua-field-input" id="tono_left" placeholder="normal 10–25 mmHg" oninput="dxChanged()">
-            </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Instrument used</label>
+            <div class="ua-field"><label class="ua-field-label">Right eye IOP (mmHg)</label><input class="ua-field-input" id="tono_right" placeholder="normal 10–25 mmHg" oninput="dxChanged()"></div>
+            <div class="ua-field"><label class="ua-field-label">Left eye IOP (mmHg)</label><input class="ua-field-input" id="tono_left" placeholder="normal 10–25 mmHg" oninput="dxChanged()"></div>
+            <div class="ua-field"><label class="ua-field-label">Instrument</label>
               <select class="ua-field-input" id="tono_instrument" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>TonoVet</option>
-                <option>TonoVet Plus</option>
-                <option>Tono-Pen</option>
-                <option>Schiotz tonometer</option>
+                <option value="">—</option><option>TonoVet</option><option>TonoVet Plus</option><option>Tono-Pen</option><option>Schiotz tonometer</option>
               </select>
             </div>
-            <div class="ua-field">
-              <label class="ua-field-label">Topical anesthetic used</label>
+            <div class="ua-field"><label class="ua-field-label">Topical anesthetic</label>
               <select class="ua-field-input" id="tono_anesthetic" onchange="dxChanged()">
-                <option value="">—</option>
-                <option>Proparacaine — yes</option>
-                <option>None used</option>
+                <option value="">—</option><option>Proparacaine — yes</option><option>None used</option>
               </select>
             </div>
           </div>
-          <div class="dx-pill-label">Interpretation</div>
-          <div class="dx-pills" id="pills_tono_interp"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Notes</label>
-            <input class="ua-field-input" id="tono_notes" placeholder="e.g. OD elevated — glaucoma suspected, vet notified..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Interpretation</div><div class="dx-pills" id="pills_tono_interp"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Notes</label><input class="ua-field-input" id="tono_notes" placeholder="e.g. OD elevated — glaucoma suspected..." oninput="dxChanged()"></div>
         </div>
       </div>
 
-      <!-- ── 13. Other ── -->
+      <!-- 14. Other -->
       <div class="dx-section">
         <div class="dx-section-header" onclick="toggleDxSection('dxother')">
           <div class="dx-section-title">📋 Other Diagnostics<span class="dx-active-dot" id="dot_dxother"></span></div>
           <svg class="dx-section-chevron" id="chev_dxother" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="dx-section-body" id="sec_dxother">
-          <div class="dx-pill-label">Test type</div>
-          <div class="dx-pills" id="pills_dxother_type"></div>
-          <div class="ua-field" style="margin-top:10px;">
-            <label class="ua-field-label">Test name / description</label>
-            <input class="ua-field-input" id="dxother_test" placeholder="e.g. Heartworm antigen test, Brucella titer, T4..." oninput="dxChanged()">
-          </div>
-          <div class="ua-field" style="margin-top:8px;">
-            <label class="ua-field-label">Result / findings</label>
-            <input class="ua-field-input" id="dxother_result" placeholder="e.g. Negative, Positive, Pending lab..." oninput="dxChanged()">
-          </div>
-          <div class="ua-field" style="margin-top:8px;">
-            <label class="ua-field-label">Additional notes</label>
-            <input class="ua-field-input" id="dxother_notes" placeholder="Any relevant context or follow-up..." oninput="dxChanged()">
-          </div>
+          <div class="dx-pill-label">Test type</div><div class="dx-pills" id="pills_dxother_type"></div>
+          <div class="ua-field" style="margin-top:10px;"><label class="ua-field-label">Test name / description</label><input class="ua-field-input" id="dxother_test" placeholder="e.g. Brucella titer, T4, progesterone..." oninput="dxChanged()"></div>
+          <div class="ua-field" style="margin-top:8px;"><label class="ua-field-label">Result / findings</label><input class="ua-field-input" id="dxother_result" placeholder="e.g. Negative, Positive, Pending lab..." oninput="dxChanged()"></div>
+          <div class="ua-field" style="margin-top:8px;"><label class="ua-field-label">Additional notes</label><input class="ua-field-input" id="dxother_notes" placeholder="Any relevant context or follow-up..." oninput="dxChanged()"></div>
         </div>
       </div>
 
     </div><!-- end dxBody -->
     <div class="dx-actions">
-      <button class="dx-action-btn primary" onclick="dxBuildPreview()">Preview all diagnostics</button>
+      <button class="dx-action-btn primary" onclick="dxBuildPreview()">Preview diagnostics</button>
       <button class="dx-action-btn" onclick="dxClearAll()">Clear all</button>
       <span class="dx-copied" id="dxCopied">✓ Included in clipboard</span>
     </div>
@@ -995,7 +858,6 @@ function apoquelDose(lb){
 // Cefpodoxime table
 const CEFPOD={15:50,20:50,25:100,30:100,35:100,40:100,45:150,50:150,55:150,60:150,65:150,70:200,75:200,80:200,85:200,90:250,95:250,100:250,110:300,120:300};
 function cefpodDose(lb){const keys=Object.keys(CEFPOD).map(Number).sort((a,b)=>a-b);let mg=CEFPOD[keys[0]];for(const k of keys){if(lb>=k)mg=CEFPOD[k];}
-  // Use 200mg first (whole), then 100mg (whole or half) — fewest splits wins
   const parts=bestPillsHalf(mg,[{mg:200,unit:'tablet'},{mg:100,unit:'tablet'}]);
   return{mg,combo:parts?parts.join(' + '):''};}
 
@@ -1078,7 +940,7 @@ function zorbiumDose(lb){
 }
 
 
-// bestPillsHalf — allows 0.5 tablet increments, minimizes splits
+// bestPillsHalf — allows 0.5 increments, minimizes splits, expands 1.5x → 1x + ½x
 function bestPillsHalf(targetMg, sizes){
   let best=null, bd=[Infinity,Infinity,Infinity];
   function recurse(idx, remaining, combo, count, splits){
@@ -1100,49 +962,17 @@ function bestPillsHalf(targetMg, sizes){
   }
   recurse(0,targetMg,[],0,0);
   if(!best)return null;
-  // Expand fractional quantities: 1.5 × 100mg → 1 × 100mg + ½ × 100mg
   const parts=[];
   best.filter(x=>x.n>0).forEach(x=>{
     const whole=Math.floor(x.n);
     const half=x.n%1!==0;
-    if(whole>0) parts.push(whole+' \u00d7 '+x.s.mg+'mg '+(whole===1?x.s.unit:x.s.unit+'s'));
-    if(half)    parts.push('\u00bd \u00d7 '+x.s.mg+'mg '+x.s.unit);
+    if(whole>0) parts.push(whole+' × '+x.s.mg+'mg '+(whole===1?x.s.unit:x.s.unit+'s'));
+    if(half)    parts.push('½ × '+x.s.mg+'mg '+x.s.unit);
   });
   return parts.length?parts:null;
 }
 
-// Albon (Sulfadimethoxine) — 55mg/kg loading, 27.5mg/kg maintenance
-// Tablets: 250mg whole or half only. Use liquid if weight doesn't fit.
-function albonDose(kg){
-  const loadTarget=55*kg;
-  const maintTarget=27.5*kg;
-  // Try tablets first — only whole or half 250mg tablets
-  const tabSizes=[{mg:250,unit:'tablet'}];
-  const loadTab=bestPillsHalf(loadTarget,tabSizes);
-  const maintTab=bestPillsHalf(maintTarget,tabSizes);
-  // Calculate actual tablet mg
-  function tabActual(parts){
-    if(!parts)return 0;
-    let mg=0;
-    parts.forEach(p=>{const m=p.match(/([\d.]+)\s*\u00d7\s*(\d+)mg/);if(m)mg+=parseFloat(m[1])*parseFloat(m[2]);});
-    return mg;
-  }
-  const loadTabMg=tabActual(loadTab);
-  const maintTabMg=tabActual(maintTab);
-  // Acceptable if within 10% of target and only whole/half tablets
-  const loadTabOk=loadTab&&Math.abs(loadTabMg-loadTarget)/loadTarget<=0.10;
-  const maintTabOk=maintTab&&Math.abs(maintTabMg-maintTarget)/maintTarget<=0.10;
-  return{
-    loadTarget, maintTarget,
-    loadTabMg, maintTabMg,
-    loadTabCombo:loadTab?loadTab.join(' + '):'',
-    maintTabCombo:maintTab?maintTab.join(' + '):'',
-    loadTabOk, maintTabOk,
-    loadLiqMl:f(loadTarget/50,2),
-    maintLiqMl:f(maintTarget/50,2),
-  };
-}
-
+// ── DRUG DEFINITIONS ─────────────────────────
 // type options:
 //   'topical' — no calculation
 //   'single'  — one checkbox, calc via calcDose()
@@ -1159,10 +989,6 @@ const DRUGS=[
 {id:'aluspray',name:'ALuSpray',alias:'Aluminum Spray Bandage',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
  use:'Wound protection, minor abrasions, post-surgical incisions — aluminum-based barrier spray.',
  note:'Clean and dry area first. Apply thin coat from 6–8 inches. Reapply q24h or as needed. Do not use on deep wounds.'},
-{id:'albon',name:'Albon',alias:'Sulfadimethoxine',route:'PO',sections:['Antibiotic','Anti-parasitic'],species:['dog','cat'],type:'multi',
- use:'Coccidiosis, susceptible bacterial infections — sulfonamide. Loading dose Day 1, then maintenance.',
- options:[{key:'liq',label:'Liquid 50mg/mL'},{key:'tab',label:'250mg Tablets'}],
- note:'55mg/kg Day 1 (loading), then 27.5mg/kg q24h. Liquid: 50mg/mL. Tablets: 250mg — whole or half only. Use liquid if weight does not fit whole/half tablet dose.'},
 {id:'animax',name:'Animax Ointment',alias:'Nystatin / Neomycin / Thiostrepton / Triamcinolone',route:'Otic / Topical',sections:['Ear','Dermatology'],species:['dog','cat'],type:'topical',
  use:'Otitis, skin folds, interdigital — broad-spectrum antibiotic + antifungal + steroid.',
  note:'Ear: 1 mL/ear q12h \u00d7 7–14 days. Skin: thin layer q12h.'},
@@ -1284,9 +1110,10 @@ const DRUGS=[
 {id:'famotidine',name:'Famotidine',alias:'Pepcid',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
  use:'Gastric ulcers, nausea — H2 blocker.',
  note:'0.5–1 mg/kg q12–24h. Tabs: 10mg, 20mg. OTC.'},
-{id:'fenbendazole',name:'Fenbendazole',alias:'Panacur 100mg/mL',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
+{id:'fenbendazole',name:'Panacur',alias:'Fenbendazole — suspension & granules',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'multi',
  use:'Roundworms, hookworms, whipworms, Giardia — dogs 50mg/kg, cats 30mg/kg.',
- note:'100mg/mL suspension. q24h \u00d7 3–5 days. Give with food.'},
+ options:[{key:'susp',label:'Suspension 100mg/mL'},{key:'gran',label:'Granules 222mg/g'}],
+ note:'q24h × 3–5 days. Give with food. Giardia: 5-day course. Granules: sprinkle on food.'},
 {id:'furosemide',name:'Furosemide',alias:'Lasix',route:'PO / SQ / IV',sections:['Other'],species:['dog','cat'],type:'multi',
  use:'Edema, heart failure, pleural effusion — loop diuretic.',
  options:[{key:'po',label:'Oral tablet'},{key:'liq',label:'Oral liquid 10mg/mL'},{key:'inj',label:'Injectable 5%'}],
@@ -2681,28 +2508,6 @@ function calcDose(drug, kg){
     const injP=`Buprenorphine SR: ${loMl}–${hiMl}mL SQ (3mg/mL, ${loMg}–${hiMg}mg) once`;
     return{opts:{transdermal:{html:tdH,plain:tdP},injectable:{html:injH,plain:injP}}};
   }
-    // ALBON
-    if(id==='albon'){
-      const d=albonDose(kg);
-      // Liquid option
-      const liqLoadH=blk('Day 1 loading — 55mg/kg',d.loadLiqMl+' mL','50mg/mL liquid PO','');
-      const liqMaintH=blk('Day 2+ maintenance — 27.5mg/kg',d.maintLiqMl+' mL','50mg/mL liquid PO q24h','');
-      const liqH=liqLoadH+liqMaintH;
-      const liqP=`Albon: Day 1 ${d.loadLiqMl}mL (50mg/mL), then ${d.maintLiqMl}mL q24h`;
-      // Tablet option — only if whole/half combos fit within 10%
-      let tabH, tabP;
-      if(d.loadTabOk&&d.maintTabOk){
-        const tabLoadH=blk('Day 1 loading — 55mg/kg',d.loadTabMg+' mg',d.loadTabCombo,'');
-        const tabMaintH=blk('Day 2+ maintenance — 27.5mg/kg',d.maintTabMg+' mg',d.maintTabCombo+' q24h','250mg tablets — whole or half only');
-        tabH=tabLoadH+tabMaintH;
-        tabP=`Albon: Day 1 ${d.loadTabMg}mg (${d.loadTabCombo}), then ${d.maintTabMg}mg q24h (${d.maintTabCombo})`;
-      } else {
-        tabH=blk('250mg Tablets','Use liquid','','Weight does not fit whole or half tablet dose — use 50mg/mL liquid instead','warn-block');
-        tabP=`Albon: weight does not fit tablet dose — use 50mg/mL liquid. Day 1 ${d.loadLiqMl}mL, then ${d.maintLiqMl}mL q24h`;
-      }
-      return{opts:{liq:{html:liqH,plain:liqP},tab:{html:tabH,plain:tabP}}};
-    }
-
     // CLINDAMYCIN
     if(id==='clinda'){
       if(species==='cat'){
@@ -2711,21 +2516,19 @@ function calcDose(drug, kg){
         const p=`Clindamycin: ${ml}mL (25mg/mL liquid) PO q24h`;
         return{opts:{std:{html:h,plain:p},pneumo:{html:h,plain:p}}};
       }
-      // Standard: ~5–11mg/kg — show actual dispensed dose
+      // Standard: ~5–11mg/kg
       const rStd=clindaDogDose(lb);
-      const stdDetail='Dose reflects actual tablet/capsule combination dispensed'+(rStd.mg>Math.ceil(5*kg)?' — rounded up to nearest whole capsule':'');
-      const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,stdDetail);
+      const stdH=blk('~5–11mg/kg q12h',rStd.mg+' mg',rStd.combo,'');
       const stdP=`Clindamycin: ${rStd.mg}mg PO q12h (${rStd.combo})`;
-      // Pneumonia: 10mg/kg — round to nearest dispensable combo
+      // Pneumonia: 10mg/kg — show actual dispensed mg
       const pnTarget=10*kg;
       const pnParts=bestPills(pnTarget,[{mg:150,unit:'capsule'},{mg:75,unit:'capsule'},{mg:25,unit:'tablet'}]);
       let pnActualMg=0;
-      if(pnParts)pnParts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*(\d+(?:\.\d+)?)mg/);if(m)pnActualMg+=parseInt(m[1])*parseFloat(m[2]);});
+      if(pnParts)pnParts.forEach(p=>{const m=p.match(/(\d+)\s*\u00d7\s*([\d.]+)mg/);if(m)pnActualMg+=parseInt(m[1])*parseFloat(m[2]);});
       else pnActualMg=Math.round(pnTarget);
       const pnCombo=pnParts?pnParts.join(' + '):'';
-      const pnRounded=pnActualMg!==Math.round(pnTarget*10)/10;
-      const pnDetail='Dose reflects actual capsule combination dispensed'+(pnActualMg>pnTarget?' — rounded up to nearest whole capsule':'');
-      const pnH=blk('Pneumonia — 10mg/kg q12h',pnActualMg+' mg',pnCombo,pnDetail);
+      const pnNote=pnActualMg>Math.ceil(pnTarget*10)/10?'Rounded up to nearest whole capsule':'Dose reflects actual capsules dispensed';
+      const pnH=blk('Pneumonia — 10mg/kg q12h',pnActualMg+' mg',pnCombo,pnNote);
       const pnP=`Clindamycin (Pneumo): ${pnActualMg}mg PO q12h (${pnCombo})`;
       return{opts:{std:{html:stdH,plain:stdP},pneumo:{html:pnH,plain:pnP}}};
     }
@@ -2739,6 +2542,24 @@ function calcDose(drug, kg){
       const hiH=blk('High dose — 0.1mg/kg SQ',hiVol+' mL',hiMg+' mg','3mg/mL SR — single dose — 24–72 hr — DEA Schedule III');
       const hiP=`Buprenorphine SR: ${hiVol}mL SQ (3mg/mL, ${hiMg}mg) — high dose`;
       return{opts:{std:{html:stdH,plain:stdP},high:{html:hiH,plain:hiP}}};
+    }
+    // FENBENDAZOLE / PANACUR
+    if(id==='fenbendazole'){
+      const dMg=species==='dog'?50*kg:30*kg;
+      const rate=species==='dog'?'50mg/kg':'30mg/kg';
+      const ml=f(dMg/100,1);
+      const suspH=blk(rate+' q24h \u2014 Suspension 100mg/mL',ml+' mL','','\u00d7 3\u20135 days with food \u2022 Giardia: 5-day course');
+      const suspP=`Panacur: ${ml}mL (100mg/mL suspension) PO q24h \u00d7 3\u20135 days`;
+      let granH, granP;
+      if(species==='cat'){
+        granH=blk(rate+' q24h \u2014 Suspension 100mg/mL',ml+' mL','','Granules not recommended for cats \u2014 using suspension');
+        granP=`Panacur: ${ml}mL (100mg/mL suspension) PO q24h \u00d7 3\u20135 days`;
+      } else {
+        const grams=f(dMg/222,1);
+        granH=blk(rate+' q24h \u2014 Granules 222mg/g',grams+' g','','\u00d7 3\u20135 days \u2022 Sprinkle on food \u2022 Giardia: 5-day course');
+        granP=`Panacur: ${grams}g granules (222mg/g) PO q24h \u00d7 3\u20135 days`;
+      }
+      return{opts:{susp:{html:suspH,plain:suspP},gran:{html:granH,plain:granP}}};
     }
     return{opts:{}};
   }
@@ -3157,13 +2978,6 @@ function calcDose(drug, kg){
     const r=strongid(lb);
     return{html:blk('1mL per 5 lbs — round UP',r.ml+' mL','','Rounded to '+r.rounded+' lbs'),plain:`Pyrantel pamoate: ${r.ml}mL PO`};
   }
-  // FENBENDAZOLE
-  if(id==='fenbendazole'){
-    const dMg=species==='dog'?50*kg:30*kg;
-    const ml=f(dMg/100,1);
-    const rate=species==='dog'?'50mg/kg (dogs)':'30mg/kg (cats)';
-    return{html:blk(rate+' q24h — Panacur 100mg/mL',ml+' mL','','\u00d7 3–5 days with food • Giardia: 5-day course'),plain:`Fenbendazole (Panacur): ${ml}mL (100mg/mL) PO q24h \u00d7 3–5 days`};
-  }
   // DRONCIT
   if(id==='droncit'){
     const mid=6.25*kg;
@@ -3264,17 +3078,11 @@ function updateCopyBar(){
     if(custom) lines.push(custom);
     const footer=getFooterLine();
     if(footer){ lines.push(''); lines.push(footer); }
+    if(hasMeds||getDxText()) lines.push('');
   }
-
   // ── Diagnostics block ──
-  const uaTxt=getDxText();
-  if(uaTxt){
-    if(hasClinical) lines.push('');
-    lines.push(uaTxt);
-    if(hasMeds) lines.push('');
-  } else if(hasClinical&&hasMeds){
-    lines.push('');
-  }
+  const dxTxt=getDxText();
+  if(dxTxt){lines.push(dxTxt);if(hasMeds)lines.push('');}
 
   // ── Medication lines ──
   if(hasMeds)lines.push('Medications Started:');
@@ -3660,7 +3468,6 @@ function buildClinicalText(item, symKey){
     });
     if(parts.length>0) text=text.replace(/\.$/,'')+'. '+parts.join('; ')+'.';
   }
-  // Append suffix (e.g. "Veterinarian notified...") after findings
   if(clinicalRole==='tech'&&item.suffix) text=text.replace(/\.$/,'')+' '+item.suffix;
   if(clinicalRole==='vet'&&item.ddx) return text+' DDx: '+item.ddx+'.';
   return text;
@@ -4317,46 +4124,26 @@ function init(){
   render();
 }
 
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
 
 // ── DIAGNOSTICS PANEL ────────────────────────
-
-// ── Pill definitions ──
 const DX_PILLS={
+  chem_panel:    ['CBC only','Chemistry only','CBC + Chemistry','Electrolytes only','Pre-anesthetic panel','Senior panel'],
+  chem_abnormal: ['Elevated ALT','Elevated ALP','Elevated BUN','Elevated creatinine — azotemia','Elevated phosphorus','Elevated bilirubin','Hypoglycemia','Hyperglycemia','Hypoalbuminemia','Elevated cholesterol','Electrolyte abnormality','Elevated calcium','Low calcium'],
+  cbc_abnormal:  ['Leukocytosis — elevated WBC','Leukopenia — low WBC','Left shift / bands present','Anemia — low PCV/HCT','Polycythemia — elevated PCV','Thrombocytopenia — low platelets','Thrombocytosis — elevated platelets','Lymphopenia','Lymphocytosis','Eosinophilia','Monocytosis','Toxic neutrophils'],
   fecal_method:  ['Direct smear','Fecal float','Centrifugal float','Giardia ELISA','Parvovirus Ag'],
-  fecal_findings:['Negative — no ova seen','Roundworm ova','Hookworm ova','Whipworm ova',
-                  'Tapeworm segments/proglottids','Coccidia oocysts','Giardia — positive',
-                  'Strongyloides','Pending — sent to lab'],
+  fecal_findings:['Negative — no ova seen','Roundworm ova','Hookworm ova','Whipworm ova','Tapeworm segments/proglottids','Coccidia oocysts','Giardia — positive','Strongyloides','Pending — sent to lab'],
   fecal_qty:     ['Rare','Few','Moderate','Heavy burden'],
   ear_side:      ['Right','Left','Both'],
-  ear_right:     ['Negative','Malassezia (yeast)','Cocci (bacteria)','Rods (bacteria)','Mixed flora',
-                  'Neutrophils (inflammatory)','Mites — Otodectes','Erythrocytes'],
-  ear_left:      ['Negative','Malassezia (yeast)','Cocci (bacteria)','Rods (bacteria)','Mixed flora',
-                  'Neutrophils (inflammatory)','Mites — Otodectes','Erythrocytes'],
+  ear_right:     ['Negative','Malassezia (yeast)','Cocci (bacteria)','Rods (bacteria)','Mixed flora','Neutrophils (inflammatory)','Mites — Otodectes','Erythrocytes'],
+  ear_left:      ['Negative','Malassezia (yeast)','Cocci (bacteria)','Rods (bacteria)','Mixed flora','Neutrophils (inflammatory)','Mites — Otodectes','Erythrocytes'],
   skin_type:     ['Deep scraping','Superficial scraping','Tape prep','Trichogram'],
-  skin_findings: ['Negative — no organisms seen','Demodex adult mites','Demodex juvenile / larvae',
-                  'Demodex eggs','Sarcoptes — mites seen','Sarcoptes — suspected (negative scrape)',
-                  'Cheyletiella','Cocci (bacteria)','Rods (bacteria)','Malassezia (yeast)','Inconclusive'],
+  skin_findings: ['Negative — no organisms seen','Demodex adult mites','Demodex juvenile / larvae','Demodex eggs','Sarcoptes — mites seen','Sarcoptes — suspected (negative scrape)','Cheyletiella','Cocci (bacteria)','Rods (bacteria)','Malassezia (yeast)','Inconclusive'],
   dtm_result:    ['Negative','Positive — dermatophyte growth','Pending','Contaminated — repeat needed'],
   dtm_color:     ['White / off-white','Buff / tan','Yellow','Pink / red media change'],
-  chem_panel:    ['CBC only','Chemistry only','CBC + Chemistry','Electrolytes only','Pre-anesthetic panel','Senior panel'],
-  chem_abnormal: ['Elevated ALT','Elevated ALP','Elevated BUN','Elevated creatinine — azotemia',
-                  'Elevated phosphorus','Elevated bilirubin','Hypoglycemia','Hyperglycemia',
-                  'Hypoalbuminemia','Elevated cholesterol','Electrolyte abnormality',
-                  'Elevated calcium','Low calcium'],
-  cbc_abnormal:  ['Leukocytosis — elevated WBC','Leukopenia — low WBC','Left shift / bands present',
-                  'Anemia — low PCV/HCT','Polycythemia — elevated PCV','Thrombocytopenia — low platelets',
-                  'Thrombocytosis — elevated platelets','Lymphopenia','Lymphocytosis',
-                  'Eosinophilia','Monocytosis','Toxic neutrophils'],
-  fna_findings:  ['Predominantly blood / hemodilute','Reactive lymph node — lymphocytes, plasma cells',
-                  'Suppurative inflammation — neutrophils','Granulomatous inflammation',
-                  'Eosinophilic inflammation','Mast cells present','Round cells — lymphoma suspected',
-                  'Spindle cells present','Epithelial cells','Carcinoma suspected',
-                  'Bacteria seen — septic','Fungal organisms seen','Within normal limits'],
+  fna_findings:  ['Predominantly blood / hemodilute','Reactive lymph node — lymphocytes, plasma cells','Suppurative inflammation — neutrophils','Granulomatous inflammation','Eosinophilic inflammation','Mast cells present','Round cells — lymphoma suspected','Spindle cells present','Epithelial cells','Carcinoma suspected','Bacteria seen — septic','Fungal organisms seen','Within normal limits'],
+  hw_kit:        ['IDEXX SNAP 4Dx Plus','Zoetis VetScan HW','Anigen Rapid HW Ag','IDEXX SNAP Heartworm RT','Other'],
+  hw_result:     ['Negative','Positive','Weak positive — confirm with Knott\'s','Invalid — repeat test'],
+  hw_mf:         ['Not performed','Microfilaria check — negative','Microfilaria check — positive','Modified Knott\'s submitted'],
   felvfiv_kit:   ['IDEXX SNAP FIV/FeLV Combo','Zoetis VetScan Feline','Anigen Rapid','Other'],
   felv_result:   ['Negative','Positive','Weak positive — confirm with IFA','Invalid — repeat test'],
   fiv_result:    ['Negative','Positive','Weak positive — confirm with Western blot','Invalid — repeat test'],
@@ -4366,27 +4153,21 @@ const DX_PILLS={
   fluor_side:    ['Right (OD)','Left (OS)','Both (OU)'],
   fluor_right:   ['Negative — no uptake','Corneal ulcer present','Superficial ulcer','Deep / stromal ulcer','Descemetocele','Fluorescein dye retention — blocked nasolacrimal duct'],
   fluor_left:    ['Negative — no uptake','Corneal ulcer present','Superficial ulcer','Deep / stromal ulcer','Descemetocele','Fluorescein dye retention — blocked nasolacrimal duct'],
-  fluor_char:    ['Small / punctate','Linear / dendritic','Geographic','Central','Peripheral','Healing — granulation present','No visible vascularization','Vascularization present'],
-  tono_interp:   ['Both eyes within normal limits','OD elevated — glaucoma suspected','OS elevated — glaucoma suspected','Both elevated','OD low — uveitis suspected','OS low — uveitis suspected','Asymmetric — &gt;5 mmHg difference','Vet notified'],
-  dxother_type:  ['Heartworm Ag test','Brucella titer / culture','Thyroid (T4)','Progesterone','Cryptococcal Ag','Distemper PCR','Ringworm PCR','Urine culture — submitted','Blood culture — submitted','Sensitivity pending','Other — see notes'],
+  fluor_char:    ['Small / punctate','Linear / dendritic','Geographic','Central','Peripheral','Healing — granulation present','No vascularization','Vascularization present'],
+  tono_interp:   ['Both eyes within normal limits','OD elevated — glaucoma suspected','OS elevated — glaucoma suspected','Both elevated','OD low — uveitis suspected','OS low — uveitis suspected','Asymmetric — >5 mmHg difference','Vet notified'],
+  dxother_type:  ['Brucella titer / culture','Thyroid (T4)','Progesterone','Cryptococcal Ag','Distemper PCR','Ringworm PCR','Urine culture — submitted','Blood culture — submitted','Sensitivity pending','Other — see notes'],
 };
 
-// ── State ──
-const dxPillState={};   // key -> Set of selected pill values
+const dxPillState={};
 
-// ── Init ──
 function initDx(){
   Object.keys(DX_PILLS).forEach(key=>{
     dxPillState[key]=new Set();
-    buildPills(key);
+    buildDxPills(key);
   });
 }
 
-
-
-
-
-function buildPills(key){
+function buildDxPills(key){
   const container=document.getElementById('pills_'+key);
   if(!container)return;
   container.innerHTML='';
@@ -4396,7 +4177,7 @@ function buildPills(key){
     btn.textContent=val;
     btn.onclick=()=>{
       const set=dxPillState[key];
-      if(set.has(val)) set.delete(val); else set.add(val);
+      if(set.has(val))set.delete(val);else set.add(val);
       btn.classList.toggle('on',set.has(val));
       dxChanged();
     };
@@ -4414,318 +4195,166 @@ function toggleDxPanel(){
 function toggleDxSection(key){
   const body=document.getElementById('sec_'+key);
   const chev=document.getElementById('chev_'+key);
+  if(!body)return;
   const open=body.classList.toggle('open');
   chev.classList.toggle('open',open);
 }
 
-function dxHasData(){
-  return !!getDxText();
-}
-
 function dxChanged(){
-  // Update active dots
-  updateDxDots();
-  // Count active sections for badge
-  const sections=['ua','chem','fecal','ear','skin','dtm','fna','rad','felvfiv','parvo','fluor','tono','dxother'];
+  const sections=['ua','chem','fecal','ear','skin','dtm','fna','rad','hw','felvfiv','parvo','fluor','tono','dxother'];
   const active=sections.filter(s=>dxSectionHasData(s)).length;
   const badge=document.getElementById('dxBadge');
-  if(active>0){
-    badge.style.display='';
-    badge.textContent=active+' section'+(active===1?'':'s')+' active';
-  } else {
-    badge.style.display='none';
-  }
+  if(active>0){badge.style.display='';badge.textContent=active+' section'+(active===1?'':'s')+' active';}
+  else badge.style.display='none';
+  sections.forEach(s=>{const dot=document.getElementById('dot_'+s);if(dot)dot.classList.toggle('show',dxSectionHasData(s));});
   updateCopyBar();
 }
 
-function updateDxDots(){
-  const sections=['ua','chem','fecal','ear','skin','dtm','fna','rad','felvfiv','parvo','fluor','tono','dxother'];
-  sections.forEach(s=>{
-    const dot=document.getElementById('dot_'+s);
-    if(dot) dot.classList.toggle('show', dxSectionHasData(s));
-  });
-}
-
 function dxSectionHasData(s){
+  const pillKeys={'chem':['chem_panel','chem_abnormal','cbc_abnormal'],'fecal':['fecal_method','fecal_findings','fecal_qty'],'ear':['ear_side','ear_right','ear_left'],'skin':['skin_type','skin_findings'],'dtm':['dtm_result','dtm_color'],'fna':['fna_findings'],'hw':['hw_kit','hw_result','hw_mf'],'felvfiv':['felvfiv_kit','felv_result','fiv_result'],'parvo':['parvo_kit','parvo_result','parvo_sample'],'fluor':['fluor_side','fluor_right','fluor_left','fluor_char'],'tono':['tono_interp'],'dxother':['dxother_type']};
   if(s==='ua'){
-    const uaIds=['ua_date','ua_method','ua_appearance','ua_color','ua_sg','ua_ph','ua_protein',
-                 'ua_glucose','ua_ketones','ua_bilirubin','ua_blood','ua_uro',
-                 'ua_wbc','ua_rbc','ua_bacteria','ua_epi','ua_casts','ua_crystals','ua_notes'];
-    return uaIds.some(id=>{const el=document.getElementById(id);return el&&el.value.trim();});
-  }
-  if(s==='chem'){
-    const hasRow=['chem_panel','chem_abnormal','cbc_abnormal'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('chem_notes')||{}).value||'';
-    return hasRow||!!notes.trim();
-  }
-  if(s==='fecal'){
-    const hasPills=['fecal_method','fecal_findings','fecal_qty'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('fecal_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='ear'){
-    const hasPills=['ear_side','ear_right','ear_left'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('ear_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='skin'){
-    const hasPills=['skin_type','skin_findings'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('skin_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='dtm'){
-    const hasPills=['dtm_result','dtm_color'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('dtm_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='fna'){
-    const site=(document.getElementById('fna_site')||{}).value||'';
-    const qual=(document.getElementById('fna_quality')||{}).value||'';
-    const hasPills=(dxPillState['fna_findings']&&dxPillState['fna_findings'].size>0);
-    const notes=(document.getElementById('fna_notes')||{}).value||'';
-    return !!(site||qual||hasPills||notes.trim());
+    return ['ua_date','ua_method','ua_appearance','ua_color','ua_sg','ua_ph','ua_protein','ua_glucose','ua_ketones','ua_bilirubin','ua_blood','ua_uro','ua_wbc','ua_rbc','ua_bacteria','ua_epi','ua_casts','ua_crystals','ua_notes'].some(id=>{const el=document.getElementById(id);return el&&el.value.trim();});
   }
   if(s==='rad'){
-    const radIds=['rad_thorax_lat','rad_thorax_vd','rad_abd_lat','rad_abd_vd','rad_msk','rad_other'];
-    return radIds.some(id=>{const el=document.getElementById(id);return el&&el.value.trim();});
-  }
-  if(s==='felvfiv'){
-    const hasPills=['felvfiv_kit','felv_result','fiv_result'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('felvfiv_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='parvo'){
-    const hasPills=['parvo_kit','parvo_result','parvo_sample'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('parvo_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
-  }
-  if(s==='fluor'){
-    const hasPills=['fluor_side','fluor_right','fluor_left','fluor_char'].some(k=>dxPillState[k]&&dxPillState[k].size>0);
-    const notes=(document.getElementById('fluor_notes')||{}).value||'';
-    return hasPills||!!notes.trim();
+    return ['rad_thorax_lat','rad_thorax_vd','rad_abd_lat','rad_abd_vd','rad_msk','rad_other'].some(id=>{const el=document.getElementById(id);return el&&el.value.trim();});
   }
   if(s==='tono'){
     const r=(document.getElementById('tono_right')||{}).value||'';
     const l=(document.getElementById('tono_left')||{}).value||'';
     const inst=(document.getElementById('tono_instrument')||{}).value||'';
-    const hasPills=(dxPillState['tono_interp']&&dxPillState['tono_interp'].size>0);
-    const notes=(document.getElementById('tono_notes')||{}).value||'';
-    return !!(r||l||inst||hasPills||notes.trim());
+    return !!(r||l||inst||(dxPillState['tono_interp']&&dxPillState['tono_interp'].size>0)||((document.getElementById('tono_notes')||{}).value||'').trim());
+  }
+  if(s==='fna'){
+    const site=(document.getElementById('fna_site')||{}).value||'';
+    const qual=(document.getElementById('fna_quality')||{}).value||'';
+    return !!(site||qual||(dxPillState['fna_findings']&&dxPillState['fna_findings'].size>0)||((document.getElementById('fna_notes')||{}).value||'').trim());
   }
   if(s==='dxother'){
     const test=(document.getElementById('dxother_test')||{}).value||'';
-    const result=(document.getElementById('dxother_result')||{}).value||'';
-    const notes=(document.getElementById('dxother_notes')||{}).value||'';
-    const hasPills=(dxPillState['dxother_type']&&dxPillState['dxother_type'].size>0);
-    return !!(test||result||notes.trim()||hasPills);
+    const res=(document.getElementById('dxother_result')||{}).value||'';
+    return !!(test||res||(dxPillState['dxother_type']&&dxPillState['dxother_type'].size>0));
   }
-  return false;
+  const keys=pillKeys[s]||[];
+  const hasPills=keys.some(k=>dxPillState[k]&&dxPillState[k].size>0);
+  const noteId=s+'_notes';
+  const notes=(document.getElementById(noteId)||{}).value||'';
+  const chemNotes=s==='chem'?((document.getElementById('chem_notes')||{}).value||''):'';
+  return hasPills||!!notes.trim()||!!chemNotes.trim();
 }
 
 function getUaText(){
-  if(!dxSectionHasData('ua')) return '';
+  if(!dxSectionHasData('ua'))return '';
   const lines=['Urinalysis:'];
   const dateEl=document.getElementById('ua_date');
   const dateVal=dateEl&&dateEl.value?new Date(dateEl.value+'T00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}):'';
   const method=(document.getElementById('ua_method')||{}).value||'';
   const meta=[dateVal,method].filter(Boolean).join(' | ');
-  if(meta) lines.push('  '+meta);
-  const chemMap={ua_appearance:'Appearance',ua_color:'Color',ua_sg:'Spec Grav',ua_ph:'pH',
-                 ua_protein:'Protein',ua_glucose:'Glucose',ua_ketones:'Ketones',
-                 ua_bilirubin:'Bilirubin',ua_blood:'Blood',ua_uro:'Urobilinogen'};
-  const sedMap={ua_wbc:'WBC',ua_rbc:'RBC',ua_bacteria:'Bacteria',ua_epi:'Epithelial cells',
-                ua_casts:'Casts',ua_crystals:'Crystals'};
+  if(meta)lines.push('  '+meta);
+  const chemMap={ua_appearance:'Appearance',ua_color:'Color',ua_sg:'Spec Grav',ua_ph:'pH',ua_protein:'Protein',ua_glucose:'Glucose',ua_ketones:'Ketones',ua_bilirubin:'Bilirubin',ua_blood:'Blood',ua_uro:'Urobilinogen'};
+  const sedMap={ua_wbc:'WBC',ua_rbc:'RBC',ua_bacteria:'Bacteria',ua_epi:'Epithelial cells',ua_casts:'Casts',ua_crystals:'Crystals'};
   const chemLines=Object.entries(chemMap).map(([id,lbl])=>{const v=(document.getElementById(id)||{}).value||'';return v?lbl+': '+v:'';}).filter(Boolean);
-  if(chemLines.length){lines.push('  Gross/Chemistry: '+chemLines.join(', '));}
+  if(chemLines.length)lines.push('  Gross/Chemistry: '+chemLines.join(', '));
   const sedLines=Object.entries(sedMap).map(([id,lbl])=>{const v=(document.getElementById(id)||{}).value||'';return v?lbl+': '+v:'';}).filter(Boolean);
-  if(sedLines.length){lines.push('  Sediment: '+sedLines.join(', '));}
+  if(sedLines.length)lines.push('  Sediment: '+sedLines.join(', '));
   const notes=(document.getElementById('ua_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  if(notes)lines.push('  Notes: '+notes);
   return lines.join('\n');
 }
 
 function getChemText(){
-  if(!dxSectionHasData('chem')) return '';
+  if(!dxSectionHasData('chem'))return '';
   const lines=['CBC / Chemistry:'];
   const panel=[...(dxPillState['chem_panel']||[])].join(', ');
-  if(panel) lines.push('  Panel: '+panel);
-  const chemAbn=[...(dxPillState['chem_abnormal']||[])].join('; ');
-  if(chemAbn) lines.push('  Chemistry abnormals: '+chemAbn);
-  const cbcAbn=[...(dxPillState['cbc_abnormal']||[])].join('; ');
-  if(cbcAbn) lines.push('  CBC abnormals: '+cbcAbn);
+  if(panel)lines.push('  Panel: '+panel);
+  const ca=[...(dxPillState['chem_abnormal']||[])].join('; ');
+  if(ca)lines.push('  Chemistry abnormals: '+ca);
+  const cb=[...(dxPillState['cbc_abnormal']||[])].join('; ');
+  if(cb)lines.push('  CBC abnormals: '+cb);
   const notes=(document.getElementById('chem_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  if(notes)lines.push('  Notes: '+notes);
   lines.push('  Full results scanned and attached in PetPoint.');
   return lines.join('\n');
 }
 
-function getFecalText(){
-  if(!dxSectionHasData('fecal')) return '';
-  const lines=['Fecal:'];
-  const method=[...(dxPillState['fecal_method']||[])].join(', ');
-  if(method) lines.push('  Method: '+method);
-  const findings=[...(dxPillState['fecal_findings']||[])].join('; ');
-  if(findings) lines.push('  Findings: '+findings);
-  const qty=[...(dxPillState['fecal_qty']||[])].join(', ');
-  if(qty) lines.push('  Burden: '+qty);
-  const notes=(document.getElementById('fecal_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
-  return lines.join('\n');
+function getDxText(){
+  const sections=[
+    getUaText(),getChemText(),
+    dxSimpleText('fecal','Fecal:',{method:'fecal_method',findings:'fecal_findings',qty:'fecal_qty'},['fecal_notes']),
+    dxSimpleText('ear','Ear cytology:',{sampled:'ear_side','Right':'ear_right','Left':'ear_left'},['ear_notes']),
+    dxSimpleText('skin','Skin scraping:',{type:'skin_type',findings:'skin_findings'},['skin_notes']),
+    dxSimpleText('dtm','Dermatophyte culture / DTM:',{result:'dtm_result',color:'dtm_color'},['dtm_notes']),
+    getFnaText(),
+    getRadText(),
+    dxSimpleText('hw','Heartworm Ag test:',{kit:'hw_kit',result:'hw_result',microfilaria:'hw_mf'},['hw_notes']),
+    dxSimpleText('felvfiv','FeLV / FIV:',{'Kit':'felvfiv_kit','FeLV':'felv_result','FIV':'fiv_result'},['felvfiv_notes']),
+    dxSimpleText('parvo','Parvovirus test:',{kit:'parvo_kit',result:'parvo_result',sample:'parvo_sample'},['parvo_notes']),
+    getFluorText(),
+    getTonoText(),
+    getDxOtherText(),
+  ].filter(Boolean);
+  return sections.length?'\u2500\u2500 Diagnostics \u2500\u2500\n'+sections.join('\n\n'):'';
 }
 
-function getEarText(){
-  if(!dxSectionHasData('ear')) return '';
-  const lines=['Ear cytology:'];
-  const side=[...(dxPillState['ear_side']||[])].join(', ');
-  if(side) lines.push('  Ear(s) sampled: '+side);
-  const right=[...(dxPillState['ear_right']||[])].join('; ');
-  if(right) lines.push('  Right: '+right);
-  const left=[...(dxPillState['ear_left']||[])].join('; ');
-  if(left) lines.push('  Left: '+left);
-  const notes=(document.getElementById('ear_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
-  return lines.join('\n');
-}
-
-function getSkinText(){
-  if(!dxSectionHasData('skin')) return '';
-  const lines=['Skin scraping:'];
-  const type=[...(dxPillState['skin_type']||[])].join(', ');
-  if(type) lines.push('  Type: '+type);
-  const findings=[...(dxPillState['skin_findings']||[])].join('; ');
-  if(findings) lines.push('  Findings: '+findings);
-  const notes=(document.getElementById('skin_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
-  return lines.join('\n');
-}
-
-function getDtmText(){
-  if(!dxSectionHasData('dtm')) return '';
-  const lines=['Dermatophyte culture / DTM:'];
-  const result=[...(dxPillState['dtm_result']||[])].join(', ');
-  if(result) lines.push('  Result: '+result);
-  const color=[...(dxPillState['dtm_color']||[])].join(', ');
-  if(color) lines.push('  Colony color: '+color);
-  const notes=(document.getElementById('dtm_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+function dxSimpleText(section,header,pillMap,noteIds){
+  if(!dxSectionHasData(section))return '';
+  const lines=[header];
+  Object.entries(pillMap).forEach(([label,key])=>{
+    const vals=[...(dxPillState[key]||[])].join('; ');
+    if(vals)lines.push('  '+label.charAt(0).toUpperCase()+label.slice(1)+': '+vals);
+  });
+  (noteIds||[]).forEach(id=>{const v=(document.getElementById(id)||{}).value||'';if(v)lines.push('  Notes: '+v);});
   return lines.join('\n');
 }
 
 function getFnaText(){
-  if(!dxSectionHasData('fna')) return '';
+  if(!dxSectionHasData('fna'))return '';
   const lines=['FNA / Cytology:'];
-  const site=(document.getElementById('fna_site')||{}).value||'';
-  if(site) lines.push('  Site: '+site);
-  const qual=(document.getElementById('fna_quality')||{}).value||'';
-  if(qual) lines.push('  Sample quality: '+qual);
-  const findings=[...(dxPillState['fna_findings']||[])].join('; ');
-  if(findings) lines.push('  Findings: '+findings);
-  const notes=(document.getElementById('fna_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  const site=(document.getElementById('fna_site')||{}).value||'';if(site)lines.push('  Site: '+site);
+  const qual=(document.getElementById('fna_quality')||{}).value||'';if(qual)lines.push('  Sample quality: '+qual);
+  const f=[...(dxPillState['fna_findings']||[])].join('; ');if(f)lines.push('  Findings: '+f);
+  const n=(document.getElementById('fna_notes')||{}).value||'';if(n)lines.push('  Notes: '+n);
   return lines.join('\n');
 }
 
 function getRadText(){
-  if(!dxSectionHasData('rad')) return '';
-  const views=[
-    {id:'rad_thorax_lat',label:'Thorax (lateral)'},
-    {id:'rad_thorax_vd', label:'Thorax (VD/DV)'},
-    {id:'rad_abd_lat',   label:'Abdomen (lateral)'},
-    {id:'rad_abd_vd',    label:'Abdomen (VD)'},
-    {id:'rad_msk',       label:'Musculoskeletal'},
-    {id:'rad_other',     label:'Additional'},
-  ];
+  if(!dxSectionHasData('rad'))return '';
+  const views=[{id:'rad_thorax_lat',label:'Thorax (lateral)'},{id:'rad_thorax_vd',label:'Thorax (VD/DV)'},{id:'rad_abd_lat',label:'Abdomen (lateral)'},{id:'rad_abd_vd',label:'Abdomen (VD)'},{id:'rad_msk',label:'Musculoskeletal'},{id:'rad_other',label:'Additional'}];
   const lines=['Radiology:'];
-  views.forEach(v=>{
-    const el=document.getElementById(v.id);
-    const val=el?el.value.trim():'';
-    if(val) lines.push('  '+v.label+': '+val);
-  });
-  return lines.join('\n');
-}
-
-function getFelvFivText(){
-  if(!dxSectionHasData('felvfiv')) return '';
-  const lines=['FeLV / FIV:'];
-  const kit=[...(dxPillState['felvfiv_kit']||[])].join(', ');
-  if(kit) lines.push('  Kit: '+kit);
-  const felv=[...(dxPillState['felv_result']||[])].join(', ');
-  if(felv) lines.push('  FeLV: '+felv);
-  const fiv=[...(dxPillState['fiv_result']||[])].join(', ');
-  if(fiv) lines.push('  FIV: '+fiv);
-  const notes=(document.getElementById('felvfiv_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
-  return lines.join('\n');
-}
-
-function getParvoText(){
-  if(!dxSectionHasData('parvo')) return '';
-  const lines=['Parvovirus test:'];
-  const kit=[...(dxPillState['parvo_kit']||[])].join(', ');
-  if(kit) lines.push('  Kit: '+kit);
-  const result=[...(dxPillState['parvo_result']||[])].join(', ');
-  if(result) lines.push('  Result: '+result);
-  const sample=[...(dxPillState['parvo_sample']||[])].join(', ');
-  if(sample) lines.push('  Sample: '+sample);
-  const notes=(document.getElementById('parvo_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  views.forEach(v=>{const el=document.getElementById(v.id);const val=el?el.value.trim():'';if(val)lines.push('  '+v.label+': '+val);});
   return lines.join('\n');
 }
 
 function getFluorText(){
-  if(!dxSectionHasData('fluor')) return '';
+  if(!dxSectionHasData('fluor'))return '';
   const lines=['Fluorescein stain:'];
-  const side=[...(dxPillState['fluor_side']||[])].join(', ');
-  if(side) lines.push('  Eye(s): '+side);
-  const right=[...(dxPillState['fluor_right']||[])].join('; ');
-  if(right) lines.push('  OD: '+right);
-  const left=[...(dxPillState['fluor_left']||[])].join('; ');
-  if(left) lines.push('  OS: '+left);
-  const char=[...(dxPillState['fluor_char']||[])].join('; ');
-  if(char) lines.push('  Ulcer characteristics: '+char);
-  const notes=(document.getElementById('fluor_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  const side=[...(dxPillState['fluor_side']||[])].join(', ');if(side)lines.push('  Eye(s): '+side);
+  const r=[...(dxPillState['fluor_right']||[])].join('; ');if(r)lines.push('  OD: '+r);
+  const l=[...(dxPillState['fluor_left']||[])].join('; ');if(l)lines.push('  OS: '+l);
+  const c=[...(dxPillState['fluor_char']||[])].join('; ');if(c)lines.push('  Characteristics: '+c);
+  const n=(document.getElementById('fluor_notes')||{}).value||'';if(n)lines.push('  Notes: '+n);
   return lines.join('\n');
 }
 
 function getTonoText(){
-  if(!dxSectionHasData('tono')) return '';
+  if(!dxSectionHasData('tono'))return '';
   const lines=['Tonometry (IOP):'];
-  const r=(document.getElementById('tono_right')||{}).value||'';
-  const l=(document.getElementById('tono_left')||{}).value||'';
-  if(r) lines.push('  OD: '+r+' mmHg');
-  if(l) lines.push('  OS: '+l+' mmHg');
-  const inst=(document.getElementById('tono_instrument')||{}).value||'';
-  if(inst) lines.push('  Instrument: '+inst);
-  const anes=(document.getElementById('tono_anesthetic')||{}).value||'';
-  if(anes) lines.push('  Topical anesthetic: '+anes);
-  const interp=[...(dxPillState['tono_interp']||[])].join('; ');
-  if(interp) lines.push('  Interpretation: '+interp);
-  const notes=(document.getElementById('tono_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  const r=(document.getElementById('tono_right')||{}).value||'';if(r)lines.push('  OD: '+r+' mmHg');
+  const l=(document.getElementById('tono_left')||{}).value||'';if(l)lines.push('  OS: '+l+' mmHg');
+  const inst=(document.getElementById('tono_instrument')||{}).value||'';if(inst)lines.push('  Instrument: '+inst);
+  const anes=(document.getElementById('tono_anesthetic')||{}).value||'';if(anes)lines.push('  Anesthetic: '+anes);
+  const interp=[...(dxPillState['tono_interp']||[])].join('; ');if(interp)lines.push('  Interpretation: '+interp);
+  const n=(document.getElementById('tono_notes')||{}).value||'';if(n)lines.push('  Notes: '+n);
   return lines.join('\n');
 }
 
 function getDxOtherText(){
-  if(!dxSectionHasData('dxother')) return '';
+  if(!dxSectionHasData('dxother'))return '';
   const lines=['Other diagnostics:'];
-  const type=[...(dxPillState['dxother_type']||[])].join(', ');
-  if(type) lines.push('  Type: '+type);
-  const test=(document.getElementById('dxother_test')||{}).value||'';
-  if(test) lines.push('  Test: '+test);
-  const result=(document.getElementById('dxother_result')||{}).value||'';
-  if(result) lines.push('  Result: '+result);
-  const notes=(document.getElementById('dxother_notes')||{}).value||'';
-  if(notes) lines.push('  Notes: '+notes);
+  const type=[...(dxPillState['dxother_type']||[])].join(', ');if(type)lines.push('  Type: '+type);
+  const test=(document.getElementById('dxother_test')||{}).value||'';if(test)lines.push('  Test: '+test);
+  const res=(document.getElementById('dxother_result')||{}).value||'';if(res)lines.push('  Result: '+res);
+  const n=(document.getElementById('dxother_notes')||{}).value||'';if(n)lines.push('  Notes: '+n);
   return lines.join('\n');
-}
-
-function getDxText(){
-  const parts=[getUaText(),getChemText(),getFecalText(),getEarText(),
-               getSkinText(),getDtmText(),getFnaText(),getRadText(),
-               getFelvFivText(),getParvoText(),getFluorText(),getTonoText(),getDxOtherText()].filter(Boolean);
-  if(!parts.length) return '';
-  return '── Diagnostics ──\n'+parts.join('\n\n');
 }
 
 function dxBuildPreview(){
@@ -4733,47 +4362,26 @@ function dxBuildPreview(){
   const el=document.getElementById('dxPreview');
   if(txt){el.textContent=txt;el.classList.add('show');}
   else el.classList.remove('show');
-  if(txt){
-    const fl=document.getElementById('dxCopied');
-    fl.classList.add('show');
-    setTimeout(()=>fl.classList.remove('show'),2500);
-  }
+  if(txt){const fl=document.getElementById('dxCopied');fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),2500);}
   updateCopyBar();
 }
 
 function dxClearAll(){
-  // UA fields
-  ['ua_date','ua_method','ua_appearance','ua_color','ua_sg','ua_ph','ua_protein',
-   'ua_glucose','ua_ketones','ua_bilirubin','ua_blood','ua_uro',
-   'ua_wbc','ua_rbc','ua_bacteria','ua_epi','ua_casts','ua_crystals','ua_notes'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
-  const cn=document.getElementById('chem_notes');if(cn)cn.value='';
-  // Pills
   Object.keys(dxPillState).forEach(key=>{
     dxPillState[key].clear();
     document.querySelectorAll('#pills_'+key+' .dx-pill').forEach(p=>p.classList.remove('on'));
   });
-  // Pill-adjacent notes
-  ['fecal_notes','ear_notes','skin_notes','dtm_notes','fna_notes',
-   'felvfiv_notes','parvo_notes','fluor_notes','tono_notes','dxother_notes',
-   'dxother_test','dxother_result','tono_right','tono_left'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
-  const fq=document.getElementById('fna_quality');if(fq)fq.value='';
-  const fs=document.getElementById('fna_site');if(fs)fs.value='';
-  const ti=document.getElementById('tono_instrument');if(ti)ti.value='';
-  const ta=document.getElementById('tono_anesthetic');if(ta)ta.value='';
-  // Radiology
-  ['rad_thorax_lat','rad_thorax_vd','rad_abd_lat','rad_abd_vd','rad_msk','rad_other'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
+  ['ua_date','ua_method','ua_appearance','ua_color','ua_sg','ua_ph','ua_protein','ua_glucose','ua_ketones','ua_bilirubin','ua_blood','ua_uro','ua_wbc','ua_rbc','ua_bacteria','ua_epi','ua_casts','ua_crystals','ua_notes','chem_notes','fecal_notes','ear_notes','skin_notes','dtm_notes','fna_site','fna_notes','hw_notes','felvfiv_notes','parvo_notes','fluor_notes','tono_right','tono_left','tono_notes','dxother_test','dxother_result','dxother_notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['fna_quality','tono_instrument','tono_anesthetic'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('dxPreview').classList.remove('show');
   dxChanged();
 }
 
-// Legacy alias so updateCopyBar's getUaText() still works
-// (getUaText is now defined above as part of dx system)
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
 // ── SERVICE WORKER REGISTRATION ──────────────
 if('serviceWorker' in navigator){
