@@ -986,9 +986,16 @@ const DRUGS=[
  use:'Pre-anesthetic sedation — phenothiazine. No analgesia.',
  options:[{key:'po',label:'Tablet PO'},{key:'inj',label:'Injectable IM/SQ'}],
  note:'10mg tabs (PO), 10mg/mL injectable. Max: dogs 3mg total, cats 1mg total. Avoid in hypotensive or epileptic animals.'},
+{id:'albon',name:'Albon',alias:'Sulfadimethoxine',route:'PO',sections:['Antibiotic','Anti-parasitic'],species:['dog','cat'],type:'multi',
+ use:'Coccidiosis, susceptible bacterial infections. Dogs & cats: 55mg/kg loading Day 1, then 27.5mg/kg q24h maintenance.',
+ options:[{key:'tab',label:'Tablets 250mg'},{key:'liq',label:'Suspension 50mg/mL'}],
+ note:'Day 1 loading dose = 55mg/kg. Maintenance = 27.5mg/kg q24h. Tablets: whole or half only. Use suspension if weight does not fit tablet dosing cleanly.'},
 {id:'aluspray',name:'ALuSpray',alias:'Aluminum Spray Bandage',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
  use:'Wound protection, minor abrasions, post-surgical incisions — aluminum-based barrier spray.',
  note:'Clean and dry area first. Apply thin coat from 6–8 inches. Reapply q24h or as needed. Do not use on deep wounds.'},
+{id:'amoxicillin',name:'Amoxicillin',alias:'Amoxicillin 50mg/mL oral suspension',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
+ use:'Broad-spectrum antibiotic — respiratory, skin, UTI, soft tissue. Gram-positive and some Gram-negative coverage.',
+ note:'Dogs: 10–22 mg/kg q12h. Cats: 50mg/mL suspension, 5–10mg/kg q12h. Shake well. Refrigerate after reconstitution. 14-day course typical.'},
 {id:'animax',name:'Animax Ointment',alias:'Nystatin / Neomycin / Thiostrepton / Triamcinolone',route:'Otic / Topical',sections:['Ear','Dermatology'],species:['dog','cat'],type:'topical',
  use:'Otitis, skin folds, interdigital — broad-spectrum antibiotic + antifungal + steroid.',
  note:'Ear: 1 mL/ear q12h \u00d7 7–14 days. Skin: thin layer q12h.'},
@@ -1001,10 +1008,6 @@ const DRUGS=[
 {id:'atropineeye',name:'Atropine 1% Ophthalmic',alias:'Atropine Eye Drops',route:'Topical — Eye',sections:['Eye'],species:['dog','cat'],type:'topical',
  use:'Uveitis, corneal ulcers — cycloplegia, reduces ciliary spasm and pain.',
  note:'1 drop q12–24h as directed. Cats: use sparingly — systemic absorption risk.'},
-{id:'amoxicillin',name:'Amoxicillin',alias:'Amoxicillin 50mg/mL oral suspension',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
- use:'Broad-spectrum antibiotic — respiratory, skin, UTI, soft tissue. Gram-positive and some Gram-negative coverage.',
- note:'Dogs: 10–22 mg/kg q12h. Cats: 50mg/mL suspension, 5–10mg/kg q12h. Shake well. Refrigerate after reconstitution. 14-day course typical.'},
-
 {id:'azithro',name:'Azithromycin',alias:'Zithromax',route:'PO',sections:['Antibiotic','Respiratory'],species:['dog','cat'],type:'single',
  use:'URI, Chlamydophila, Mycoplasma — macrolide. Auto-selects tablet or liquid.',
  note:'5–10 mg/kg q24h \u00d7 3–5 days. Tablets 250mg (larger dogs). Oral susp 200mg/5mL for cats/small dogs.'},
@@ -1071,6 +1074,9 @@ const DRUGS=[
 {id:'cytopoint',name:'Cytopoint',alias:'Lokivetmab — injectable monoclonal antibody',route:'SQ injection',sections:['Dermatology'],species:['dog'],type:'single',
  use:'Allergic/atopic dermatitis, canine pruritus — IL-31 monoclonal antibody. Monthly injection. Dogs only.',
  note:'2–3 mg/kg SQ once monthly. Vials: 10mg, 20mg, 30mg, 40mg. Use smallest vial combination. Duration 4–8 weeks. No tapering required.'},
+{id:'depomedrol',name:'Depo-Medrol',alias:'Methylprednisolone Acetate 20mg/mL',route:'SQ / IM',sections:['Pain / NSAID','Dermatology','Other'],species:['cat'],type:'single',
+ use:'Long-acting corticosteroid — allergic skin disease, inflammation, immune-mediated conditions. Cats only.',
+ note:'1–2 mg/kg SQ or IM. 20mg/mL suspension. Duration 2–8 weeks. Do not combine with NSAIDs. Shake well. Use cautiously — long duration means side effects cannot be quickly reversed.'},
 {id:'dex',name:'Dexamethasone',alias:'Dex 2mg/mL',route:'SQ / IV / IM',sections:['Pain / NSAID','Respiratory','Other'],species:['dog','cat'],type:'single',
  use:'Anti-inflammatory, shock, allergic reactions.',
  note:'0.5 mg/kg. 2mg/mL injectable. Do not combine with NSAIDs.'},
@@ -1080,9 +1086,6 @@ const DRUGS=[
 {id:'diaperrashpaste',name:'Diaper Rash Paste',alias:'Zinc Oxide / Dimethicone Paste',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
  use:'Perivulvar, perianal, skin fold dermatitis — barrier protection and mild astringent.',
  note:'Apply thin layer to clean, dry skin q12–24h as needed. Prevent licking — use e-collar. Do not use with occlusive bandaging.'},
-{id:'depomedrol',name:'Depo-Medrol',alias:'Methylprednisolone Acetate 20mg/mL',route:'SQ / IM',sections:['Pain / NSAID','Dermatology','Other'],species:['cat'],type:'single',
- use:'Long-acting corticosteroid — allergic skin disease, inflammation, immune-mediated conditions. Cats only.',
- note:'1–2 mg/kg SQ or IM. 20mg/mL suspension. Duration 2–8 weeks. Do not combine with NSAIDs. Shake well. Use cautiously — long duration means side effects cannot be quickly reversed.'},
 {id:'diazepam',name:'Diazepam',alias:'Valium 5mg/mL',route:'IV / IM / PR',sections:['Pain / NSAID','Sedation / Behavior'],species:['dog','cat'],type:'single',
  use:'Seizures, muscle relaxation, sedation — benzodiazepine. DEA Schedule IV.',
  note:'Seizures: 0.5 mg/kg IV or rectal. Sedation: 0.25–0.5 mg/kg IV. 5mg/mL. DEA Schedule IV — log required. Short-acting; have flumazenil reversal available.'},
@@ -1110,10 +1113,6 @@ const DRUGS=[
 {id:'famotidine',name:'Famotidine',alias:'Pepcid',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
  use:'Gastric ulcers, nausea — H2 blocker.',
  note:'0.5–1 mg/kg q12–24h. Tabs: 10mg, 20mg. OTC.'},
-{id:'fenbendazole',name:'Panacur',alias:'Fenbendazole — suspension & granules',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'multi',
- use:'Roundworms, hookworms, whipworms, Giardia — dogs 50mg/kg, cats 30mg/kg.',
- options:[{key:'susp',label:'Suspension 100mg/mL'},{key:'gran',label:'Granules 222mg/g'}],
- note:'q24h × 3–5 days. Give with food. Giardia: 5-day course. Granules: sprinkle on food.'},
 {id:'furosemide',name:'Furosemide',alias:'Lasix',route:'PO / SQ / IV',sections:['Other'],species:['dog','cat'],type:'multi',
  use:'Edema, heart failure, pleural effusion — loop diuretic.',
  options:[{key:'po',label:'Oral tablet'},{key:'liq',label:'Oral liquid 10mg/mL'},{key:'inj',label:'Injectable 5%'}],
@@ -1154,12 +1153,12 @@ const DRUGS=[
 {id:'metro',name:'Metronidazole',alias:'Flagyl',route:'PO',sections:['Antibiotic','GI / Antiemetic'],species:['dog','cat'],type:'single',
  use:'Giardia, anaerobic infections, diarrhea, colitis.',
  note:'22 mg/kg q24h (Giardia) or q12h (infection). Tabs: 250mg, 500mg. Liquid 80mg/mL for cats.'},
-{id:'miconazole',name:'Miconazole 1% Lotion',alias:'Miconazole Nitrate Lotion',route:'Topical',sections:['Dermatology','Antifungal'],species:['dog','cat'],type:'topical',
- use:'Superficial dermatophytosis, Malassezia dermatitis, skin fold yeast infections.',
- note:'Apply thin layer to affected area q12h. Continue 7 days past resolution. Avoid eyes and mucous membranes.'},
 {id:'miconahex',name:'MiconaHex + Triz Wipes',alias:'Miconazole / Chlorhexidine / Tris-EDTA Wipes',route:'Topical',sections:['Dermatology','Antifungal','Ear'],species:['dog','cat'],type:'topical',
  use:'Skin fold dermatitis, interdigital yeast/bacteria, ear pinna cleaning — antifungal + antiseptic wipes.',
  note:'Wipe affected areas q12–24h. Allow to air dry. Do not rinse. Safe for ears, skin folds, paws, and perianal areas.'},
+{id:'miconazole',name:'Miconazole 1% Lotion',alias:'Miconazole Nitrate Lotion',route:'Topical',sections:['Dermatology','Antifungal'],species:['dog','cat'],type:'topical',
+ use:'Superficial dermatophytosis, Malassezia dermatitis, skin fold yeast infections.',
+ note:'Apply thin layer to affected area q12h. Continue 7 days past resolution. Avoid eyes and mucous membranes.'},
 {id:'mirtazapine',name:'Mirtazapine',alias:'Mirataz / Remeron',route:'PO / Transdermal',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
  use:'Appetite stimulant, antiemetic.',
  note:'Cats: Mirataz 0.1mL transdermal to LEFT ear pinna (inner surface) q24h. Wear gloves. Dogs: whole 15mg tabs q72h.'},
@@ -1193,16 +1192,16 @@ const DRUGS=[
 {id:'oxytocin',name:'Oxytocin',alias:'Pitocin',route:'SQ / IM',sections:['Other'],species:['dog','cat'],type:'single',
  use:'Uterine inertia, retained placenta, milk letdown.',
  note:'0.5–2 IU/kg SQ or IM. Max \u00d73 doses q30min. Rule out obstruction first.'},
+{id:'fenbendazole',name:'Panacur',alias:'Fenbendazole — suspension & granules',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'multi',
+ use:'Roundworms, hookworms, whipworms, Giardia — dogs 50mg/kg, cats 30mg/kg.',
+ options:[{key:'susp',label:'Suspension 100mg/mL'},{key:'gran',label:'Granules 222mg/g'}],
+ note:'q24h × 3–5 days. Give with food. Giardia: 5-day course. Granules: sprinkle on food.'},
 {id:'pentoxifylline',name:'Pentoxifylline',alias:'Trental / 125mg/mL susp / 400mg tabs',route:'PO',sections:['Dermatology','Respiratory'],species:['dog'],type:'single',
  use:'Dermatomyositis, vasculitis, pulmonary fibrosis — dogs only.',
  note:'Dogs: 10–15 mg/kg q8–12h. Cats: 100mg fixed q8–12h. Oral susp 125mg/mL or tabs 400mg. Takes 4–8 weeks for effect.'},
 {id:'ponazuril',name:'Ponazuril',alias:'Marquis 50mg/mL',route:'PO',sections:['GI / Antiemetic','Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Coccidia — antiprotozoal. 1–3 day course.',
  note:'50 mg/kg q24h \u00d7 1–3 days. 50mg/mL oral paste.'},
-{id:'propectalin',name:'Pro-Pectalin',alias:'Kaolin/Pectin/Enterococcus',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
- use:'Acute diarrhea, GI upset — probiotic + kaolin/pectin adsorbent. Safe for all ages.',
- note:'Dogs: 1 tablet (chewable) per 20 lbs q12h. Cats: 2–4 inches paste q12h (paste formulation). Continue 2–5 days or until resolved.'},
-
 {id:'droncit',name:'Praziquantel',alias:'Droncit 34mg tabs',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Tapeworms — single dose.',
  note:'5–7.5 mg/kg single dose. Tabs 34mg. Injectable 56.8mg/mL also available.'},
@@ -1218,6 +1217,9 @@ const DRUGS=[
 {id:'previcox',name:'Previcox',alias:'Firocoxib',route:'PO',sections:['Pain / NSAID'],species:['dog'],type:'single',
  use:'Osteoarthritis, post-op pain — COX-2 NSAID. Dogs only.',
  note:'5 mg/kg q24h. Chewable tabs: 57mg, 227mg.'},
+{id:'propectalin',name:'Pro-Pectalin',alias:'Kaolin/Pectin/Enterococcus',route:'PO',sections:['GI / Antiemetic'],species:['dog','cat'],type:'single',
+ use:'Acute diarrhea, GI upset — probiotic + kaolin/pectin adsorbent. Safe for all ages.',
+ note:'Dogs: 1 tablet (chewable) per 20 lbs q12h. Cats: 2–4 inches paste q12h (paste formulation). Continue 2–5 days or until resolved.'},
 {id:'strongid',name:'Pyrantel Pamoate',alias:'Strongid / Nemex',route:'PO',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Roundworms, hookworms — 1 mL per 5 lbs, round UP.',
  note:'Shake well. Repeat in 2 weeks. Very safe for young animals.'},
@@ -1227,12 +1229,12 @@ const DRUGS=[
 {id:'selamectin',name:'Selamectin',alias:'Revolution 120mg/mL',route:'Topical',sections:['Anti-parasitic'],species:['dog','cat'],type:'single',
  use:'Fleas, heartworm prevention, ear mites, mange.',
  note:'120mg/mL. Apply to back of neck. Monthly.'},
-{id:'ssdcream',name:'SSD Cream',alias:'Silver Sulfadiazine 1% Cream',route:'Topical',sections:['Dermatology','Antibiotic'],species:['dog','cat'],type:'topical',
- use:'Burns, deep wounds, infected ulcers — broad-spectrum antimicrobial with gram-negative and gram-positive coverage.',
- note:'Apply 1/16 inch layer to clean wound q12–24h. Cover with non-adherent dressing. Avoid prolonged use on large areas — systemic absorption possible. Do not use near eyes.'},
 {id:'smztmp',name:'SMZ / TMP',alias:'Trimethoprim-Sulfa',route:'PO',sections:['Antibiotic'],species:['dog','cat'],type:'single',
  use:'UTI, skin, toxoplasmosis — sulfonamide combo.',
  note:'15–30 mg/kg q12h. Tabs: 480mg, 960mg. Ensure hydration. Cats: use cautiously.'},
+{id:'ssdcream',name:'SSD Cream',alias:'Silver Sulfadiazine 1% Cream',route:'Topical',sections:['Dermatology','Antibiotic'],species:['dog','cat'],type:'topical',
+ use:'Burns, deep wounds, infected ulcers — broad-spectrum antimicrobial with gram-negative and gram-positive coverage.',
+ note:'Apply 1/16 inch layer to clean wound q12–24h. Cover with non-adherent dressing. Avoid prolonged use on large areas — systemic absorption possible. Do not use near eyes.'},
 {id:'temarilp',name:'Temaril-P',alias:'Trimeprazine / Prednisolone',route:'PO',sections:['Dermatology','Respiratory'],species:['dog'],type:'single',
  use:'Pruritus, allergic cough, kennel cough — antihistamine + corticosteroid. Dogs only.',
  note:'Each tab = 5mg trimeprazine + 2mg prednisolone. q12h \u00d7 4 days then taper. Do not use in cats.'},
@@ -1255,19 +1257,17 @@ const DRUGS=[
 {id:'b12',name:'Vitamin B12',alias:'Cyanocobalamin 1000mcg/mL',route:'SQ',sections:['GI / Antiemetic','Supportive Care','Other'],species:['dog','cat'],type:'single',
  use:'Appetite stimulation support, anorexia, GI disease, cobalamin deficiency.',
  note:'Dogs: 0.5–1.0 mL SQ once weekly or as directed. Cats: 0.25–0.5 mL SQ once weekly. 1000mcg/mL injectable.'},
-
 {id:'vitk1',name:'Vitamin K1',alias:'Phytonadione 10mg/mL',route:'SQ / PO',sections:['Other'],species:['dog','cat'],type:'single',
  use:'Rodenticide toxicity, coagulopathy.',
  note:'2.5–5 mg/kg q12h \u00d7 4 weeks. SQ first dose (NOT IV), then oral. Give oral with fatty food.'},
+{id:'zn7spray',name:'ZN7 Spray',alias:'Zinc Compound Wound Spray',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
+ use:'Hot spots, minor wounds, skin irritation — zinc-based antiseptic and astringent spray.',
+ note:'Shake well. Apply to clean, dry affected area q12–24h. Keep away from eyes. Do not bandage tightly after application. Prevent licking — use e-collar if needed.'},
 {id:'zorbium',name:'Zorbium',alias:'Buprenorphine ER 20mg/mL — Cats',route:'Transdermal / SQ',sections:['Pain / NSAID'],species:['cat'],type:'multi',
  use:'Extended-release pain — transdermal or injectable SR. Cats only.',
  options:[{key:'transdermal',label:'Transdermal 20mg/mL'},{key:'injectable',label:'Injectable SR 3mg/mL SQ'}],
- note:'Transdermal: 2.6–6.6 lbs: 0.4 mL | >6.6–16.5 lbs: 1.0 mL — apply to back of neck at base of skull, wear gloves. Injectable SR: 0.1–0.2mg/kg SQ — use when weight outside transdermal range or transdermal not appropriate. DEA Schedule III — log required.'},
-{id:'zn7spray',name:'ZN7 Spray',alias:'Zinc Compound Wound Spray',route:'Topical',sections:['Dermatology'],species:['dog','cat'],type:'topical',
- use:'Hot spots, minor wounds, skin irritation — zinc-based antiseptic and astringent spray.',
- note:'Shake well. Apply to clean, dry affected area q12–24h. Keep away from eyes. Do not bandage tightly after application. Prevent licking — use e-collar if needed.'}
-]
-
+ note:'Transdermal: 2.6–6.6 lbs: 0.4 mL | >6.6–16.5 lbs: 1.0 mL — apply to back of neck at base of skull, wear gloves. Injectable SR: 0.1–0.2mg/kg SQ — use when weight outside transdermal range or transdermal not appropriate. DEA Schedule III — log required.'}
+];
 // ── CLINICAL PROBLEM MODULE ───────────────────
 // Each symptom: { label, sub, techText, vetText, ddx }
 // sub        — optional subtitle shown in checkbox list
@@ -2292,6 +2292,44 @@ function calcDose(drug, kg){
 
   // ── MULTI-OPTION ──
   if(drug.type==='multi'){
+    // ALBON
+    if(id==='albon'){
+      const loadMg=55*kg;
+      const maintMg=27.5*kg;
+      // Tablet logic — 250mg, whole or half only (125mg minimum)
+      function albonTabCombo(mg){
+        const whole=Math.floor(mg/250);
+        const rem=mg-(whole*250);
+        // Try whole+half
+        if(rem>=62.5&&rem<=187.5) return{mg:whole*250+125,combo:(whole>0?whole+' × 250mg tablet'+(whole>1?'s':'')+' + ':'')+'½ × 250mg tablet'};
+        if(rem<62.5&&whole>0) return{mg:whole*250,combo:whole+' × 250mg tablet'+(whole>1?'s':'')};
+        if(rem>=187.5) return{mg:(whole+1)*250,combo:(whole+1)+' × 250mg tablet'+((whole+1)>1?'s':'')};
+        // Less than 125mg — too small for tablets
+        return null;
+      }
+      const loadTab=albonTabCombo(loadMg);
+      const maintTab=albonTabCombo(maintMg);
+      const tabOk=loadTab&&maintTab;
+      // Suspension logic — 50mg/mL
+      const loadMl=f(loadMg/50,1);
+      const maintMl=f(maintMg/50,1);
+      const liqH=blk('Day 1: 55mg/kg loading — then 27.5mg/kg q24h',
+        'Day 1: '+loadMl+' mL  |  Maint: '+maintMl+' mL',
+        '50mg/mL suspension','Give with food • Typical course 5–20 days');
+      const liqP=`Albon suspension: Day 1 ${loadMl}mL (50mg/mL loading), then ${maintMl}mL q24h (50mg/mL maintenance)`;
+      let tabH, tabP;
+      if(!tabOk){
+        tabH=blk('Weight does not fit tablet dosing cleanly','—','Use 50mg/mL suspension instead','Tablets: whole or half only — 125mg minimum increment','warn-block');
+        tabP=`Albon: weight does not fit tablet dose — use 50mg/mL suspension. Day 1 ${loadMl}mL, then ${maintMl}mL q24h`;
+      } else {
+        tabH=blk('Day 1: 55mg/kg loading — then 27.5mg/kg q24h',
+          'Day 1: '+loadTab.mg+'mg  |  Maint: '+maintTab.mg+'mg',
+          'Day 1: '+loadTab.combo+'  |  Maint: '+maintTab.combo,
+          'Whole or half tablets only • Give with food');
+        tabP=`Albon tablets: Day 1 ${loadTab.mg}mg (${loadTab.combo} — loading), then ${maintTab.mg}mg q24h (${maintTab.combo} — maintenance)`;
+      }
+      return{opts:{tab:{html:tabH,plain:tabP},liq:{html:liqH,plain:liqP}}};
+    }
     // CERENIA
     if(id==='cerenia'){
       // Injectable: exact per-label (1mg/kg = lb/2.2046/10 mL)
